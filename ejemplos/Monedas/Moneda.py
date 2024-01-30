@@ -6,7 +6,7 @@ class Moneda(GameObject):
     def __init__(self, x, y):
         super().__init__(x, y, "Recursos/Moneda.png", "Moneda")
 
-    # actualizamos /1fps veces
+    # actualizamos fps veces por segundo
     def onUpdate(self, dt):
         pass
 

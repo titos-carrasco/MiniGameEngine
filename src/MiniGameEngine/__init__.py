@@ -226,10 +226,14 @@ class GameWorld:
 class GameObject:
     _images = {}
 
-    def _getImage(imagePath: str) -> tk.PhotoImage:
+    def loadImage(imagePath: str) -> tk.PhotoImage:
         if not imagePath in GameObject._images:
             GameObject._images[imagePath] = tk.PhotoImage(file=imagePath)
         return GameObject._images[imagePath]
+
+    def loadImages(imagesPaths:list):
+        for path in imagesPaths:
+            GameObject.loadImage(path)
 
     def __init__(self, x: int, y: int, imagePath: str, tipo: str = "undef"):
         """
@@ -248,7 +252,7 @@ class GameObject:
 
         self._x = x
         self._y = y
-        img = GameObject._getImage(imagePath)
+        img = GameObject.loadImage(imagePath)
         self._width = img.width()
         self._height = img.height()
         self._shape = canvas.create_image(
@@ -300,7 +304,7 @@ class GameObject:
         Args:
             imagePath (str): Ruta de la nueva imagen del objeto.
         """
-        img = GameObject._getImage(imagePath)
+        img = GameObject.loadImage(imagePath)
         self._width = img.width()
         self._height = img.height()
         self._gw._getCanvas().itemconfig(self._shape, image=img)
