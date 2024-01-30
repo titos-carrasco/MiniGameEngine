@@ -19,18 +19,18 @@ class Betty(GameObject):
             x = x - 4
             if x - w / 2 < 0:
                 x = w / 2
-            if(self.direccion != "L"):
+            if self.direccion != "L":
                 self.direccion = "L"
                 self.setShape("Recursos/Betty-L.png")
         elif self.isPressed("Right"):
             x = x + 4
             if x > ww - w / 2:
                 x = ww - w / 2
-            if(self.direccion != "R"):
+            if self.direccion != "R":
                 self.direccion = "R"
                 self.setShape("Recursos/Betty-R.png")
         self.setPosition(x, y)
 
     # manejamos las colisiones
     def onCollision(self, dt, gobj):
-        pass
+        print("Betty: Colisione con", gobj.getTipo())

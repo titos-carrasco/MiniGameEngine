@@ -2,7 +2,6 @@
 # File -> Preferences -> Settings: Buscar y Marcar "Python: Execute In File Dir"
 
 from MiniGameEngine import GameWorld
-from MiniGameEngine import GameText
 from SpaceShip import SpaceShip
 from Alien import Alien
 
@@ -10,8 +9,7 @@ from Alien import Alien
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(800, 600, title="Actividad 01", bgpic="Recursos/Fondo.png")
-        self.status_line = GameText(0, 0, color="white")
+        super().__init__(800, 600, title="Aliens", bgpic="Recursos/Fondo.png")
 
         # agregamos a los actores
         SpaceShip(400, 540)
@@ -25,7 +23,6 @@ class Game(GameWorld):
 
     def onUpdate(self, dt):
         fps = round(1 / dt, 1)
-        self.status_line.changeText(x=0, y=0, text=str(fps))
         if self.isPressed("Escape"):
             self.exitGame()
 

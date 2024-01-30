@@ -3,11 +3,11 @@ import ctypes
 import tkinter as tk
 
 try:
-    TIME_BEGIN_PERIOD = ctypes.windll.winmm.timeBeginPeriod
-    TIME_END_PERIOD = ctypes.windll.winmm.timeEndPeriod
+    _TIME_BEGIN_PERIOD = ctypes.windll.winmm.timeBeginPeriod
+    _TIME_END_PERIOD = ctypes.windll.winmm.timeEndPeriod
 except:
-    TIME_BEGIN_PERIOD = lambda n: True
-    TIME_END_PERIOD = lambda n: True
+    _TIME_BEGIN_PERIOD = lambda n: True
+    _TIME_END_PERIOD = lambda n: True
 
 
 class GameWorld:
@@ -43,13 +43,14 @@ class GameWorld:
         self._win = tk.Tk()
         self._win.geometry("%dx%d" % (width, height))
         self._win.title(title)
+        self._win.resizable(False, False)
 
         self._canvas = tk.Canvas(self._win, width=width, height=height, bg=bgcolor)
         self._canvas.place(x=0, y=0)
 
         if not bgpic is None:
             self._bgpic = tk.PhotoImage(file=bgpic)
-            self._canvas.create_image(0, 0, image=self._bgpic, anchor="nw")
+            self._canvas.create_image(0, 0, image=self._bgpic, anchor=tk.NW)
 
         self._keys = {}
         self._tick_prev = 0
@@ -93,7 +94,7 @@ class GameWorld:
 
     def onUpdate(self, dt: float):
         """
-        Llamada por cada ciclo dentro del loop (1/fps veces por segundo)
+        Llamada por cada ciclo dentro del loop (fps veces por segundo)
 
         Args:
             dt (float): Tiempo en segundos desde la ultima llamada
@@ -146,9 +147,9 @@ class GameWorld:
         dt = self._fps_time - (time.perf_counter() - self._tick_prev) - 0.001
         dr = round(dt, 3)
         if dt > 0:
-            TIME_BEGIN_PERIOD(1)
+            _TIME_BEGIN_PERIOD(1)
             time.sleep(dt)
-            TIME_END_PERIOD(1)
+            _TIME_END_PERIOD(1)
 
         now = time.perf_counter()
         dt = now - self._tick_prev
@@ -243,20 +244,22 @@ class GameObject:
         self._gw = GameWorld._getInstance()
         if self._gw is None:
             raise ("No existe una instancia de GameWorld activa!!!")
+        canvas = self._gw._getCanvas()
 
         self._x = x
         self._y = y
         img = GameObject._getImage(imagePath)
         self._width = img.width()
         self._height = img.height()
-        self._shape = self._gw._getCanvas().create_image(
-            self._x - self._width / 2,
-            self._y - self._height / 2,
+        self._shape = canvas.create_image(
+            self._x,
+            self._y,
             image=img,
-            anchor="nw",
+            anchor=tk.CENTER,
         )
         self._tipo = tipo
         self._gw._addGObject(self)
+        canvas.tag_raise("TextObject")
 
     def getX(self) -> int:
         """
@@ -284,10 +287,11 @@ class GameObject:
             x (int): Nueva coordenada x del objeto.
             y (int): Nueva coordenada y del objeto.
         """
-        self._x, self._y = int(x), int(y)
-        self._gw._getCanvas().moveto(
-            self._shape, self._x - self._width / 2, self._y - self._height / 2
-        )
+        x, y = int(x), int(y)
+        dx = x - self._x
+        dy = y - self._y
+        self._gw._getCanvas().move(self._shape, dx, dy)
+        self._x, self._y = x, y
 
     def setShape(self, imagePath: str):
         """
@@ -323,7 +327,6 @@ class GameObject:
     def getTipo(self) -> str:
         """
         Obtiene el tipo del objeto.
-
         Returns:
             str: Tipo del objeto.
         """
@@ -389,25 +392,43 @@ class GameObject:
 # ---
 
 
-class GameText:
+class TextObject:
     def __init__(
         self,
         x: int,
         y: int,
-        text: str = None,
+        text: str,
         font: str = "Arial",
         size: int = 10,
         bold: bool = False,
         italic: bool = False,
         color: str = "black",
     ):
+        """
+        Constructor de la clase TextObject que agrega un Texto al mundo del juego
+
+        Args:
+            x (int): Coordenada x del texto
+            y (int): Coordenada y del texto
+            text (str): Texto para este objeto
+            font (str, optional): Font a utilizar para el texto (opcional, por defecto es "Arial").
+            size (int, optional): Tamano a utilizar para el texto (opcional, por defecto es 10).
+            bold (bool, optional): Especifica que el texto estara en bold (opcional, por defecto es False).
+            italic (bool, optional): Especifica que el texto estara en italic (opcional, por defecto es False).
+            color (str, optional): Color a utilizar para el texto (opcional, por defecto es "black").
+        """
         self._gw = GameWorld._getInstance()
         if self._gw is None:
             raise ("No existe una instancia de GameWorld activa!!!")
-        self._text = self._gw._getCanvas().create_text(0, 0, anchor="nw")
-        self.changeText(x, y, text, font, size, bold, italic, color)
+        canvas = self._gw._getCanvas()
 
-    def changeText(
+        self._text = canvas.create_text(
+            0, 0, text=text, anchor=tk.NW, tags="TextObject"
+        )
+        self.setText(x, y, text, font, size, bold, italic, color)
+        canvas.tag_raise("TextObject")
+
+    def setText(
         self,
         x: int = None,
         y: int = None,
@@ -418,26 +439,57 @@ class GameText:
         italic: bool = None,
         color: str = None,
     ):
-        canvas = self._gw._getCanvas()
-        _x, _y = canvas.coords(self._text)
+        """
+        Modifica el texto desplegado y sus atributos. Si no se especifican atributos se convservan los existentes
 
-        kwargs = {}
+        Args:
+            x (int, optional): Coordenada x del texto.
+            y (int, optional): Coordenada y del texto
+            text (str, optional): Texto para este objeto
+            font (str, optional): Font a utilizar para el texto
+            size (int, optional): Tamano a utilizar para el texto
+            bold (bool, optional): Especifica que el texto estara en bold
+            italic (bool, optional): Especifica que el texto estara en italic
+            color (str, optional): Color a utilizar para el texto
+        """
+        canvas = self._gw._getCanvas()
+
+        # la posicion del texto
+        _x, _y = canvas.coords(self._text)
         if x is None:
             x = _x
         if y is None:
             y = _y
+        x, y = int(x), int(y)
+        dx = x - _x
+        dy = y - _y
+        canvas.move(self._text, dx, dy)
+
+        # los atributos
+        kwargs = {}
         if not text is None:
             kwargs["text"] = text
-        # if(not font is None): kwargs["x"] = x
-        # if(not fontSize is None): kwargs["x"] = x
-        # if(not fontBold is None): kwargs["x"] = x
-        # if(not fontItalic is None): kwargs["x"] = x
+        f = []
+        if not font is None:
+            f.append(font)
+        if not size is None:
+            f.append(size)
+        t = ""
+        if bold:
+            t = t + " bold "
+        if italic:
+            t = t + " italic "
+        if t:
+            f.append(t)
+        if f:
+            kwargs["font"] = tuple(f)
         if not color is None:
             kwargs["fill"] = color
-
         canvas.itemconfig(self._text, kwargs)
-        canvas.moveto(self._text, x, y)
 
     def destroy(self):
+        """
+        Elimina este texto del mundo del juego
+        """
         self._gw._getCanvas().delete(self._text)
         self._text = None
