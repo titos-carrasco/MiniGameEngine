@@ -143,12 +143,9 @@ class GameWorld:
         self._win.update_idletasks()
         self._win.update()
 
-        # usaremos 1ms de precision debido a Windows
-        dt = self._fps_time - (time.perf_counter() - self._tick_prev) - 0.001
-        dr = round(dt, 3)
-        if dt > 0:
+        while(time.perf_counter() - self._tick_prev < self._fps_time):
             _TIME_BEGIN_PERIOD(1)
-            time.sleep(dt)
+            time.sleep(0)
             _TIME_END_PERIOD(1)
 
         now = time.perf_counter()
