@@ -9,7 +9,7 @@ from Alien import Alien
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(800, 600, title="Aliens", bgpic="Recursos/Fondo.png")
+        super().__init__(800, 600, title="Aliens", bgPath="Recursos/Fondo.png")
 
         # agregamos a los actores
         SpaceShip(400, 540)

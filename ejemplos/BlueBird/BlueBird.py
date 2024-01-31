@@ -6,6 +6,7 @@ class BlueBird(GameObject):
     # inicializamos el Ave
     def __init__(self, x, y):
         super().__init__(x, y, "Recursos/bird-000.png", "BlueBird")
+
         self.images = [
             "Recursos/bird-000.png",
             "Recursos/bird-001.png",
@@ -15,7 +16,7 @@ class BlueBird(GameObject):
             "Recursos/bird-005.png",
             "Recursos/bird-006.png"
         ]
-        GameObject.loadImages(self.images)
+        self.loadImages(self.images)
         self.actual = 0
         self.t = time.time()
 

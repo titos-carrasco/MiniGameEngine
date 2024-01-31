@@ -10,7 +10,7 @@ from Moneda import Moneda
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(800, 600, title="Monedas", bgpic="Recursos/Fondo.png")
+        super().__init__(800, 600, title="Monedas", bgPath="Recursos/Fondo.png")
         self.statusBar = TextObject(
             10, 10, "", font="Arial", size=15, bold=False, italic=False, color="black"
         )

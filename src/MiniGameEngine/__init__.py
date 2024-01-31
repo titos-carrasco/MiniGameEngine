@@ -17,52 +17,87 @@ class GameWorld:
         return GameWorld.__instance__
 
     # ---
+
     def __init__(
         self,
         width: int,
         height: int,
         title: str = "MiniGameEngine",
-        bgcolor: str = "gray",
-        bgpic: str = None,
+        bgColor: str = "gray",
+        bgPath: str = None,
     ):
         """Constructor de la clase GameWorld que inicializa una instancia del mundo de juego.
 
         Args:
             width (int): Ancho de la ventana del juego.
             height (int): Altura de la ventana del juego.
-            title (str, optional): Título de la ventana del juego (opcional, por defecto es "MiniGameEngine").
-            bgcolor (str, optional): Color de fondo de la ventana del juego (opcional, por defecto es "gray").
-            bgpic (str, optional): Ruta de la imagen de fondo de la ventana del juego (opcional, por defecto es None).
-
-        Raises:
-            Exception: Solo puede haber una instancia del jeugo en ejecucion
+            title (str, optional): Título de la ventana del juego (por defecto es "MiniGameEngine").
+            bgColor (str, optional): Color de fondo de la ventana del juego (por defecto es "gray").
+            bgPath (str, optional): Ruta de la imagen de fondo de la ventana del juego (por defecto es None).
         """
         if not GameWorld.__instance__ is None:
             raise Exception("Ya existe una instancia de GameWorld activa!!!")
 
-        self._win = tk.Tk()
-        self._win.geometry("%dx%d" % (width, height))
-        self._win.title(title)
-        self._win.resizable(False, False)
+        self.win = tk.Tk()
+        self.win.geometry("%dx%d" % (width, height))
+        self.win.title(title)
+        self.win.resizable(False, False)
 
-        self._canvas = tk.Canvas(self._win, width=width, height=height, bg=bgcolor)
-        self._canvas.place(x=0, y=0)
+        self.canvas = tk.Canvas(self.win, width=width, height=height, bg=bgColor)
+        self.canvas.place(x=0, y=0)
 
-        if not bgpic is None:
-            self._bgpic = tk.PhotoImage(file=bgpic)
-            self._canvas.create_image(0, 0, image=self._bgpic, anchor=tk.NW)
+        self.images = {}
+        self.bgpic = None
+        self.bgpic_obj = self.canvas.create_image(0, 0, anchor=tk.NW)
+        self.setBgPic(bgPath)
 
-        self._keys = {}
-        self._tick_prev = 0
-        self._fps = 0
-        self._gObjects = []
-        self._running = False
+        self.keys = {}
+        self.tick_prev = 0
+        self.fps = 0
+        self.gObjects = []
+        self.running = False
         GameWorld.__instance__ = self
 
     def _getCanvas(self) -> tk.Canvas:
-        return self._canvas
+        return self.canvas
 
-    # ---
+    def loadImage(self, imagePath: str) -> tk.PhotoImage:
+        """
+        Carga la imagen referenciada por el path
+
+        Args:
+            imagePath (str): Path a la imagen a cargar.
+
+        Returns:
+            binary: La imagen a cargar.
+        """
+        if not imagePath in self.images:
+            self.images[imagePath] = tk.PhotoImage(file=imagePath)
+        return self.images[imagePath]
+
+    def loadImages(self, imagesPaths: list) -> list:
+        """
+        Carga las imagenes referenciadas por el arreglo de paths
+
+        Args:
+            imagesPaths (list): Arreglo de imagenes cargadas
+        """
+        images = []
+        for path in imagesPaths:
+            images.append(self.loadImage(path))
+        return images
+
+    def setBgPic(self, bgPath: str):
+        """
+        Cambia la imagen de fondo
+
+        Args:
+            bgPath (str): Ruta a la imagen a utilizar como fondo
+        """
+        if bgPath:
+            self.bgpic = self.loadImage(bgPath)
+            self.canvas.itemconfig(self.bgpic_obj, image=self.bgpic)
+
     def gameLoop(self, fps: int):
         """
         Inicia el loop principal del juego.
@@ -70,27 +105,27 @@ class GameWorld:
         Args:
             fps (int): Fotogramas por segundo del juego.
         """
-        self._fps = fps
-        self._fps_time = 1 / self._fps
-        self._tick_prev = time.perf_counter()
+        self.fps = fps
+        self.fps_time = 1 / self.fps
+        self.tick_prev = time.perf_counter()
 
-        self._running = True
-        self._win.protocol("WM_DELETE_WINDOW", self.exitGame)
-        while self._running:
+        self.running = True
+        self.win.protocol("WM_DELETE_WINDOW", self.exitGame)
+        while self.running:
             self._doAddGameObjects()
             dt = self._doRefresh()
             self.onUpdate(dt)
             self._doUpdateGameObjects(dt)
-            self._doCollisions(dt)
+            self._doCheckCollisions(dt)
             self._doDelGameObjects()
-        self._win.destroy()
+        self.win.destroy()
         self.__instance__ = None
 
     def exitGame(self):
         """
         Finaliza el loop principal del juego
         """
-        self._running = False
+        self.running = False
 
     def onUpdate(self, dt: float):
         """
@@ -104,10 +139,10 @@ class GameWorld:
     def _addGObject(self, gobj):
         if not hasattr(gobj, "__status__"):
             gobj.__status__ = "new"
-            self._gObjects.append(gobj)
+            self.gObjects.append(gobj)
 
     def _doAddGameObjects(self):
-        for o in self._gObjects:
+        for o in self.gObjects:
             if o.__status__ == "new":
                 o.__status__ = "alive"
 
@@ -116,45 +151,40 @@ class GameWorld:
             gobj.__status__ = "dead"
 
     def _doDelGameObjects(self):
-        gobjs = [o for o in self._gObjects if o.__status__ == "dead"]
+        gobjs = [o for o in self.gObjects if o.__status__ == "dead"]
         for o in gobjs:
-            self._gObjects.remove(o)
+            self.gObjects.remove(o)
 
     def _doUpdateGameObjects(self, dt):
-        for o in self._gObjects:
+        for o in self.gObjects:
             if o.__status__ == "alive":
                 o.onUpdate(dt)
 
-    def _doCollisions(self, dt):
-        gobjs1 = [o for o in self._gObjects if o.__status__ == "alive"]
+    def _doCheckCollisions(self, dt):
+        gobjs1 = [o for o in self.gObjects if o.__status__ == "alive" and o.collisions]
         gobjs2 = gobjs1.copy()
         for o1 in gobjs1:
             gobjs2.pop(0)
-            if o1.__status__ != "alive":
+            if o1.__status__ != "alive" or not o1.collisions:
                 continue
             for o2 in gobjs2:
-                if o2.__status__ != "alive":
+                if o2.__status__ != "alive" or not o2.collisions:
                     continue
-                if self._collides(o1, o2):
+                if self.collide(o1, o2):
                     o1.onCollision(dt, o2)
                     o2.onCollision(dt, o1)
 
-    def _doRefresh(self):
-        self._win.update_idletasks()
-        self._win.update()
+    def collide(self, o1, o2) -> bool:
+        """
+        Detecta si 2 GameObjects colisionan en los rectangulos que los delimitan
 
-        while(time.perf_counter() - self._tick_prev < self._fps_time):
-            _TIME_BEGIN_PERIOD(1)
-            time.sleep(0)
-            _TIME_END_PERIOD(1)
+        Args:
+            o1 (GameObject): El GameObject a verificar si colisiona
+            o2 (GameObject): El GameObject a verificar si colisiona
 
-        now = time.perf_counter()
-        dt = now - self._tick_prev
-        self._tick_prev = now
-
-        return dt
-
-    def _collides(self, o1, o2):
+        Returns:
+            bool: True si colisionan. False en caso contrario.
+        """
         if o1 == o2:
             return False
         if o1.__status__ != "alive" or o2.__status__ != "alive":
@@ -172,7 +202,21 @@ class GameWorld:
 
         return o1x1 <= o2x2 and o2x1 <= o1x2 and o1y1 <= o2y2 and o2y1 <= o1y2
 
-    # ---
+    def _doRefresh(self):
+        self.win.update_idletasks()
+        self.win.update()
+
+        while time.perf_counter() - self.tick_prev < self.fps_time:
+            _TIME_BEGIN_PERIOD(1)
+            time.sleep(0)
+            _TIME_END_PERIOD(1)
+
+        now = time.perf_counter()
+        dt = now - self.tick_prev
+        self.tick_prev = now
+
+        return dt
+
     def isPressed(self, key_name: str) -> bool:
         """
         Verifica si una tecla específica está presionada.
@@ -183,21 +227,20 @@ class GameWorld:
         Returns:
             bool: True si la tecla está presionada, False en caso contrario.
         """
-        if not key_name in self._keys:
-            self._keys[key_name] = False
-            self._win.bind(
+        if not key_name in self.keys:
+            self.keys[key_name] = False
+            self.win.bind(
                 "<KeyPress-%s>" % key_name, lambda e: self._setPressed(key_name, True)
             )
-            self._win.bind(
+            self.win.bind(
                 "<KeyRelease-%s>" % key_name,
                 lambda e: self._setPressed(key_name, False),
             )
-        return self._keys[key_name]
+        return self.keys[key_name]
 
     def _setPressed(self, key_name: str, pressed: bool):
-        self._keys[key_name] = pressed
+        self.keys[key_name] = pressed
 
-    # --
     def getWorldWidth(self) -> int:
         """
         Obtiene el ancho del mundo de juego.
@@ -205,7 +248,7 @@ class GameWorld:
         Returns:
             int: Ancho del mundo de juego.
         """
-        return self._win.winfo_width()
+        return self.win.winfo_width()
 
     def getWorldHeight(self) -> int:
         """
@@ -214,25 +257,21 @@ class GameWorld:
         Returns:
             int: Altura del mundo de juego.
         """
-        return self._win.winfo_height()
+        return self.win.winfo_height()
 
 
 # ---
 
 
 class GameObject:
-    _images = {}
-
-    def loadImage(imagePath: str) -> tk.PhotoImage:
-        if not imagePath in GameObject._images:
-            GameObject._images[imagePath] = tk.PhotoImage(file=imagePath)
-        return GameObject._images[imagePath]
-
-    def loadImages(imagesPaths:list):
-        for path in imagesPaths:
-            GameObject.loadImage(path)
-
-    def __init__(self, x: int, y: int, imagePath: str, tipo: str = "undef"):
+    def __init__(
+        self,
+        x: int,
+        y: int,
+        imagePath: str,
+        tipo: str = "undef",
+        collisions: bool = False,
+    ):
         """
         Constructor de la clase GameObject que inicializa un objeto en el mundo de juego.
 
@@ -240,26 +279,30 @@ class GameObject:
             x (int): Coordenada x inicial del objeto.
             y (int): Coordenada y inicial del objeto.
             imagePath (str): Ruta de la imagen del objeto.
-            tipo (str, optional): Tipo del objeto (opcional, por defecto es "undef").
+            tipo (str, optional): Tipo del objeto (por defecto es "undef").
+            collisions (bool, optional): True si este objeto participara de las colisiones (por defecto es False)
         """
-        self._gw = GameWorld._getInstance()
-        if self._gw is None:
+        self.gw = GameWorld._getInstance()
+        if self.gw is None:
             raise ("No existe una instancia de GameWorld activa!!!")
-        canvas = self._gw._getCanvas()
+        canvas = self.gw._getCanvas()
 
-        self._x = x
-        self._y = y
-        img = GameObject.loadImage(imagePath)
-        self._width = img.width()
-        self._height = img.height()
-        self._shape = canvas.create_image(
-            self._x,
-            self._y,
+        self.x = x
+        self.y = y
+
+        img = self.gw.loadImage(imagePath)
+        self.width = img.width()
+        self.height = img.height()
+        self.shape = canvas.create_image(
+            self.x,
+            self.y,
             image=img,
             anchor=tk.CENTER,
         )
-        self._tipo = tipo
-        self._gw._addGObject(self)
+
+        self.tipo = tipo
+        self.collisions = collisions
+        self.gw._addGObject(self)
         canvas.tag_raise("TextObject")
 
     def getX(self) -> int:
@@ -269,7 +312,7 @@ class GameObject:
         Returns:
             int: Coordenada x del objeto.
         """
-        return self._x
+        return self.x
 
     def getY(self) -> int:
         """
@@ -278,7 +321,7 @@ class GameObject:
         Returns:
             int: Coordenada y del objeto.
         """
-        return self._y
+        return self.y
 
     def setPosition(self, x: int, y: int):
         """
@@ -289,10 +332,10 @@ class GameObject:
             y (int): Nueva coordenada y del objeto.
         """
         x, y = int(x), int(y)
-        dx = x - self._x
-        dy = y - self._y
-        self._gw._getCanvas().move(self._shape, dx, dy)
-        self._x, self._y = x, y
+        dx = x - self.x
+        dy = y - self.y
+        self.gw._getCanvas().move(self.shape, dx, dy)
+        self.x, self.y = x, y
 
     def setShape(self, imagePath: str):
         """
@@ -301,11 +344,11 @@ class GameObject:
         Args:
             imagePath (str): Ruta de la nueva imagen del objeto.
         """
-        img = GameObject.loadImage(imagePath)
-        self._width = img.width()
-        self._height = img.height()
-        self._gw._getCanvas().itemconfig(self._shape, image=img)
-        self.setPosition(self._x, self._y)
+        img = self.gw.loadImage(imagePath)
+        self.width = img.width()
+        self.height = img.height()
+        self.gw._getCanvas().itemconfig(self.shape, image=img)
+        self.setPosition(self.x, self.y)
 
     def getWidth(self) -> int:
         """
@@ -314,7 +357,7 @@ class GameObject:
         Returns:
             int: Ancho del objeto.
         """
-        return self._width
+        return self.width
 
     def getHeight(self) -> int:
         """
@@ -323,7 +366,7 @@ class GameObject:
         Returns:
             int: Altura del objeto.
         """
-        return self._height
+        return self.height
 
     def getTipo(self) -> str:
         """
@@ -331,44 +374,35 @@ class GameObject:
         Returns:
             str: Tipo del objeto.
         """
-        return self._tipo
+        return self.tipo
+
+    def setCollisions(self, collisions: bool):
+        """
+        Habilita o deshabilita participar del procesamiento de colisiones
+
+        Args:
+            collisions (bool): True para habilitar, False para deshabilitar
+        """
+        self.collisions = collisions
 
     def destroy(self):
         """
         Elimina el objeto del mundo de juego.
         """
-        self._gw._getCanvas().delete(self._shape)
-        self._gw._delGObject(self)
+        self.gw._getCanvas().delete(self.shape)
+        self.gw._delGObject(self)
 
-    def getWorldWidth(self) -> int:
+    def collidesWith(self, obj) -> bool:
         """
-        Obtiene el ancho del mundo de juego.
-
-        Returns:
-            int: Ancho del mundo de juego.
-        """
-        return self._gw.getWorldWidth()
-
-    def getWorldHeight(self) -> int:
-        """
-        Obtiene la altura del mundo de juego.
-
-        Returns:
-            int: Altura del mundo de juego.
-        """
-        return self._gw.getWorldHeight()
-
-    def isPressed(self, key_name: str) -> bool:
-        """
-        Verifica si una tecla específica está presionada.
+        Determina si este GameObject colisiona con otro
 
         Args:
-            key_name (str): Nombre de la tecla a verificar.
+            obj (GameObject): GameObject a detectar si colision con este
 
         Returns:
-            bool: True si la tecla está presionada, False en caso contrario.
+            bool: True si colisiona. False en caso contrario
         """
-        return self._gw.isPressed(key_name)
+        return self.gw.collides(self, obj)
 
     def onUpdate(self, dt: float):
         """
@@ -388,6 +422,66 @@ class GameObject:
             gobj (GameObject): Objeto con el que colisiona.
         """
         pass
+
+    def getWorldWidth(self) -> int:
+        """
+        Obtiene el ancho del mundo de juego.
+
+        Returns:
+            int: Ancho del mundo de juego.
+        """
+        return self.gw.getWorldWidth()
+
+    def getWorldHeight(self) -> int:
+        """
+        Obtiene la altura del mundo de juego.
+
+        Returns:
+            int: Altura del mundo de juego.
+        """
+        return self.gw.getWorldHeight()
+
+    def isPressed(self, key_name: str) -> bool:
+        """
+        Verifica si una tecla específica está presionada.
+
+        Args:
+            key_name (str): Nombre de la tecla a verificar.
+
+        Returns:
+            bool: True si la tecla está presionada, False en caso contrario.
+        """
+        return self.gw.isPressed(key_name)
+
+    def loadImage(self, imagePath: str) -> tk.PhotoImage:
+        """
+        Carga la imagen referenciada por el path
+
+        Args:
+            imagePath (str): Path a la imagen a cargar.
+
+        Returns:
+            binary: La imagen a cargar.
+        """
+        return self.gw.loadImage(imagePath)
+
+    def loadImages(self, imagesPaths: list) -> list:
+        """
+        Carga las imagenes referenciadas por el arreglo de paths
+
+        Args:
+            imagesPaths (list): Arreglo de imagenes cargadas
+        """
+        return self.gw.loadImages(imagesPaths)
+
+    def setBgPic(self, bgPath: str):
+        """
+        Cambia la imagen de fondo
+
+        Args:
+            bgPath (str): Ruta a la imagen a utilizar como fondo
+        """
+        self.gw.setBgPic(bgPath)
 
 
 # ---
@@ -412,20 +506,18 @@ class TextObject:
             x (int): Coordenada x del texto
             y (int): Coordenada y del texto
             text (str): Texto para este objeto
-            font (str, optional): Font a utilizar para el texto (opcional, por defecto es "Arial").
-            size (int, optional): Tamano a utilizar para el texto (opcional, por defecto es 10).
-            bold (bool, optional): Especifica que el texto estara en bold (opcional, por defecto es False).
-            italic (bool, optional): Especifica que el texto estara en italic (opcional, por defecto es False).
-            color (str, optional): Color a utilizar para el texto (opcional, por defecto es "black").
+            font (str, optional): Font a utilizar para el texto (por defecto es "Arial").
+            size (int, optional): Tamano a utilizar para el texto (por defecto es 10).
+            bold (bool, optional): Especifica que el texto estara en bold (por defecto es False).
+            italic (bool, optional): Especifica que el texto estara en italic (por defecto es False).
+            color (str, optional): Color a utilizar para el texto (por defecto es "black").
         """
-        self._gw = GameWorld._getInstance()
-        if self._gw is None:
+        self.gw = GameWorld._getInstance()
+        if self.gw is None:
             raise ("No existe una instancia de GameWorld activa!!!")
-        canvas = self._gw._getCanvas()
+        canvas = self.gw._getCanvas()
 
-        self._text = canvas.create_text(
-            0, 0, text=text, anchor=tk.NW, tags="TextObject"
-        )
+        self.text = canvas.create_text(0, 0, text=text, anchor=tk.NW, tags="TextObject")
         self.setText(x, y, text, font, size, bold, italic, color)
         canvas.tag_raise("TextObject")
 
@@ -453,10 +545,10 @@ class TextObject:
             italic (bool, optional): Especifica que el texto estara en italic
             color (str, optional): Color a utilizar para el texto
         """
-        canvas = self._gw._getCanvas()
+        canvas = self.gw._getCanvas()
 
         # la posicion del texto
-        _x, _y = canvas.coords(self._text)
+        _x, _y = canvas.coords(self.text)
         if x is None:
             x = _x
         if y is None:
@@ -464,7 +556,7 @@ class TextObject:
         x, y = int(x), int(y)
         dx = x - _x
         dy = y - _y
-        canvas.move(self._text, dx, dy)
+        canvas.move(self.text, dx, dy)
 
         # los atributos
         kwargs = {}
@@ -486,11 +578,11 @@ class TextObject:
             kwargs["font"] = tuple(f)
         if not color is None:
             kwargs["fill"] = color
-        canvas.itemconfig(self._text, kwargs)
+        canvas.itemconfig(self.text, kwargs)
 
     def destroy(self):
         """
         Elimina este texto del mundo del juego
         """
-        self._gw._getCanvas().delete(self._text)
-        self._text = None
+        self.gw._getCanvas().delete(self.text)
+        self.text = None
