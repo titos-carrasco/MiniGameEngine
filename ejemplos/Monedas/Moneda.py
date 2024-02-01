@@ -3,8 +3,10 @@ from MiniGameEngine import GameObject
 
 class Moneda(GameObject):
     # inicializamos el Alien
-    def __init__(self, x, y):
-        super().__init__(x, y, "Recursos/Moneda.png", "Moneda", collisions=True)
+    def __init__(self, x, y, layer=1):
+        super().__init__(
+            x, y, "Recursos/Moneda.png", "Moneda", collisions=True, layer=layer
+        )
 
     # actualizamos fps veces por segundo
     def onUpdate(self, dt):

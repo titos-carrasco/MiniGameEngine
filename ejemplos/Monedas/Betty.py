@@ -3,8 +3,10 @@ from MiniGameEngine import GameObject
 
 class Betty(GameObject):
     # inicializamos el Alien
-    def __init__(self, x, y):
-        super().__init__(x, y, "Recursos/Betty-R.png", "Betty", collisions=True)
+    def __init__(self, x, y, layer=1):
+        super().__init__(
+            x, y, "Recursos/Betty-R.png", "Betty", collisions=True, layer=layer
+        )
         self.direccion = "R"
 
     # actualizamos /1fps veces

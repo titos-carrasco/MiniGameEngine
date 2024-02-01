@@ -16,9 +16,9 @@ class Game(GameWorld):
         )
 
         # agregamos a los actores
-        Moneda(300, 460)
-        Moneda(500, 460)
-        Betty(200, 474)
+        Betty(200, 474, layer=2)
+        Moneda(300, 460, layer=1)
+        Moneda(500, 460, layer=3)
 
     def onUpdate(self, dt):
         fps = round(1 / dt, 1)

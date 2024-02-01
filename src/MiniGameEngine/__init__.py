@@ -25,6 +25,7 @@ class GameWorld:
         title: str = "MiniGameEngine",
         bgColor: str = "gray",
         bgPath: str = None,
+        numLayers: int = 10
     ):
         """Constructor de la clase GameWorld que inicializa una instancia del mundo de juego.
 
@@ -34,6 +35,7 @@ class GameWorld:
             title (str, optional): Título de la ventana del juego (por defecto es "MiniGameEngine").
             bgColor (str, optional): Color de fondo de la ventana del juego (por defecto es "gray").
             bgPath (str, optional): Ruta de la imagen de fondo de la ventana del juego (por defecto es None).
+            numLayers(int, optional): Numero de capas a permitir en el juego
         """
         if not GameWorld.__instance__ is None:
             raise Exception("Ya existe una instancia de GameWorld activa!!!")
@@ -50,6 +52,8 @@ class GameWorld:
         self.bgpic = None
         self.bgpic_obj = self.canvas.create_image(0, 0, anchor=tk.NW)
         self.setBgPic(bgPath)
+
+        self.numLayers = numLayers
 
         self.keys = {}
         self.tick_prev = 0
@@ -140,6 +144,10 @@ class GameWorld:
         if not hasattr(gobj, "__status__"):
             gobj.__status__ = "new"
             self.gObjects.append(gobj)
+            for layer in range(1, self.numLayers + 1):
+                self.canvas.tag_raise("Layer " + str(layer))
+            self.canvas.tag_raise(TextObject.layer)
+
 
     def _doAddGameObjects(self):
         for o in self.gObjects:
@@ -271,6 +279,7 @@ class GameObject:
         imagePath: str,
         tipo: str = "undef",
         collisions: bool = False,
+        layer: int = 1
     ):
         """
         Constructor de la clase GameObject que inicializa un objeto en el mundo de juego.
@@ -281,6 +290,7 @@ class GameObject:
             imagePath (str): Ruta de la imagen del objeto.
             tipo (str, optional): Tipo del objeto (por defecto es "undef").
             collisions (bool, optional): True si este objeto participara de las colisiones (por defecto es False)
+            layer (int, optional): capa en que se colocara este objeto (por defecto es 1)
         """
         self.gw = GameWorld._getInstance()
         if self.gw is None:
@@ -298,12 +308,13 @@ class GameObject:
             self.y,
             image=img,
             anchor=tk.CENTER,
+            tags = ("Layer " + str(layer),)
         )
 
         self.tipo = tipo
         self.collisions = collisions
+        self.layer = layer
         self.gw._addGObject(self)
-        canvas.tag_raise("TextObject")
 
     def getX(self) -> int:
         """
@@ -488,6 +499,7 @@ class GameObject:
 
 
 class TextObject:
+    layer = "TextObject"
     def __init__(
         self,
         x: int,
@@ -517,9 +529,9 @@ class TextObject:
             raise ("No existe una instancia de GameWorld activa!!!")
         canvas = self.gw._getCanvas()
 
-        self.text = canvas.create_text(0, 0, text=text, anchor=tk.NW, tags="TextObject")
+        self.text = canvas.create_text(0, 0, text=text, anchor=tk.NW, tags=(TextObject.layer,))
         self.setText(x, y, text, font, size, bold, italic, color)
-        canvas.tag_raise("TextObject")
+        canvas.tag_raise(TextObject.layer)
 
     def setText(
         self,
