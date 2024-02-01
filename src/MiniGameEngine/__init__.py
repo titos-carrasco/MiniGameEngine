@@ -11,10 +11,10 @@ except:
 
 
 class GameWorld:
-    __instance__ = None
+    _instance_ = None
 
     def _getInstance():
-        return GameWorld.__instance__
+        return GameWorld._instance_
 
     # ---
 
@@ -25,9 +25,10 @@ class GameWorld:
         title: str = "MiniGameEngine",
         bgColor: str = "gray",
         bgPath: str = None,
-        numLayers: int = 10
+        numLayers: int = 10,
     ):
-        """Constructor de la clase GameWorld que inicializa una instancia del mundo de juego.
+        """
+        Constructor de la clase GameWorld que inicializa una instancia del mundo de juego.
 
         Args:
             width (int): Ancho de la ventana del juego.
@@ -35,9 +36,9 @@ class GameWorld:
             title (str, optional): Título de la ventana del juego (por defecto es "MiniGameEngine").
             bgColor (str, optional): Color de fondo de la ventana del juego (por defecto es "gray").
             bgPath (str, optional): Ruta de la imagen de fondo de la ventana del juego (por defecto es None).
-            numLayers(int, optional): Numero de capas a permitir en el juego
+            numLayers (int, optional): Numero de capas a permitir en el juego (por defecto es 10).
         """
-        if not GameWorld.__instance__ is None:
+        if not GameWorld._instance_ is None:
             raise Exception("Ya existe una instancia de GameWorld activa!!!")
 
         self.win = tk.Tk()
@@ -60,20 +61,20 @@ class GameWorld:
         self.fps = 0
         self.gObjects = []
         self.running = False
-        GameWorld.__instance__ = self
+        GameWorld._instance_ = self
 
     def _getCanvas(self) -> tk.Canvas:
         return self.canvas
 
     def loadImage(self, imagePath: str) -> tk.PhotoImage:
         """
-        Carga la imagen referenciada por el path
+        Carga la imagen que se encuentra en la ruta especificada
 
         Args:
-            imagePath (str): Path a la imagen a cargar.
+            imagePath (str): Ruta de la imagen a cargar.
 
         Returns:
-            binary: La imagen a cargar.
+            binary: La imagen cargada.
         """
         if not imagePath in self.images:
             self.images[imagePath] = tk.PhotoImage(file=imagePath)
@@ -81,10 +82,13 @@ class GameWorld:
 
     def loadImages(self, imagesPaths: list) -> list:
         """
-        Carga las imagenes referenciadas por el arreglo de paths
+        Carga las imagenes referenciadas por el arreglo de rutas
 
         Args:
-            imagesPaths (list): Arreglo de imagenes cargadas
+            imagesPaths (list): Arreglo de rutas a las imagenes a cargar.
+
+        Returns:
+            list : Arreglo con las imágenes cargadas.
         """
         images = []
         for path in imagesPaths:
@@ -107,7 +111,7 @@ class GameWorld:
         Inicia el loop principal del juego.
 
         Args:
-            fps (int): Fotogramas por segundo del juego.
+            fps (int): Número de cuadros por segundo del juego.
         """
         self.fps = fps
         self.fps_time = 1 / self.fps
@@ -123,7 +127,7 @@ class GameWorld:
             self._doCheckCollisions(dt)
             self._doDelGameObjects()
         self.win.destroy()
-        self.__instance__ = None
+        self._instance_ = None
 
     def exitGame(self):
         """
@@ -136,7 +140,7 @@ class GameWorld:
         Llamada por cada ciclo dentro del loop (fps veces por segundo)
 
         Args:
-            dt (float): Tiempo en segundos desde la ultima llamada
+            dt (float): Tiempo en segundos desde la última llamada
         """
         pass
 
@@ -146,7 +150,7 @@ class GameWorld:
             self.gObjects.append(gobj)
             for layer in range(1, self.numLayers + 1):
                 self.canvas.tag_raise("Layer " + str(layer))
-            self.canvas.tag_raise(TextObject.layer)
+            self.canvas.tag_raise(TextObject._layer_)
 
 
     def _doAddGameObjects(self):
@@ -184,11 +188,11 @@ class GameWorld:
 
     def collide(self, o1, o2) -> bool:
         """
-        Detecta si 2 GameObjects colisionan en los rectangulos que los delimitan
+        Detecta si dos GameObjects colisionan entre si
 
         Args:
-            o1 (GameObject): El GameObject a verificar si colisiona
-            o2 (GameObject): El GameObject a verificar si colisiona
+            o1 (GameObject): El GameObject a verificar si colisiona con o2
+            o2 (GameObject): El GameObject a verificar si colisiona con o1
 
         Returns:
             bool: True si colisionan. False en caso contrario.
@@ -227,7 +231,7 @@ class GameWorld:
 
     def isPressed(self, key_name: str) -> bool:
         """
-        Verifica si una tecla específica está presionada.
+        Verifica si una tecla específica está siendo presionada.
 
         Args:
             key_name (str): Nombre de la tecla a verificar.
@@ -313,7 +317,6 @@ class GameObject:
 
         self.tipo = tipo
         self.collisions = collisions
-        self.layer = layer
         self.gw._addGObject(self)
 
     def getX(self) -> int:
@@ -454,22 +457,22 @@ class GameObject:
 
     def isPressed(self, key_name: str) -> bool:
         """
-        Verifica si una tecla específica está presionada.
+        Verifica si una tecla específica está siendo presionada.
 
         Args:
             key_name (str): Nombre de la tecla a verificar.
 
         Returns:
-            bool: True si la tecla está presionada, False en caso contrario.
+            bool: True si la tecla está siendo presionada, False en caso contrario.
         """
         return self.gw.isPressed(key_name)
 
     def loadImage(self, imagePath: str) -> tk.PhotoImage:
         """
-        Carga la imagen referenciada por el path
+        Carga la imagen que se encuentra en la ruta especificada
 
         Args:
-            imagePath (str): Path a la imagen a cargar.
+            imagePath (str): Ruta de la imagen a cargar.
 
         Returns:
             binary: La imagen a cargar.
@@ -490,7 +493,7 @@ class GameObject:
         Cambia la imagen de fondo
 
         Args:
-            bgPath (str): Ruta a la imagen a utilizar como fondo
+            bgPath (str): Ruta de la imagen a utilizar como fondo
         """
         self.gw.setBgPic(bgPath)
 
@@ -499,7 +502,7 @@ class GameObject:
 
 
 class TextObject:
-    layer = "TextObject"
+    _layer_ = "TextObject"
     def __init__(
         self,
         x: int,
@@ -529,9 +532,9 @@ class TextObject:
             raise ("No existe una instancia de GameWorld activa!!!")
         canvas = self.gw._getCanvas()
 
-        self.text = canvas.create_text(0, 0, text=text, anchor=tk.NW, tags=(TextObject.layer,))
+        self.text = canvas.create_text(0, 0, text=text, anchor=tk.NW, tags=(TextObject._layer_,))
         self.setText(x, y, text, font, size, bold, italic, color)
-        canvas.tag_raise(TextObject.layer)
+        canvas.tag_raise(TextObject._layer_)
 
     def setText(
         self,

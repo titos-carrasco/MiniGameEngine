@@ -15,9 +15,9 @@ class Game(GameWorld):
             10, 10, "", font="Arial", size=15, bold=False, italic=False, color="red"
         )
 
-        for i in range(200):
-            x = 10 + random.random()*700
-            y = 40 + random.random()*400
+        for i in range(100):
+            x = 10 + random.random() * 700
+            y = 40 + random.random() * 400
             BlueBird(x, y)
 
     def onUpdate(self, dt):
@@ -25,6 +25,7 @@ class Game(GameWorld):
         self.statusBar.setText(text=str(fps))
         if self.isPressed("Escape"):
             self.exitGame()
+
 
 # -- show time
 game = Game()
