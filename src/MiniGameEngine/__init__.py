@@ -1,18 +1,13 @@
+import sys
 import time
 import ctypes
 import glob
 import tkinter as tk
 
-try:
-    _TIME_BEGIN_PERIOD = ctypes.windll.winmm.timeBeginPeriod
-    _TIME_END_PERIOD = ctypes.windll.winmm.timeEndPeriod
-except:
-    _TIME_BEGIN_PERIOD = lambda n: True
-    _TIME_END_PERIOD = lambda n: True
-
 
 class GameWorld:
     _instance_ = None
+    _isWindow32_ = sys.platform == "win32"
 
     def _getInstance():
         return GameWorld._instance_
@@ -103,14 +98,13 @@ class GameWorld:
         Args:
             bgPath (str): Ruta a la imagen a utilizar como fondo
         """
-        if bgPath:
-            if not self.bgpic is None:
-                self.canvas.delete(self.bgpic)
-            img = self.loadImage(bgPath)
-            self.bgpic = self.canvas.create_image(
-                0, 0, image=img, anchor=tk.NW, tags=("Layer 0",)
-            )
-            self.canvas.tag_lower(self.bgpic, "all")
+        if not self.bgpic is None:
+            self.canvas.delete(self.bgpic)
+        img = self.loadImage(bgPath)
+        self.bgpic = self.canvas.create_image(
+            0, 0, image=img, anchor=tk.NW, tags=("Layer 0",)
+        )
+        self.canvas.tag_lower(self.bgpic, "all")
 
     def gameLoop(self, fps: int):
         """
@@ -133,6 +127,13 @@ class GameWorld:
             self._doCheckCollisions(dt)
             self._doDelGameObjects()
         self.win.destroy()
+
+        self.gObjects = None
+        self.keys = None
+        self.bgPic = None
+        self.images = None
+        self.canvas = None
+        self.win = None
         self._instance_ = None
 
     def exitGame(self):
@@ -163,12 +164,12 @@ class GameWorld:
     def _doAddGameObjects(self):
         for o in self.gObjects:
             if o.__status__ == "new":
-                self.canvas.itemconfig(o.shape, state="normal")
+                if o.shape > 0:
+                    self.canvas.itemconfig(o.shape, state="normal")
                 o.__status__ = "alive"
 
     def _delGObject(self, gobj):
         if hasattr(gobj, "__status__"):
-            self.canvas.itemconfig(gobj.shape, state="hidden")
             gobj.__status__ = "dead"
 
     def _doDelGameObjects(self):
@@ -186,10 +187,10 @@ class GameWorld:
         gobjs2 = gobjs1.copy()
         for o1 in gobjs1:
             gobjs2.pop(0)
-            if o1.__status__ != "alive" or not o1.collisions:
+            if o1.__status__ != "alive" or not o1.collisions or o1.shape < 0:
                 continue
             for o2 in gobjs2:
-                if o2.__status__ != "alive" or not o2.collisions:
+                if o2.__status__ != "alive" or not o2.collisions or o2.shape < 0:
                     continue
                 if self.collide(o1, o2):
                     o1.onCollision(dt, o2)
@@ -211,6 +212,9 @@ class GameWorld:
         if o1.__status__ != "alive" or o2.__status__ != "alive":
             return False
 
+        if o1.shape < 0 or o2.shape < 0:
+            return False
+
         o1x1 = o1.getX() - o1.getWidth() / 2
         o1y1 = o1.getY() - o1.getHeight() / 2
         o1x2 = o1x1 + o1.getWidth() - 1
@@ -227,10 +231,14 @@ class GameWorld:
         self.win.update_idletasks()
         self.win.update()
 
-        while time.perf_counter() - self.tick_prev < self.fps_time:
-            _TIME_BEGIN_PERIOD(1)
-            time.sleep(0)
-            _TIME_END_PERIOD(1)
+        if GameWorld._isWindow32_:
+            ctypes.windll.winmm.timeBeginPeriod(1)
+            while time.perf_counter() - self.tick_prev < self.fps_time:
+                time.sleep(0.0001)
+            ctypes.windll.winmm.timeEndPeriod(1)
+        else:
+            while time.perf_counter() - self.tick_prev < self.fps_time:
+                time.sleep(0.0001)
 
         now = time.perf_counter()
         dt = now - self.tick_prev
@@ -289,7 +297,7 @@ class GameObject:
         self,
         x: int,
         y: int,
-        imagePath: str,
+        imagePath: str = None,
         tipo: str = "undef",
         collisions: bool = False,
         layer: int = 1,
@@ -300,7 +308,7 @@ class GameObject:
         Args:
             x (int): Coordenada x inicial del objeto.
             y (int): Coordenada y inicial del objeto.
-            imagePath (str): Ruta de la imagen del objeto (puede ser del tipo "image-*.png").
+            imagePath (str): Ubicación de la imagen del objeto (por defecto None).
             tipo (str, optional): Tipo del objeto (por defecto es "undef").
             collisions (bool, optional): True si este objeto participara de las colisiones (por defecto es False)
             layer (int, optional): capa en que se colocara este objeto (por defecto es 1)
@@ -312,29 +320,32 @@ class GameObject:
 
         self.x = x
         self.y = y
-
-        self.images = self.loadImages(sorted(glob.glob(imagePath)))
-        self.shapes = []
-        for img in self.images:
-            shape = self.canvas.create_image(
-                self.x,
-                self.y,
-                image=img,
-                anchor=tk.CENTER,
-                state="hidden",
-                tags=("Layer " + str(layer)),
-            )
-            self.shapes.append(shape)
-
-        self.shape = self.shapes[0]
-        img = self.images[0]
-        self.width = img.width()
-        self.height = img.height()
-
         self.tipo = tipo
         self.collisions = collisions
         self.layer = layer
+
+        if imagePath is None:
+            self.shape = -1
+            self.width = 0
+            self.height = 0
+        else:
+            self.shape, self.width, self.height = self._createImage(imagePath)
+
         self.gw._addGObject(self)
+
+    def _createImage(self, imagePath):
+        img = self.loadImage(imagePath)
+        shape = self.canvas.create_image(
+            self.x,
+            self.y,
+            image=img,
+            anchor=tk.CENTER,
+            state="hidden",
+            tags=("Layer " + str(self.layer),),
+        )
+        width = img.width()
+        height = img.height()
+        return shape, width, height
 
     def getX(self) -> int:
         """
@@ -363,26 +374,26 @@ class GameObject:
             y (int): Nueva coordenada y del objeto.
         """
         x, y = int(x), int(y)
-        dx = x - self.x
-        dy = y - self.y
-        for shape in self.shapes:
-            self.canvas.move(shape, dx, dy)
+        if self.shape > 0:
+            dx = x - self.x
+            dy = y - self.y
+            self.canvas.move(self.shape, dx, dy)
         self.x, self.y = x, y
 
-    def setShape(self, imageIdx: int):
+    def setShape(self, imagePath: str):
         """
-        Cambia la forma del objeto reemplazando su imagen.
+        Cambia la imagen del objeto
 
         Args:
-            imageIdx (int): Índice de la imagen a establecer como la actual.
+            imagePath (str): Ubicación de la nueva imagen para el objeto
         """
-        img = self.images[imageIdx]
-        self.width = img.width()
-        self.height = img.height()
-
-        self.canvas.itemconfig(self.shape, state="hidden")
-        self.shape = self.shapes[imageIdx]
-        self.canvas.itemconfig(self.shape, state="normal")
+        if self.shape > 0:
+            img = self.loadImage(imagePath)
+            self.width = img.width()
+            self.height = img.height()
+            self.canvas.itemconfig(self.shape, image=img)
+        else:
+            self.shape, self.width, self.height = self._createImage(imagePath)
 
     def getWidth(self) -> int:
         """
@@ -423,9 +434,11 @@ class GameObject:
         """
         Elimina el objeto del mundo de juego.
         """
-        for shape in self.shapes:
-            self.canvas.delete(shape)
+        if self.shape > 0:
+            self.canvas.delete(self.shape)
         self.gw._delGObject(self)
+        self.canvas = None
+        self.gw = None
 
     def collidesWith(self, obj) -> bool:
         """
@@ -523,7 +536,7 @@ class GameObject:
 
 
 class TextObject:
-    _layer_ = "TextObject"
+    _layer_ = "Layer Top"
 
     def __init__(
         self,
@@ -552,13 +565,13 @@ class TextObject:
         self.gw = GameWorld._getInstance()
         if self.gw is None:
             raise ("No existe una instancia de GameWorld activa!!!")
-        canvas = self.gw._getCanvas()
+        self.canvas = self.gw._getCanvas()
 
-        self.text = canvas.create_text(
+        self.text = self.canvas.create_text(
             0, 0, text=text, anchor=tk.NW, tags=(TextObject._layer_,)
         )
         self.setText(x, y, text, font, size, bold, italic, color)
-        canvas.tag_raise(TextObject._layer_)
+        self.canvas.tag_raise(TextObject._layer_, "all")
 
     def setText(
         self,
@@ -584,10 +597,8 @@ class TextObject:
             italic (bool, optional): Especifica que el texto estara en italic
             color (str, optional): Color a utilizar para el texto
         """
-        canvas = self.gw._getCanvas()
-
         # la posicion del texto
-        _x, _y = canvas.coords(self.text)
+        _x, _y = self.canvas.coords(self.text)
         if x is None:
             x = _x
         if y is None:
@@ -595,7 +606,7 @@ class TextObject:
         x, y = int(x), int(y)
         dx = x - _x
         dy = y - _y
-        canvas.move(self.text, dx, dy)
+        self.canvas.move(self.text, dx, dy)
 
         # los atributos
         kwargs = {}
@@ -617,27 +628,32 @@ class TextObject:
             kwargs["font"] = tuple(f)
         if not color is None:
             kwargs["fill"] = color
-        canvas.itemconfig(self.text, kwargs)
+        self.canvas.itemconfig(self.text, kwargs)
 
     def destroy(self):
         """
         Elimina este texto del mundo del juego
         """
-        self.gw._getCanvas().delete(self.text)
+        self.canvas.delete(self.text)
         self.text = None
+        self.canvas = None
+        self.gw = None
 
 
 # ---
 
 
 class ObjectAnimator:
-    def __init__(self, gobj: GameObject, speed: float = 0.100, repeat=True):
+    def __init__(
+        self, gobj: GameObject, imagesPath: str, speed: float = 0.100, repeat=True
+    ):
         """_summary_
 
         Args:
             gobj (GameObject): _description_
-            speed (float, optional): _description_. Defaults to 0.100.
-            repeat (bool, optional): _description_. Defaults to True.
+            imagesPath (str): Ubicación de las imágenes para la animación (ej. "image-*.png").
+            speed (float, optional): Velocidad de la animación en segundos (por defecto es 0.100).
+            repeat (bool, optional): True si la animación se repite siempre (por defecto es True).
         """
         self.gobj = gobj
         self.speed = speed
@@ -646,11 +662,32 @@ class ObjectAnimator:
         self.t = 0
         self.running = False
 
+        self.imagesPath = sorted(glob.glob(imagesPath))
+        gobj.loadImages(self.imagesPath)
+
+    def setSpeed(self, speed: float):
+        """
+        Cambia la velocidad de la animación
+
+        Args:
+            speed (float): Velocidad de la animación en segundos
+        """
+        self.speed = speed
+
+    def setRepeat(self, repeat: bool):
+        """
+        Cambia el atributo de repetición
+
+        Args:
+            repeat (bool): True si la animación se repite siempre
+        """
+        self.repeat = repeat
+
     def start(self):
         """
-        Da inicio a a la animación
+        Da inicio a la animación desde el primer frame
         """
-        self.gobj.setShape(0)
+        self.gobj.setShape(self.imagesPath[0])
         self.idx = 0
         self.t = time.perf_counter()
         self.running = True
@@ -667,7 +704,7 @@ class ObjectAnimator:
         """
         Resetea la animación dejándola detenida en el primer frame
         """
-        self.gobj.setShape(0)
+        self.gobj.setShape(self.imagesPath[0])
         self.idx = 0
         self.t = 0
         self.running = False
@@ -677,7 +714,7 @@ class ObjectAnimator:
         Avanza al siguiente frame según la velocidad configurada
 
         Returns:
-            bool: True si pasó al siguiente cuadro. False en caso contrario
+            bool: True si la animación continua. False en caso contrario
         """
         if not self.running:
             return False
@@ -688,10 +725,17 @@ class ObjectAnimator:
         self.t = time.perf_counter()
 
         self.idx = self.idx + 1
-        if self.idx >= len(self.gobj.shapes):
+        if self.idx >= len(self.imagesPath):
             if not self.repeat:
                 self.stop()
                 return False
             self.idx = 0
-        self.gobj.setShape(self.idx)
+        self.gobj.setShape(self.imagesPath[self.idx])
         return True
+
+        def destroy(self):
+            """
+            Destruye este animador de objetos
+            """
+            self.imagesPath = None
+            self.gobj = None

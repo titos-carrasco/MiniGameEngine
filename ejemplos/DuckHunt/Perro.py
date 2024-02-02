@@ -3,9 +3,9 @@ from MiniGameEngine import ObjectAnimator
 
 
 class Perro(GameObject):
-    def __init__(self, x, y, layer=3):
-        super().__init__(x, y, "Recursos/PerroCaminando-000.png", "Perro", layer=layer)
-        self.animator = ObjectAnimator(self, pattern="Recursos/PerroCaminando-*")
+    def __init__(self, x, y):
+        super().__init__(x, y, imagePath=None, tipo="Perro", layer=3)
+        self.animator = ObjectAnimator(self, imagesPath="Recursos/PerroCaminando-*")
         self.animator.start()
 
     def onUpdate(self, dt):

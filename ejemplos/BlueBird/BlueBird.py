@@ -6,10 +6,10 @@ from MiniGameEngine import ObjectAnimator
 class BlueBird(GameObject):
     # inicializamos el Ave
     def __init__(self, x, y):
-        super().__init__(x, y, "Recursos/bird-*.png", "BlueBird")
-        self.animator = ObjectAnimator(self)
+        super().__init__(x, y, imagePath=None, tipo="BlueBird")
+        self.animator = ObjectAnimator(self, imagesPath="Recursos/bird-*.png")
         self.animator.start()
 
-    # actualizamos fps veces por segundo
+    # actualizamos 1/fps veces por segundo
     def onUpdate(self, dt):
         self.animator.animate()

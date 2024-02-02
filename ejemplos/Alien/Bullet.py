@@ -4,7 +4,9 @@ from MiniGameEngine import GameObject
 class Bullet(GameObject):
     # inicializamos la Bala
     def __init__(self, x, y):
-        super().__init__(x, y, "Recursos/Bullet.png", "Bullet", collisions=True)
+        super().__init__(
+            x, y, imagePath="Recursos/Bullet.png", tipo="Bullet", collisions=True
+        )
 
     # actualizamos el estado de la Bala en cada frame
     def onUpdate(self, dt):

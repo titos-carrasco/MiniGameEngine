@@ -29,13 +29,4 @@ class Game(GameWorld):
 
 # -- show time
 game = Game()
-
-import cProfile
-import pstats
-
-profiler = cProfile.Profile()
-profiler.enable()
 game.gameLoop(60)
-profiler.disable()
-stats = pstats.Stats(profiler).sort_stats("tottime")
-stats.print_stats()

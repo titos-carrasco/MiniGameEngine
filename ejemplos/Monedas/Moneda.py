@@ -5,10 +5,15 @@ class Moneda(GameObject):
     # inicializamos la Moneda
     def __init__(self, x, y, layer=1):
         super().__init__(
-            x, y, "Recursos/Moneda.png", "Moneda", collisions=True, layer=layer
+            x,
+            y,
+            imagePath="Recursos/Moneda.png",
+            tipo="Moneda",
+            collisions=True,
+            layer=layer,
         )
 
-    # actualizamos fps veces por segundo
+    # actualizamos 1/fps veces por segundo
     def onUpdate(self, dt):
         pass
 

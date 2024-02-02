@@ -6,7 +6,7 @@ from Bullet import Bullet
 class SpaceShip(GameObject):
     # inicializamos la Nave Espacial
     def __init__(self, x, y):
-        super().__init__(x, y, "Recursos/SpaceShip.png", "SpaceShip")
+        super().__init__(x, y, imagePath="Recursos/SpaceShip.png", tipo="SpaceShip")
         self.lastBullet = time.time()
 
     # actualizamos el estado de la Nave Espacial en cada frame

@@ -4,4 +4,4 @@ from MiniGameEngine import GameObject
 
 class Pasto(GameObject):
     def __init__(self, x, y):
-        super().__init__(x, y, "Recursos/Pasto.png", "Pasto", layer=2)
+        super().__init__(x, y, imagePath="Recursos/Pasto.png", tipo="Pasto", layer=2)
