@@ -10,7 +10,7 @@ from BlueBird import BlueBird
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(800, 440, title="Monedas", bgPath="Recursos/Fondo.png")
+        super().__init__(800, 440, title="Blue Bird", bgPath="Recursos/Fondo.png")
         self.statusBar = TextObject(
             10, 10, "", font="Arial", size=15, bold=False, italic=False, color="red"
         )
@@ -29,4 +29,13 @@ class Game(GameWorld):
 
 # -- show time
 game = Game()
+
+import cProfile
+import pstats
+
+profiler = cProfile.Profile()
+profiler.enable()
 game.gameLoop(60)
+profiler.disable()
+stats = pstats.Stats(profiler).sort_stats("tottime")
+stats.print_stats()

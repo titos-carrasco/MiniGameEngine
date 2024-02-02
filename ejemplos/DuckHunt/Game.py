@@ -10,7 +10,7 @@ class Game(GameWorld):
         super().__init__(720, 375, title="Duck Hunt", bgPath="Recursos/Fondo.png")
 
         # agregamos a los actores
-        Pasto(360,265)
+        Pasto(360, 265)
         Perro(50, 300)
         Pato(-200, 80)
         Pato(-130, 60)

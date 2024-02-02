@@ -2,10 +2,10 @@ from MiniGameEngine import GameObject
 
 
 class Betty(GameObject):
-    # inicializamos el Alien
+    # inicializamos a Betty
     def __init__(self, x, y, layer=1):
         super().__init__(
-            x, y, "Recursos/Betty-R.png", "Betty", collisions=True, layer=layer
+            x, y, "Recursos/Betty-*.png", "Betty", collisions=True, layer=layer
         )
         self.direccion = "R"
 
@@ -23,14 +23,14 @@ class Betty(GameObject):
                 x = w / 2
             if self.direccion != "L":
                 self.direccion = "L"
-                self.setShape("Recursos/Betty-L.png")
+                self.setShape(1)
         elif self.isPressed("Right"):
             x = x + 4
             if x > ww - w / 2:
                 x = ww - w / 2
             if self.direccion != "R":
                 self.direccion = "R"
-                self.setShape("Recursos/Betty-R.png")
+                self.setShape(0)
         self.setPosition(x, y)
 
     # manejamos las colisiones

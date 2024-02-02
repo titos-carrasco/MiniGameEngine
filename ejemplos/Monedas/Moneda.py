@@ -2,7 +2,7 @@ from MiniGameEngine import GameObject
 
 
 class Moneda(GameObject):
-    # inicializamos el Alien
+    # inicializamos la Moneda
     def __init__(self, x, y, layer=1):
         super().__init__(
             x, y, "Recursos/Moneda.png", "Moneda", collisions=True, layer=layer

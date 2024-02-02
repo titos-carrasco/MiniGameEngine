@@ -1,5 +1,6 @@
 import time
 import ctypes
+import glob
 import tkinter as tk
 
 try:
@@ -50,8 +51,8 @@ class GameWorld:
         self.canvas.place(x=0, y=0)
 
         self.images = {}
+
         self.bgpic = None
-        self.bgpic_obj = self.canvas.create_image(0, 0, anchor=tk.NW)
         self.setBgPic(bgPath)
 
         self.numLayers = numLayers
@@ -103,8 +104,13 @@ class GameWorld:
             bgPath (str): Ruta a la imagen a utilizar como fondo
         """
         if bgPath:
-            self.bgpic = self.loadImage(bgPath)
-            self.canvas.itemconfig(self.bgpic_obj, image=self.bgpic)
+            if not self.bgpic is None:
+                self.canvas.delete(self.bgpic)
+            img = self.loadImage(bgPath)
+            self.bgpic = self.canvas.create_image(
+                0, 0, image=img, anchor=tk.NW, tags=("Layer 0",)
+            )
+            self.canvas.tag_lower(self.bgpic, "all")
 
     def gameLoop(self, fps: int):
         """
@@ -147,19 +153,22 @@ class GameWorld:
     def _addGObject(self, gobj):
         if not hasattr(gobj, "__status__"):
             gobj.__status__ = "new"
+            if gobj.layer < 1 or gobj.layer >= self.numLayers:
+                gobj.layer = 1
             self.gObjects.append(gobj)
             for layer in range(1, self.numLayers + 1):
-                self.canvas.tag_raise("Layer " + str(layer))
-            self.canvas.tag_raise(TextObject._layer_)
-
+                self.canvas.tag_raise("Layer " + str(layer), "all")
+            self.canvas.tag_raise(TextObject._layer_, "all")
 
     def _doAddGameObjects(self):
         for o in self.gObjects:
             if o.__status__ == "new":
+                self.canvas.itemconfig(o.shape, state="normal")
                 o.__status__ = "alive"
 
     def _delGObject(self, gobj):
         if hasattr(gobj, "__status__"):
+            self.canvas.itemconfig(gobj.shape, state="hidden")
             gobj.__status__ = "dead"
 
     def _doDelGameObjects(self):
@@ -283,7 +292,7 @@ class GameObject:
         imagePath: str,
         tipo: str = "undef",
         collisions: bool = False,
-        layer: int = 1
+        layer: int = 1,
     ):
         """
         Constructor de la clase GameObject que inicializa un objeto en el mundo de juego.
@@ -291,7 +300,7 @@ class GameObject:
         Args:
             x (int): Coordenada x inicial del objeto.
             y (int): Coordenada y inicial del objeto.
-            imagePath (str): Ruta de la imagen del objeto.
+            imagePath (str): Ruta de la imagen del objeto (puede ser del tipo "image-*.png").
             tipo (str, optional): Tipo del objeto (por defecto es "undef").
             collisions (bool, optional): True si este objeto participara de las colisiones (por defecto es False)
             layer (int, optional): capa en que se colocara este objeto (por defecto es 1)
@@ -299,24 +308,32 @@ class GameObject:
         self.gw = GameWorld._getInstance()
         if self.gw is None:
             raise ("No existe una instancia de GameWorld activa!!!")
-        canvas = self.gw._getCanvas()
+        self.canvas = self.gw._getCanvas()
 
         self.x = x
         self.y = y
 
-        img = self.gw.loadImage(imagePath)
+        self.images = self.loadImages(sorted(glob.glob(imagePath)))
+        self.shapes = []
+        for img in self.images:
+            shape = self.canvas.create_image(
+                self.x,
+                self.y,
+                image=img,
+                anchor=tk.CENTER,
+                state="hidden",
+                tags=("Layer " + str(layer)),
+            )
+            self.shapes.append(shape)
+
+        self.shape = self.shapes[0]
+        img = self.images[0]
         self.width = img.width()
         self.height = img.height()
-        self.shape = canvas.create_image(
-            self.x,
-            self.y,
-            image=img,
-            anchor=tk.CENTER,
-            tags = ("Layer " + str(layer),)
-        )
 
         self.tipo = tipo
         self.collisions = collisions
+        self.layer = layer
         self.gw._addGObject(self)
 
     def getX(self) -> int:
@@ -348,21 +365,24 @@ class GameObject:
         x, y = int(x), int(y)
         dx = x - self.x
         dy = y - self.y
-        self.gw._getCanvas().move(self.shape, dx, dy)
+        for shape in self.shapes:
+            self.canvas.move(shape, dx, dy)
         self.x, self.y = x, y
 
-    def setShape(self, imagePath: str):
+    def setShape(self, imageIdx: int):
         """
         Cambia la forma del objeto reemplazando su imagen.
 
         Args:
-            imagePath (str): Ruta de la nueva imagen del objeto.
+            imageIdx (int): Índice de la imagen a establecer como la actual.
         """
-        img = self.gw.loadImage(imagePath)
+        img = self.images[imageIdx]
         self.width = img.width()
         self.height = img.height()
-        self.gw._getCanvas().itemconfig(self.shape, image=img)
-        self.setPosition(self.x, self.y)
+
+        self.canvas.itemconfig(self.shape, state="hidden")
+        self.shape = self.shapes[imageIdx]
+        self.canvas.itemconfig(self.shape, state="normal")
 
     def getWidth(self) -> int:
         """
@@ -403,7 +423,8 @@ class GameObject:
         """
         Elimina el objeto del mundo de juego.
         """
-        self.gw._getCanvas().delete(self.shape)
+        for shape in self.shapes:
+            self.canvas.delete(shape)
         self.gw._delGObject(self)
 
     def collidesWith(self, obj) -> bool:
@@ -503,6 +524,7 @@ class GameObject:
 
 class TextObject:
     _layer_ = "TextObject"
+
     def __init__(
         self,
         x: int,
@@ -532,7 +554,9 @@ class TextObject:
             raise ("No existe una instancia de GameWorld activa!!!")
         canvas = self.gw._getCanvas()
 
-        self.text = canvas.create_text(0, 0, text=text, anchor=tk.NW, tags=(TextObject._layer_,))
+        self.text = canvas.create_text(
+            0, 0, text=text, anchor=tk.NW, tags=(TextObject._layer_,)
+        )
         self.setText(x, y, text, font, size, bold, italic, color)
         canvas.tag_raise(TextObject._layer_)
 
@@ -601,3 +625,73 @@ class TextObject:
         """
         self.gw._getCanvas().delete(self.text)
         self.text = None
+
+
+# ---
+
+
+class ObjectAnimator:
+    def __init__(self, gobj: GameObject, speed: float = 0.100, repeat=True):
+        """_summary_
+
+        Args:
+            gobj (GameObject): _description_
+            speed (float, optional): _description_. Defaults to 0.100.
+            repeat (bool, optional): _description_. Defaults to True.
+        """
+        self.gobj = gobj
+        self.speed = speed
+        self.repeat = repeat
+        self.idx = 0
+        self.t = 0
+        self.running = False
+
+    def start(self):
+        """
+        Da inicio a a la animación
+        """
+        self.gobj.setShape(0)
+        self.idx = 0
+        self.t = time.perf_counter()
+        self.running = True
+
+    def stop(self):
+        """
+        Detiene la animación. La imagen que queda es la del último frame mostrado
+        """
+        self.idx = 0
+        self.t = 0
+        self.running = False
+
+    def reset(self):
+        """
+        Resetea la animación dejándola detenida en el primer frame
+        """
+        self.gobj.setShape(0)
+        self.idx = 0
+        self.t = 0
+        self.running = False
+
+    def animate(self) -> bool:
+        """
+        Avanza al siguiente frame según la velocidad configurada
+
+        Returns:
+            bool: True si pasó al siguiente cuadro. False en caso contrario
+        """
+        if not self.running:
+            return False
+
+        t = time.perf_counter()
+        if t - self.t < self.speed:
+            return False
+        self.t = time.perf_counter()
+
+        self.idx = self.idx + 1
+        if self.idx >= len(self.gobj.shapes):
+            if not self.repeat:
+                self.stop()
+                return False
+            self.idx = 0
+        self.gobj.setShape(self.idx)
+        return True
