@@ -7,7 +7,6 @@ import tkinter as tk
 
 class GameWorld:
     _instance_ = None
-    _isWindow32_ = sys.platform == "win32"
 
     def _getInstance():
         return GameWorld._instance_
@@ -87,8 +86,7 @@ class GameWorld:
             list : Arreglo con las imágenes cargadas.
         """
         images = []
-        for path in imagesPaths:
-            images.append(self.loadImage(path))
+        [images.append(self.loadImage(path)) for path in imagesPaths]
         return images
 
     def setBgPic(self, bgPath: str):
@@ -157,8 +155,10 @@ class GameWorld:
             if gobj.layer < 1 or gobj.layer >= self.numLayers:
                 gobj.layer = 1
             self.gObjects.append(gobj)
-            for layer in range(1, self.numLayers + 1):
+            [
                 self.canvas.tag_raise("Layer " + str(layer), "all")
+                for layer in range(1, self.numLayers + 1)
+            ]
             self.canvas.tag_raise(TextObject._layer_, "all")
 
     def _doAddGameObjects(self):
@@ -174,13 +174,10 @@ class GameWorld:
 
     def _doDelGameObjects(self):
         gobjs = [o for o in self.gObjects if o.__status__ == "dead"]
-        for o in gobjs:
-            self.gObjects.remove(o)
+        [self.gObjects.remove(o) for o in gobjs]
 
     def _doUpdateGameObjects(self, dt):
-        for o in self.gObjects:
-            if o.__status__ == "alive":
-                o.onUpdate(dt)
+        [o.onUpdate(dt) for o in self.gObjects if o.__status__ == "alive"]
 
     def _doCheckCollisions(self, dt):
         gobjs1 = [o for o in self.gObjects if o.__status__ == "alive" and o.collisions]
@@ -231,20 +228,27 @@ class GameWorld:
         self.win.update_idletasks()
         self.win.update()
 
-        if GameWorld._isWindow32_:
-            ctypes.windll.winmm.timeBeginPeriod(1)
-            while time.perf_counter() - self.tick_prev < self.fps_time:
-                time.sleep(0.0001)
-            ctypes.windll.winmm.timeEndPeriod(1)
-        else:
-            while time.perf_counter() - self.tick_prev < self.fps_time:
-                time.sleep(0.0001)
-
-        now = time.perf_counter()
+        now = self._tick()
         dt = now - self.tick_prev
         self.tick_prev = now
 
         return dt
+
+    if sys.platform == "win32":
+
+        def _tick(self):
+            ctypes.windll.winmm.timeBeginPeriod(1)
+            while time.perf_counter() - self.tick_prev < self.fps_time:
+                time.sleep(0.0001)
+            ctypes.windll.winmm.timeEndPeriod(1)
+            return time.perf_counter()
+
+    else:
+
+        def _tick(self):
+            while time.perf_counter() - self.tick_prev < self.fps_time:
+                time.sleep(0.0001)
+            return time.perf_counter()
 
     def isPressed(self, key_name: str) -> bool:
         """
