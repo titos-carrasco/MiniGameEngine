@@ -1,12 +1,11 @@
-from MiniGameEngine import GameObject
+from MiniGameEngine.Sprite import Sprite
 
 
-class Alien(GameObject):
+class Alien(Sprite):
     # inicializamos el Alien
     def __init__(self, x, y):
-        super().__init__(
-            x, y, imagePath="Recursos/Alien.png", tipo="Alien", collisions=True
-        )
+        super().__init__(x, y, layer=1, tipo="Alien", imagePath="Recursos/Alien.png")
+        self.setCollisions(True)
 
     # manejamos las colisiones
     def onCollision(self, dt, gobj):

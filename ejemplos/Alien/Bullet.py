@@ -1,23 +1,21 @@
-from MiniGameEngine import GameObject
+from MiniGameEngine.Sprite import Sprite
 
 
-class Bullet(GameObject):
+class Bullet(Sprite):
     # inicializamos la Bala
     def __init__(self, x, y):
-        super().__init__(
-            x, y, imagePath="Recursos/Bullet.png", tipo="Bullet", collisions=True
-        )
+        super().__init__(x, y, layer=1, tipo="Bullet", imagePath="Recursos/Bullet.png")
+        self.setCollisions(True)
 
     # actualizamos el estado de la Bala en cada frame
     def onUpdate(self, dt):
-        x = self.getX()
         y = self.getY()
 
         y = y - 8
         if y < 0:
             self.destroy()
         else:
-            self.setPosition(x, y)
+            self.setY(y)
 
     # manejamos las colisiones
     def onCollision(self, dt, gobj):

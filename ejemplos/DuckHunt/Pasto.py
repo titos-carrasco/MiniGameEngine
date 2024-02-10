@@ -1,7 +1,6 @@
-import time
-from MiniGameEngine import GameObject
+from MiniGameEngine.Sprite import Sprite
 
 
-class Pasto(GameObject):
+class Pasto(Sprite):
     def __init__(self, x, y):
-        super().__init__(x, y, imagePath="Recursos/Pasto.png", tipo="Pasto", layer=2)
+        super().__init__(x, y, layer=2, tipo="Pasto", imagePath="Recursos/Pasto.png")

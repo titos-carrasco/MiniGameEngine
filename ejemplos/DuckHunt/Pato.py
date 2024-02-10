@@ -1,21 +1,25 @@
-from MiniGameEngine import GameObject
-from MiniGameEngine import ObjectAnimator
+from MiniGameEngine.Sprite import Sprite
+from MiniGameEngine.ImageAnimator import ImageAnimator
 
 
-class Pato(GameObject):
+class Pato(Sprite):
     def __init__(self, x, y):
-        super().__init__(x, y, imagePath=None, tipo="Pato", layer=1)
-        self.animator = ObjectAnimator(self, imagesPath="Recursos/PatoVolando-*")
+        super().__init__(
+            x, y, layer=1, tipo="Pato", imagePath="Recursos/PatoVolando-000.png"
+        )
+        self.animator = ImageAnimator("Recursos/PatoVolando-*.png")
         self.animator.start()
 
     def onUpdate(self, dt):
         x = self.getX()
-        y = self.getY()
         w = self.getWidth()
         ww = self.getWorldWidth()
 
-        if self.animator.animate():
-            x = x + 8
-            if x - w / 2 > ww:
-                x = 0 - w / 2
-            self.setPosition(x, y)
+        imagePath = self.animator.next()
+        if imagePath:
+            self.setShape(imagePath)
+
+        x = x + 5
+        if x > ww:
+            x = 0 - w
+        self.setX(x)

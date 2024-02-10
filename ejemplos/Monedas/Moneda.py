@@ -1,22 +1,10 @@
-from MiniGameEngine import GameObject
+from MiniGameEngine.Sprite import Sprite
 
 
-class Moneda(GameObject):
+class Moneda(Sprite):
     # inicializamos la Moneda
-    def __init__(self, x, y, layer=1):
+    def __init__(self, x, y, layer):
         super().__init__(
-            x,
-            y,
-            imagePath="Recursos/Moneda.png",
-            tipo="Moneda",
-            collisions=True,
-            layer=layer,
+            x, y, layer=layer, tipo="Moneda", imagePath="Recursos/Moneda.png"
         )
-
-    # actualizamos 1/fps veces por segundo
-    def onUpdate(self, dt):
-        pass
-
-    # manejamos las colisiones
-    def onCollision(self, dt, gobj):
-        pass
+        self.setCollisions(True)
