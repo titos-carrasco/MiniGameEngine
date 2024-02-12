@@ -1,16 +1,12 @@
-import tkinter as tk
-
 from MiniGameEngine.GameWorld import GameWorld
 
 
 class GameObject:
-    """
-    Clase que representa un objeto dentro del juego.
-    """
+    """Clase que representa un objeto dentro del juego."""
 
     def __init__(self, x: int, y: int, layer: int, tipo: str):
         """
-        Constructor de la clase GameObject que inicializa un objeto en el mundo de juego.
+        Crea un objeto de la clase GameObject.
 
         Args:
             x (int): Coordenada x del objeto.
@@ -27,9 +23,9 @@ class GameObject:
         self._y = int(y)
         self._width = 0
         self._height = 0
-        self._layer = int(layer) if layer > 0 else 1
+        self._layer = layer
         self._tipo = tipo
-        self._collisions = False
+        self._can_collide = False
 
         self._gw._addGObject(self)
 
@@ -48,6 +44,8 @@ class GameObject:
     def _setDimension(self, width: int, height: int):
         self._width = int(width) if width >= 0 else 0
         self._height = int(height) if height >= 0 else 0
+
+    # ---
 
     def getX(self) -> int:
         """
@@ -95,16 +93,16 @@ class GameObject:
 
     def getDimension(self) -> (int, int):
         """
-        Retorna las dimensiones del objeto
+        Retorna las dimensiones del objeto.
 
         Returns:
-            (int, int): El ancho y alto del objeto
+            (int, int): El ancho y alto del objeto.
         """
         return self._width, self._height
 
     def getLayer(self) -> int:
         """
-        Obtiene la capa en la que se encuentra este objeto
+        Obtiene la capa en la que se encuentra este objeto.
 
         Returns:
             int: La capa en que se encuentra este objeto.
@@ -114,6 +112,7 @@ class GameObject:
     def getTipo(self) -> str:
         """
         Obtiene el tipo del objeto.
+
         Returns:
             str: Tipo del objeto.
         """
@@ -161,22 +160,31 @@ class GameObject:
 
     def setCollisions(self, enable: bool):
         """
-        Habilita o deshabilita participar del procesamiento de colisiones
+        Habilita o deshabilita participar del procesamiento de colisiones.
 
         Args:
-            enable (bool): True para habilitar, False para deshabilitar
+            enable (bool): True para habilitar, False para deshabilitar.
         """
-        self._collisions = enable
+        self._can_collide = enable
+
+    def canCollide(self) -> bool:
+        """
+        Determina si tiene habilitadas las colisiones
+
+        Returns:
+            bool: True si las colisiones están habilitadas. False en caso contrario
+        """
+        return self._can_collide
 
     def collides(self, obj) -> bool:
         """
-        Determina si este GameObject colisiona con otro
+        Determina si este GameObject colisiona con otro.
 
         Args:
-            obj (GameObject): GameObject a detectar si colisiona con este GameObject
+            obj (GameObject): GameObject a detectar si colisiona con este GameObject.
 
         Returns:
-            bool: True si colisiona. False en caso contrario
+            bool: True si colisiona. False en caso contrario.
         """
         o1, o2 = self, obj
 
@@ -199,7 +207,6 @@ class GameObject:
         Args:
             dt (float): Tiempo en segundos desde la ultima llamada.
         """
-        pass
 
     def onCollision(self, dt: float, gobj):
         """
@@ -209,12 +216,9 @@ class GameObject:
             dt (float): Tiempo en segundos desde la ultima llamada.
             gobj (GameObject): Objeto con el que colisiona.
         """
-        pass
 
     def destroy(self):
-        """
-        Elimina el objeto del mundo de juego.
-        """
+        """Elimina el objeto del mundo de juego."""
         self._canvas.delete(self._element)
         del self._element
 
@@ -231,7 +235,7 @@ class GameObject:
         Returns:
             int: Ancho del mundo de juego.
         """
-        return self._gw.win.winfo_width()
+        return self._canvas.winfo_width()
 
     def getWorldHeight(self) -> int:
         """
@@ -240,7 +244,7 @@ class GameObject:
         Returns:
             int: Altura del mundo de juego.
         """
-        return self._gw.win.winfo_height()
+        return self._canvas.winfo_height()
 
     def isPressed(self, key_name: str) -> bool:
         """

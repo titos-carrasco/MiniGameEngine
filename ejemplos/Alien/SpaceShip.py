@@ -8,7 +8,7 @@ class SpaceShip(Sprite):
     # inicializamos la Nave Espacial
     def __init__(self, x, y):
         super().__init__(
-            x, y, layer=1, tipo="SpaceShip", imagePath="Recursos/SpaceShip.png"
+            x, y, layer=1, tipo="SpaceShip", image_path="Recursos/SpaceShip.png"
         )
         self.lastBullet = 0
 

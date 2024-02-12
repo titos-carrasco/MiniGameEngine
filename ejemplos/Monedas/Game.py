@@ -8,23 +8,20 @@ from Moneda import Moneda
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(800, 600, title="Monedas", bgPath="Recursos/Fondo.png")
+        super().__init__(800, 600, title="Monedas", bg_path="Recursos/Fondo.png")
         self.statusBar = Text(
             10,
             10,
             layer=100,
             text="60",
-            font="Arial",
-            size=12,
-            bold=False,
-            italic=False,
+            font="Arial 12",
             color="black",
         )
 
         # agregamos a los actores
         Betty(200, 456, layer=2)
-        Moneda(300, 440, layer=1)
-        Moneda(500, 440, layer=3)
+        Moneda(300, 440, layer=3)
+        Moneda(500, 440, layer=1)
 
     def onUpdate(self, dt):
         fps = round(1 / dt, 1)

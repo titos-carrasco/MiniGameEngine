@@ -8,7 +8,7 @@ from Alien import Alien
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(800, 600, title="Aliens", bgPath="Recursos/Fondo.png")
+        super().__init__(800, 600, title="Aliens", bg_path="Recursos/Fondo.png")
 
         # para mostrar los FPS
         self.statusBar = Text(
@@ -16,10 +16,7 @@ class Game(GameWorld):
             10,
             layer=100,
             text="60",
-            font="Arial",
-            size=10,
-            bold=False,
-            italic=False,
+            font="Arial 10",
             color="white",
         )
 

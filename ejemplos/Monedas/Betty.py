@@ -5,7 +5,7 @@ class Betty(Sprite):
     # inicializamos a Betty
     def __init__(self, x, y, layer):
         super().__init__(
-            x, y, tipo="Betty", layer=layer, imagePath="Recursos/BettyRight.png"
+            x, y, tipo="Betty", layer=layer, image_path="Recursos/BettyRight.png"
         )
         self.setCollisions(True)
 

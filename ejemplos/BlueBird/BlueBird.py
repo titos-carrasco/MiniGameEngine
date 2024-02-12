@@ -2,17 +2,18 @@ import time
 import random
 
 from MiniGameEngine.Sprite import Sprite
-from MiniGameEngine.ImageAnimator import ImageAnimator
+from MiniGameEngine.Animator import Animator
 
 
 class BlueBird(Sprite):
     # inicializamos el Ave
     def __init__(self, x, y):
         super().__init__(
-            x, y, layer=1, tipo="BlueBird", imagePath="Recursos/bird-000.png"
+            x, y, layer=1, tipo="BlueBird", image_path="Recursos/bird-000.png"
         )
+        self.setCollisions(True)
         self.speed = random.randint(1, 6)
-        self.animator = ImageAnimator("Recursos/bird-*.png")
+        self.animator = Animator("Recursos/bird-*.png")
         self.animator.start()
 
     # actualizamos 1/fps veces por segundo

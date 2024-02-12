@@ -1,13 +1,10 @@
 import tkinter as tk
 
-from MiniGameEngine.GameWorld import GameWorld
 from MiniGameEngine.GameObject import GameObject
 
 
 class Text(GameObject):
-    """
-    Clase que representa un GameObject definido por un texto.
-    """
+    """Clase que representa un GameObject definido por un texto."""
 
     def __init__(
         self,
@@ -15,24 +12,18 @@ class Text(GameObject):
         y: int,
         layer: int,
         text: str,
-        font: str = "Arial",
-        size: int = 10,
-        bold: bool = False,
-        italic: bool = False,
+        font: str = "Arial 12",
         color: str = "black",
     ):
         """
-        Constructor de la clase Text que agrega un Texto al mundo del juego
+        Crea una un objeto de la clase Text.
 
         Args:
-            x (int): Coordenada x del texto
-            y (int): Coordenada y del texto
+            x (int): Coordenada x del texto.
+            y (int): Coordenada y del texto.
             layer (int): Capa en que se colocará este texto.
             text (str): Texto para este objeto
-            font (str, optional): Font a utilizar para el texto (por defecto es "Arial").
-            size (int, optional): Tamano a utilizar para el texto (por defecto es 10).
-            bold (bool, optional): Especifica que el texto estara en bold (por defecto es False).
-            italic (bool, optional): Especifica que el texto estara en italic (por defecto es False).
+            font (str, optional): Font a utilizar para el texto (por defecto es "Arial 12").
             color (str, optional): Color a utilizar para el texto (por defecto es "black").
         """
         super().__init__(x, y, layer=layer, tipo="Text Object")
@@ -41,59 +32,49 @@ class Text(GameObject):
             self.getX(),
             self.getY(),
             text=text,
+            font=font,
+            fill=color,
             anchor=tk.NW,
-            state="normal",
-            tags=("Layer " + str(self.getLayer()),),
+            state="hidden",
+            tags=("Layer " + str(layer),),
         )
 
         self._setElement(gobj)
-        self.setText(text=text, font=font, size=size, bold=bold, italic=italic, color=color)
 
-    def setText(
-        self,
-        text: str,
-        font: str = None,
-        size: int = None,
-        bold: bool = None,
-        italic: bool = None,
-        color: str = None,
-    ):
+    def setText(self, text: str):
         """
-        Modifica el texto desplegado y sus atributos. Si no se especifican atributos se convservan los existentes
+        Cambia el texto del objeto.
 
         Args:
-            text (str): Texto para este objeto
-            font (str, optional): Font a utilizar para el texto
-            size (int, optional): Tamano a utilizar para el texto
-            bold (bool, optional): Especifica que el texto estara en bold
-            italic (bool, optional): Especifica que el texto estara en italic
-            color (str, optional): Color a utilizar para el texto
+            text (str): El nuevo texto del objeto.
         """
-        kwargs = {}
-        kwargs["text"] = text
+        self._getCanvas().itemconfig(self._getElement(), text=text)
+        self._updateDimension()
 
-        f = []
-        if not font is None:
-            f.append(font)
-        if not size is None:
-            f.append(size)
-        t = ""
-        if bold:
-            t = t + " bold "
-        if italic:
-            t = t + " italic "
-        if t:
-            f.append(t)
-        if f:
-            kwargs["font"] = tuple(f)
+    def setFont(self, font: str):
+        """
+        Cambia el Tipo de letra, tamaño y atributo del texto del objeto.
+        El nuevo font se puede especificar como "Arial 10 italica bold"
 
-        if not color is None:
-            kwargs["fill"] = color
+        Args:
+            font (str): El nuevo tipo de letra, tamaño y atributo del texto del objeto.
+        """
+        self._getCanvas().itemconfig(self._getElement(), font=font)
+        self._updateDimension()
 
-        self._getCanvas().itemconfig(self._getElement(), kwargs)
+    def setColor(self, color: str):
+        """
+        Cambia el color del texto del objeto.
 
+        Args:
+            color (str): El nuevo color para el texto del objeto.
+        """
+        self._getCanvas().itemconfig(self._getElement(), fill=color)
+
+    def _updateDimension(self):
+        self._getCanvas().itemconfig(self._getElement(), state="normal")
         bbox = self._getCanvas().bbox(self._getElement())
+        self._getCanvas().itemconfig(self._getElement(), state="hidden")
         width = bbox[2] - bbox[0]
         height = bbox[3] - bbox[1]
-
         self._setDimension(width, height)

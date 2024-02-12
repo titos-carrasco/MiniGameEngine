@@ -1,13 +1,13 @@
 from MiniGameEngine.Sprite import Sprite
-from MiniGameEngine.ImageAnimator import ImageAnimator
+from MiniGameEngine.Animator import Animator
 
 
 class Pato(Sprite):
     def __init__(self, x, y):
         super().__init__(
-            x, y, layer=1, tipo="Pato", imagePath="Recursos/PatoVolando-000.png"
+            x, y, layer=1, tipo="Pato", image_path="Recursos/PatoVolando-000.png"
         )
-        self.animator = ImageAnimator("Recursos/PatoVolando-*.png")
+        self.animator = Animator("Recursos/PatoVolando-*.png")
         self.animator.start()
 
     def onUpdate(self, dt):

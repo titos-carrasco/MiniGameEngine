@@ -9,16 +9,13 @@ from Pato import Pato
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(720, 375, title="Duck Hunt", bgPath="Recursos/Fondo.png")
+        super().__init__(720, 375, title="Duck Hunt", bg_path="Recursos/Fondo.png")
         self.statusBar = Text(
             4,
             4,
             layer=100,
             text="60",
-            font="Arial",
-            size=12,
-            bold=False,
-            italic=False,
+            font="Arial 12",
             color="black",
         )
 
