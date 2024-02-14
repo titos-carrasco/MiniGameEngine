@@ -11,7 +11,9 @@ from BlueBird import BlueBird
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(800, 440, title="Blue Bird", bg_path="Recursos/Fondo.png")
+        super().__init__(
+            800, 440, title="Blue Bird", bg_path="Recursos/Fondo.png", debug="F12"
+        )
 
         # para mostrar los FPS
         self.statusBar = Text(
