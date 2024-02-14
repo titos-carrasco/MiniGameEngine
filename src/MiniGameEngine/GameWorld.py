@@ -21,6 +21,7 @@ class GameWorld:
         title: str = "MiniGameEngine",
         bg_color: str = "gray",
         bg_path: str = None,
+        debug=None,
     ):
         """
         Crea un objeto de la clase GameWorld.
@@ -31,6 +32,7 @@ class GameWorld:
             title (str, optional): Título de la ventana del juego (por defecto es "MiniGameEngine").
             bg_color (str, optional): Color de fondo de la ventana del juego (por defecto es "gray").
             bg_path (str, optional): Ruta de la imagen de fondo de la ventana del juego (por defecto es None).
+            debug (str, optional): La tecla a utilizar para mostrar los detalles del mini motor de juego (por defecto es None)
         """
         if GameWorld._instance_:
             return
@@ -48,8 +50,13 @@ class GameWorld:
 
         self._images = {}
 
-        self._bg_pic = None
+        self._bg_pic = self._canvas.create_image(
+            0, 0, image=None, anchor=tk.NW, state="hidden"
+        )
         self.setBgPic(bg_path)
+
+        if debug is not None:
+            self._win.bind(f"<KeyRelease-{debug}>", self._doDebug)
 
         self._keys = {}
         self._gobjects = []
@@ -87,22 +94,21 @@ class GameWorld:
         Returns:
             list[tk.PhotoImage] : Arreglo con las imágenes cargadas.
         """
-        images = []
-        for path in images_paths:
-            images.append(self.loadImage(path))
-        return images
+        return [self.loadImage(path) for path in images_paths]
 
     def setBgPic(self, bg_path: str):
         """
-                Cambia la imagen de fondo.
-        protectedlizar como fondo.
+        Cambia la imagen de fondo.
+
+        Args:
+            bg_path (str): Archivo con la imagen a establecer como fondo.
         """
-        if not self._bg_pic is None:
-            self._canvas.delete(self._bg_pic)
-        img = self.loadImage(bg_path)
-        self._bg_pic = self._canvas.create_image(
-            0, 0, image=img, anchor=tk.NW, state="disabled", tags=("Layer 0",)
-        )
+
+        if bg_path is None:
+            self._getCanvas().itemconfig(self._bg_pic, image=None, state="hidden")
+        else:
+            img = self.loadImage(bg_path)
+            self._getCanvas().itemconfig(self._bg_pic, image=img, state="normal")
         self._canvas.tag_lower(self._bg_pic, "all")
 
     def gameLoop(self, fps: int):
@@ -149,6 +155,15 @@ class GameWorld:
             dt (float): Tiempo en segundos desde la última llamada.
         """
 
+    def _doDebug(self, evt):
+        """
+        Muestra información de la ejecución del mino motor de juegos
+        """
+        items = self._canvas.find_all()
+        print("Canvas items:", items)
+        gobjs = [(o._tipo, o._layer) for o in self._gobjects]
+        print("gObjects:", gobjs)
+
     def _addGObject(self, gobj):
         if not hasattr(gobj, "__status__"):
             gobj.__status__ = "new"
@@ -166,8 +181,10 @@ class GameWorld:
                 update_layers = True
 
         if update_layers:
-            for layer in sorted(self._layers.keys()):
+            [
                 self._canvas.tag_raise("Layer " + str(layer), "all")
+                for layer in sorted(self._layers.keys())
+            ]
 
     def _delGObject(self, gobj):
         if hasattr(gobj, "__status__"):
@@ -198,7 +215,7 @@ class GameWorld:
                     o2.onCollision(dt, o1)
 
     def _doRefresh(self):
-        # self._win.update_idletasks()
+        self._win.update_idletasks()
         self._win.update()
 
         now = self._tick()
