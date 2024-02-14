@@ -40,6 +40,7 @@ class Text(GameObject):
         )
 
         self._setElement(gobj)
+        self._updateDimension()
 
     def setText(self, text: str):
         """
