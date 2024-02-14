@@ -35,7 +35,7 @@ class Text(GameObject):
             font=font,
             fill=color,
             anchor=tk.NW,
-            state="hidden",
+            state="disabled",
             tags=("Layer " + str(layer),),
         )
 
@@ -72,9 +72,7 @@ class Text(GameObject):
         self._getCanvas().itemconfig(self._getElement(), fill=color)
 
     def _updateDimension(self):
-        self._getCanvas().itemconfig(self._getElement(), state="normal")
         bbox = self._getCanvas().bbox(self._getElement())
-        self._getCanvas().itemconfig(self._getElement(), state="hidden")
         width = bbox[2] - bbox[0]
         height = bbox[3] - bbox[1]
         self._setDimension(width, height)

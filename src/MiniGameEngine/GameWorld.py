@@ -1,5 +1,6 @@
 import sys
 import time
+import ctypes
 import tkinter as tk
 
 
@@ -40,7 +41,7 @@ class GameWorld:
         self._win.resizable(False, False)
 
         self._canvas = tk.Canvas(
-            self._win, width=width, height=height, bg=bg_color, bd=0
+            self._win, width=width, height=height, bg=bg_color, bd=0, state="disabled"
         )
         self._canvas.place(x=0, y=0)
         # self._canvas.pack()
@@ -100,7 +101,7 @@ class GameWorld:
             self._canvas.delete(self._bg_pic)
         img = self.loadImage(bg_path)
         self._bg_pic = self._canvas.create_image(
-            0, 0, image=img, anchor=tk.NW, state="hidden", tags=("Layer 0",)
+            0, 0, image=img, anchor=tk.NW, state="disabled", tags=("Layer 0",)
         )
         self._canvas.tag_lower(self._bg_pic, "all")
 
@@ -197,16 +198,8 @@ class GameWorld:
                     o2.onCollision(dt, o1)
 
     def _doRefresh(self):
-        [
-            self._canvas.itemconfig(item, state="normal")
-            for item in self._canvas.find_all()
-        ]
         # self._win.update_idletasks()
         self._win.update()
-        [
-            self._canvas.itemconfig(item, state="hidden")
-            for item in self._canvas.find_all()
-        ]
 
         now = self._tick()
         dt = now - self._tick_prev

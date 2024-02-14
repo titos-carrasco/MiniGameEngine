@@ -25,7 +25,7 @@ class Sprite(GameObject):
             self.getY(),
             image=img,
             anchor=tk.NW,
-            state="hidden",
+            state="disabled",
             tags=("Layer " + str(layer),),
         )
         self._setElement(gobj)
