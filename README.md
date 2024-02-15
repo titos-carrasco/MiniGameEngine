@@ -1,7 +1,7 @@
 # MiniGameEngine
 Mini motor de juegos escrito en python.
 
-* Utiliza sólo tkinter y requiera Python 3.6+
+* Utiliza sólo tkinter y requierePython 3.6+
 * La documentación se encuentra en doc/
 * Algunos ejemplos se encuentran en ejemplos/
 
