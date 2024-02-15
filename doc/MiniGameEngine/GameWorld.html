@@ -35,22 +35,16 @@
                                 <a class="function" href="#GameWorld.__init__">GameWorld</a>
                         </li>
                         <li>
-                                <a class="function" href="#GameWorld.loadImage">loadImage</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#GameWorld.loadImages">loadImages</a>
-                        </li>
-                        <li>
-                                <a class="function" href="#GameWorld.setBgPic">setBgPic</a>
-                        </li>
-                        <li>
                                 <a class="function" href="#GameWorld.gameLoop">gameLoop</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#GameWorld.onUpdate">onUpdate</a>
                         </li>
                         <li>
                                 <a class="function" href="#GameWorld.exitGame">exitGame</a>
                         </li>
                         <li>
-                                <a class="function" href="#GameWorld.onUpdate">onUpdate</a>
+                                <a class="function" href="#GameWorld.setBgPic">setBgPic</a>
                         </li>
                         <li>
                                 <a class="function" href="#GameWorld.isPressed">isPressed</a>
@@ -60,6 +54,12 @@
                         </li>
                         <li>
                                 <a class="function" href="#GameWorld.getHeight">getHeight</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#GameWorld.loadImage">loadImage</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#GameWorld.loadImages">loadImages</a>
                         </li>
                 </ul>
 
@@ -102,7 +102,7 @@
                             <div id="GameWorld.__init__" class="classattr">
                                 <div class="attr function">
             
-        <span class="name">GameWorld</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">width</span><span class="p">:</span> <span class="nb">int</span>,</span><span class="param">	<span class="n">height</span><span class="p">:</span> <span class="nb">int</span>,</span><span class="param">	<span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;MiniGameEngine&#39;</span>,</span><span class="param">	<span class="n">bg_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span>,</span><span class="param">	<span class="n">bg_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
+        <span class="name">GameWorld</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">width</span><span class="p">:</span> <span class="nb">int</span>,</span><span class="param">	<span class="n">height</span><span class="p">:</span> <span class="nb">int</span>,</span><span class="param">	<span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;MiniGameEngine&#39;</span>,</span><span class="param">	<span class="n">bg_color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span>,</span><span class="param">	<span class="n">bg_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">debug</span><span class="o">=</span><span class="kc">None</span></span>)</span>
 
         
     </div>
@@ -118,77 +118,8 @@
 <li><strong>title (str, optional):</strong>  Título de la ventana del juego (por defecto es "MiniGameEngine").</li>
 <li><strong>bg_color (str, optional):</strong>  Color de fondo de la ventana del juego (por defecto es "gray").</li>
 <li><strong>bg_path (str, optional):</strong>  Ruta de la imagen de fondo de la ventana del juego (por defecto es None).</li>
+<li><strong>debug (str, optional):</strong>  La tecla a utilizar para mostrar los detalles del mini motor de juego (por defecto es None)</li>
 </ul>
-</div>
-
-
-                            </div>
-                            <div id="GameWorld.loadImage" class="classattr">
-                                <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">loadImage</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">image_path</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n">tkinter</span><span class="o">.</span><span class="n">PhotoImage</span>:</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#GameWorld.loadImage"></a>
-    
-            <div class="docstring"><p>Carga la imagen que se encuentra en la ruta especificada.</p>
-
-<h6 id="arguments">Arguments:</h6>
-
-<ul>
-<li><strong>imagePath (str):</strong>  Ruta de la imagen a cargar.</li>
-</ul>
-
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>tk.PhotoImage: La imagen cargada.</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                            <div id="GameWorld.loadImages" class="classattr">
-                                <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">loadImages</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">images_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></span><span class="return-annotation">) -> <span class="nb">list</span><span class="p">[</span><span class="n">tkinter</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">]</span>:</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#GameWorld.loadImages"></a>
-    
-            <div class="docstring"><p>Carga las imagenes referenciadas por el arreglo de rutas.</p>
-
-<h6 id="arguments">Arguments:</h6>
-
-<ul>
-<li><strong>images_paths (list[str]):</strong>  Arreglo de rutas a las imagenes a cargar.</li>
-</ul>
-
-<h6 id="returns">Returns:</h6>
-
-<blockquote>
-  <p>list[tk.PhotoImage] : Arreglo con las imágenes cargadas.</p>
-</blockquote>
-</div>
-
-
-                            </div>
-                            <div id="GameWorld.setBgPic" class="classattr">
-                                <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">setBgPic</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">bg_path</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">):</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#GameWorld.setBgPic"></a>
-    
-            <div class="docstring"><p>Cambia la imagen de fondo.
-protectedlizar como fondo.</p>
 </div>
 
 
@@ -214,21 +145,6 @@ protectedlizar como fondo.</p>
 
 
                             </div>
-                            <div id="GameWorld.exitGame" class="classattr">
-                                <div class="attr function">
-            
-        <span class="def">def</span>
-        <span class="name">exitGame</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
-
-        
-    </div>
-    <a class="headerlink" href="#GameWorld.exitGame"></a>
-    
-            <div class="docstring"><p>Finaliza el loop principal del juego.</p>
-</div>
-
-
-                            </div>
                             <div id="GameWorld.onUpdate" class="classattr">
                                 <div class="attr function">
             
@@ -245,6 +161,42 @@ protectedlizar como fondo.</p>
 
 <ul>
 <li><strong>dt (float):</strong>  Tiempo en segundos desde la última llamada.</li>
+</ul>
+</div>
+
+
+                            </div>
+                            <div id="GameWorld.exitGame" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">exitGame</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#GameWorld.exitGame"></a>
+    
+            <div class="docstring"><p>Finaliza el loop principal del juego.</p>
+</div>
+
+
+                            </div>
+                            <div id="GameWorld.setBgPic" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">setBgPic</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">bg_path</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">):</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#GameWorld.setBgPic"></a>
+    
+            <div class="docstring"><p>Cambia la imagen de fondo.</p>
+
+<h6 id="arguments">Arguments:</h6>
+
+<ul>
+<li><strong>bg_path (str):</strong>  Archivo con la imagen a establecer como fondo.</li>
 </ul>
 </div>
 
@@ -314,6 +266,60 @@ protectedlizar como fondo.</p>
 
 <blockquote>
   <p>int: Altura del mundo de juego.</p>
+</blockquote>
+</div>
+
+
+                            </div>
+                            <div id="GameWorld.loadImage" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">loadImage</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">image_path</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n">tkinter</span><span class="o">.</span><span class="n">PhotoImage</span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#GameWorld.loadImage"></a>
+    
+            <div class="docstring"><p>Carga la imagen que se encuentra en la ruta especificada.</p>
+
+<h6 id="arguments">Arguments:</h6>
+
+<ul>
+<li><strong>imagePath (str):</strong>  Ruta de la imagen a cargar.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>tk.PhotoImage: La imagen cargada.</p>
+</blockquote>
+</div>
+
+
+                            </div>
+                            <div id="GameWorld.loadImages" class="classattr">
+                                <div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">loadImages</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">images_paths</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></span><span class="return-annotation">) -> <span class="nb">list</span><span class="p">[</span><span class="n">tkinter</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">]</span>:</span></span>
+
+        
+    </div>
+    <a class="headerlink" href="#GameWorld.loadImages"></a>
+    
+            <div class="docstring"><p>Carga las imagenes referenciadas por el arreglo de rutas.</p>
+
+<h6 id="arguments">Arguments:</h6>
+
+<ul>
+<li><strong>images_paths (list[str]):</strong>  Arreglo de rutas a las imagenes a cargar.</li>
+</ul>
+
+<h6 id="returns">Returns:</h6>
+
+<blockquote>
+  <p>list[tk.PhotoImage] : Arreglo con las imágenes cargadas.</p>
 </blockquote>
 </div>
 

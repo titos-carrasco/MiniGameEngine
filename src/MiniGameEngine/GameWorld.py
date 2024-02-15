@@ -1,5 +1,6 @@
 import sys
 import time
+import itertools
 import ctypes
 import tkinter as tk
 
@@ -43,10 +44,15 @@ class GameWorld:
         self._win.resizable(False, False)
 
         self._canvas = tk.Canvas(
-            self._win, width=width, height=height, bg=bg_color, bd=0, state="disabled"
+            self._win,
+            width=width,
+            height=height,
+            bg=bg_color,
+            bd=0,
+            state="disabled",
         )
         self._canvas.place(x=0, y=0)
-        # self._canvas.pack()
+        self._canvas.update()
 
         self._images = {}
 
@@ -60,15 +66,142 @@ class GameWorld:
 
         self._keys = {}
         self._gobjects = []
-        self._layers = {}
         self._tick_prev = 0
         self._fps = 0
         self._fps_time = 0
         self._running = False
         GameWorld._instance_ = self
 
-    def _getCanvas(self) -> tk.Canvas:
-        return self._canvas
+    def gameLoop(self, fps: int):
+        """
+        Inicia el loop principal del juego.
+
+        Args:
+            fps (int): Número de cuadros por segundo del juego.
+        """
+        self._win.protocol("WM_DELETE_WINDOW", self.exitGame)
+        self._fps = fps
+        self._fps_time = 1 / self._fps
+        self._tick_prev = time.perf_counter()
+        self._running = True
+        while self._running:
+            # se sincroniza a 1/fps
+            dt = self._tick()
+
+            # elimina los game objects destruidos
+            gobjs = [o for o in self._gobjects if o.__status__ == "dead"]
+            [self._gobjects.remove(o) for o in gobjs]
+
+            # incorpora los game objects agregados
+            gobjs = [
+                (o._layer, setattr(o, "__status__", "alive"))
+                for o in self._gobjects
+                if o.__status__ == "new"
+            ]
+            [
+                (layer, self._canvas.tag_raise("Layer " + str(layer), "all"))
+                for layer, _ in sorted(gobjs)
+            ]
+
+            # onUpdate para la app
+            self.onUpdate(dt)
+
+            # onUpdate para los game objects
+            gobjs = [o for o in self._gobjects if o.__status__ == "alive"]
+            [o.onUpdate(dt) for o in gobjs]
+
+            # onCollision para los game objects
+            gobjs = [
+                o for o in self._gobjects if o.__status__ == "alive" and o._can_collide
+            ]
+            [
+                (o1.onCollision(dt, o2), o2.onCollision(dt, o1))
+                for o1, o2 in itertools.combinations(gobjs, 2)
+                if o1.collides(o2)
+            ]
+
+            # actualiza el despliegue
+            self._win.update_idletasks()
+            self._win.update()
+
+        self._win.destroy()
+
+        self._gobjects = None
+        self._keys = None
+        self._bg_pic = None
+        self._images = None
+        self._canvas = None
+        self._win = None
+        self._instance_ = None
+        GameWorld._instance_ = None
+
+    def onUpdate(self, dt: float):
+        """
+        Llamada por cada ciclo dentro del loop (fps veces por segundo).
+
+        Args:
+            dt (float): Tiempo en segundos desde la última llamada.
+        """
+
+    def exitGame(self):
+        """Finaliza el loop principal del juego."""
+        self._running = False
+
+    def setBgPic(self, bg_path: str):
+        """
+        Cambia la imagen de fondo.
+
+        Args:
+            bg_path (str): Archivo con la imagen a establecer como fondo.
+        """
+
+        if bg_path is None:
+            self._getCanvas().itemconfig(self._bg_pic, image=None, state="hidden")
+        else:
+            img = self.loadImage(bg_path)
+            self._getCanvas().itemconfig(self._bg_pic, image=img, state="normal")
+        self._canvas.tag_lower(self._bg_pic, "all")
+
+    def isPressed(self, key_name: str) -> bool:
+        """
+        Verifica si una tecla específica está siendo presionada.
+
+        Args:
+            key_name (str): Nombre de la tecla a verificar.
+
+        Returns:
+            bool: True si la tecla está presionada, False en caso contrario.
+        """
+        if not key_name in self._keys:
+            self._keys[key_name] = False
+            self._win.bind(
+                f"<KeyPress-{key_name}>", lambda e: self._setPressed(key_name, True)
+            )
+            self._win.bind(
+                f"<KeyRelease-{key_name}>", lambda e: self._setPressed(key_name, False)
+            )
+        return self._keys[key_name]
+
+    def _setPressed(self, key_name: str, pressed):
+        self._keys[key_name] = pressed
+
+    def getWidth(self) -> int:
+        """
+        Obtiene el ancho del mundo de juego.
+
+        Returns:
+            int: Ancho del mundo de juego.
+        """
+        return self._win.winfo_width()
+
+    def getHeight(self) -> int:
+        """
+        Obtiene la altura del mundo de juego.
+
+        Returns:
+            int: Altura del mundo de juego.
+        """
+        return self._win.winfo_height()
 
     def loadImage(self, image_path: str) -> tk.PhotoImage:
         """
@@ -96,133 +229,16 @@ class GameWorld:
         """
         return [self.loadImage(path) for path in images_paths]
 
-    def setBgPic(self, bg_path: str):
-        """
-        Cambia la imagen de fondo.
-
-        Args:
-            bg_path (str): Archivo con la imagen a establecer como fondo.
-        """
-
-        if bg_path is None:
-            self._getCanvas().itemconfig(self._bg_pic, image=None, state="hidden")
-        else:
-            img = self.loadImage(bg_path)
-            self._getCanvas().itemconfig(self._bg_pic, image=img, state="normal")
-        self._canvas.tag_lower(self._bg_pic, "all")
-
-    def gameLoop(self, fps: int):
-        """
-        Inicia el loop principal del juego.
-
-        Args:
-            fps (int): Número de cuadros por segundo del juego.
-        """
-        self._fps = fps
-        self._fps_time = 1 / self._fps
-        self._tick_prev = time.perf_counter()
-
-        self._running = True
-        self._win.protocol("WM_DELETE_WINDOW", self.exitGame)
-        while self._running:
-            self._doAddGameObjects()
-            dt = self._doRefresh()
-            self.onUpdate(dt)
-            self._doUpdateGameObjects(dt)
-            self._doCheckCollisions(dt)
-            self._doDelGameObjects()
-        self._win.destroy()
-
-        self._layers = None
-        self._gobjects = None
-        self._keys = None
-        self._bg_pic = None
-        self._images = None
-        self._canvas = None
-        self._win = None
-        self._instance_ = None
-        GameWorld._instance_ = None
-
-    def exitGame(self):
-        """Finaliza el loop principal del juego."""
-        self._running = False
-
-    def onUpdate(self, dt: float):
-        """
-        Llamada por cada ciclo dentro del loop (fps veces por segundo).
-
-        Args:
-            dt (float): Tiempo en segundos desde la última llamada.
-        """
-
-    def _doDebug(self, evt):
-        """
-        Muestra información de la ejecución del mino motor de juegos
-        """
-        items = self._canvas.find_all()
-        print("Canvas items:", items)
-        gobjs = [(o._tipo, o._layer) for o in self._gobjects]
-        print("gObjects:", gobjs)
+    # ---
 
     def _addGObject(self, gobj):
         if not hasattr(gobj, "__status__"):
             gobj.__status__ = "new"
             self._gobjects.append(gobj)
-            layer = gobj.getLayer()
-            if not layer in self._layers:
-                self._layers[layer] = 0
-            self._layers[layer] += 1
-
-    def _doAddGameObjects(self):
-        update_layers = False
-        for o in self._gobjects:
-            if o.__status__ == "new":
-                o.__status__ = "alive"
-                update_layers = True
-
-        if update_layers:
-            [
-                self._canvas.tag_raise("Layer " + str(layer), "all")
-                for layer in sorted(self._layers.keys())
-            ]
 
     def _delGObject(self, gobj):
         if hasattr(gobj, "__status__"):
             gobj.__status__ = "dead"
-            layer = gobj.getLayer()
-            self._layers[layer] -= 1
-            if self._layers[layer] == 0:
-                del self._layers[layer]
-
-    def _doDelGameObjects(self):
-        gobjs = [o for o in self._gobjects if o.__status__ == "dead"]
-        [self._gobjects.remove(o) for o in gobjs]
-
-    def _doUpdateGameObjects(self, dt):
-        gobjs = [o for o in self._gobjects if o.__status__ == "alive"]
-        [o.onUpdate(dt) for o in gobjs]
-
-    def _doCheckCollisions(self, dt):
-        gobjs1 = [
-            o for o in self._gobjects if o.__status__ == "alive" and o._can_collide
-        ]
-        gobjs2 = gobjs1.copy()
-        for o1 in gobjs1:
-            gobjs2.pop(0)
-            for o2 in gobjs2:
-                if o1.collides(o2):
-                    o1.onCollision(dt, o2)
-                    o2.onCollision(dt, o1)
-
-    def _doRefresh(self):
-        self._win.update_idletasks()
-        self._win.update()
-
-        now = self._tick()
-        dt = now - self._tick_prev
-        self._tick_prev = now
-
-        return dt
 
     if sys.platform == "win32":
 
@@ -231,53 +247,26 @@ class GameWorld:
             while time.perf_counter() - self._tick_prev < self._fps_time:
                 time.sleep(0.0001)
             ctypes.windll.winmm.timeEndPeriod(1)
-            return time.perf_counter()
+            now = time.perf_counter()
+            dt = now - self._tick_prev
+            self._tick_prev = now
+            return dt
 
     else:
 
         def _tick(self):
             while time.perf_counter() - self._tick_prev < self._fps_time:
                 time.sleep(0.0001)
-            return time.perf_counter()
+            now = time.perf_counter()
+            dt = now - self._tick_prev
+            self._tick_prev = now
+            return dt
 
-    def isPressed(self, key_name: str) -> bool:
-        """
-        Verifica si una tecla específica está siendo presionada.
+    def _getCanvas(self) -> tk.Canvas:
+        return self._canvas
 
-        Args:
-            key_name (str): Nombre de la tecla a verificar.
-
-        Returns:
-            bool: True si la tecla está presionada, False en caso contrario.
-        """
-        if not key_name in self._keys:
-            self._keys[key_name] = False
-            self._win.bind(
-                f"<KeyPress-{key_name}>", lambda e: self._setPressed(key_name, True)
-            )
-            self._win.bind(
-                f"<KeyRelease-{key_name}>",
-                lambda e: self._setPressed(key_name, False),
-            )
-        return self._keys[key_name]
-
-    def _setPressed(self, key_name: str, pressed: bool):
-        self._keys[key_name] = pressed
-
-    def getWidth(self) -> int:
-        """
-        Obtiene el ancho del mundo de juego.
-
-        Returns:
-            int: Ancho del mundo de juego.
-        """
-        return self._win.winfo_width()
-
-    def getHeight(self) -> int:
-        """
-        Obtiene la altura del mundo de juego.
-
-        Returns:
-            int: Altura del mundo de juego.
-        """
-        return self._win.winfo_height()
+    def _doDebug(self, evt):
+        items = self._canvas.find_all()
+        print("Canvas items:", items)
+        gobjs = [(o._tipo, o._layer) for o in self._gobjects]
+        print("gObjects:", gobjs)
