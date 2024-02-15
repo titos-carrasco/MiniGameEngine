@@ -217,7 +217,7 @@ class GameWorld:
             self._images[image_path] = tk.PhotoImage(file=image_path)
         return self._images[image_path]
 
-    def loadImages(self, images_paths: list[str]) -> list[tk.PhotoImage]:
+    def loadImages(self, images_paths: list) -> list:
         """
         Carga las imagenes referenciadas por el arreglo de rutas.
 
