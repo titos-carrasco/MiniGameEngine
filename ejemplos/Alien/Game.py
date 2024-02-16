@@ -3,12 +3,13 @@ from MiniGameEngine.Text import Text
 
 from SpaceShip import SpaceShip
 from Alien import Alien
+from Space import Space
 
 
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(800, 600, title="Aliens", bg_path="Recursos/Fondo.png")
+        super().__init__(800, 600, title="Aliens", debug="F12")
 
         # para mostrar los FPS
         self.statusBar = Text(
@@ -19,6 +20,9 @@ class Game(GameWorld):
             font="Arial 10",
             color="white",
         )
+
+        # el espacio infinito
+        Space()
 
         # agregamos a los actores
         SpaceShip(400, 540)
