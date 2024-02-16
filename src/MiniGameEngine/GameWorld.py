@@ -93,14 +93,10 @@ class GameWorld:
             [self._gobjects.remove(o) for o in gobjs]
 
             # incorpora los game objects agregados
-            gobjs = [
+            [
                 (o._layer, setattr(o, "__status__", "alive"))
                 for o in self._gobjects
                 if o.__status__ == "new"
-            ]
-            [
-                (layer, self._canvas.tag_raise("Layer " + str(layer), "all"))
-                for layer, _ in sorted(gobjs)
             ]
 
             # onUpdate para la app
@@ -232,9 +228,16 @@ class GameWorld:
     # ---
 
     def _addGObject(self, gobj):
-        if not hasattr(gobj, "__status__"):
-            gobj.__status__ = "new"
-            self._gobjects.append(gobj)
+        if hasattr(gobj, "__status__"):
+            return
+        gobj.__status__ = "new"
+        self._gobjects.append(gobj)
+
+        layers = sorted(set([o._layer for o in self._gobjects]))
+        [
+            (layer, self._canvas.tag_raise("Layer " + str(layer), "all"))
+            for layer in layers
+        ]
 
     def _delGObject(self, gobj):
         if hasattr(gobj, "__status__"):
@@ -268,5 +271,5 @@ class GameWorld:
     def _doDebug(self, evt):
         items = self._canvas.find_all()
         print("Canvas items:", items)
-        gobjs = [(o._tipo, o._layer) for o in self._gobjects]
+        gobjs = sorted([(o._layer, o._element, o._tipo) for o in self._gobjects])
         print("gObjects:", gobjs)

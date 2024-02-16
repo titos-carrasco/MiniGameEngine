@@ -20,3 +20,5 @@ Mini motor de juegos escrito en python.
 
 ![Texto Alternativo](images/Monedas.png)
 
+
+    Imágenes obtenidas desde https://opengameart.org/
