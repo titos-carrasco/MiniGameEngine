@@ -15,9 +15,9 @@ class Pato(Sprite):
         w = self.getWidth()
         ww = self.getWorldWidth()
 
-        imagePath = self.animator.next()
-        if imagePath:
-            self.setShape(imagePath)
+        image_path = self.animator.next()
+        if image_path:
+            self.setShape(image_path)
 
         x = x + 5
         if x > ww:

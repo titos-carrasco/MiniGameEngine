@@ -235,7 +235,7 @@ class GameObject:
         Returns:
             int: Ancho del mundo de juego.
         """
-        return self._canvas.winfo_width()
+        return self._gw.getWidth()
 
     def getWorldHeight(self) -> int:
         """
@@ -244,7 +244,7 @@ class GameObject:
         Returns:
             int: Altura del mundo de juego.
         """
-        return self._canvas.winfo_height()
+        return self._gw.getHeight()
 
     def isPressed(self, key_name: str) -> bool:
         """

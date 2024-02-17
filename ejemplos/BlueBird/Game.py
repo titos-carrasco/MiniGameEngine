@@ -2,10 +2,9 @@ import random
 import time
 import cProfile
 
+from BlueBird import BlueBird
 from MiniGameEngine.GameWorld import GameWorld
 from MiniGameEngine.Text import Text
-
-from BlueBird import BlueBird
 
 
 class Game(GameWorld):
@@ -16,12 +15,12 @@ class Game(GameWorld):
         )
 
         # para mostrar los FPS
-        self.statusBar = Text(
+        self.status_bar = Text(
             2,
             2,
             layer=100,
-            text="60",
-            font="Arial 12",
+            text=" 60.0 fps",
+            font=("Courier New", 12),
             color="red",
         )
 
@@ -34,7 +33,7 @@ class Game(GameWorld):
     def onUpdate(self, dt):
         fps = round(1 / dt, 1)
         if fps < 59:
-            self.statusBar.setText(text="%5.1f fps" % fps)
+            self.status_bar.setText(text=f"{fps:5.1f} fps")
 
         if self.isPressed("Escape"):
             self.exitGame()

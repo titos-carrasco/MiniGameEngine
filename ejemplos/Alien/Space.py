@@ -14,6 +14,7 @@ class Space(Sprite):
         if time.time() - self.t < 0.03:
             return
         y = self.getY() + 4
-        if(y>= 0): y = -600
+        if y >= 0:
+            y = -600
         self.setY(y)
         self.t = time.time()

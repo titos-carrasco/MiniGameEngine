@@ -1,7 +1,7 @@
 import time
 
-from MiniGameEngine.Sprite import Sprite
 from Bullet import Bullet
+from MiniGameEngine.Sprite import Sprite
 
 
 class SpaceShip(Sprite):
@@ -10,7 +10,7 @@ class SpaceShip(Sprite):
         super().__init__(
             x, y, layer=1, tipo="SpaceShip", image_path="Recursos/SpaceShip.png"
         )
-        self.lastBullet = 0
+        self.last_bullet = 0
 
     # actualizamos el estado de la Nave Espacial en cada frame
     def onUpdate(self, dt):
@@ -20,11 +20,9 @@ class SpaceShip(Sprite):
         y = self.getY()
 
         # movimiento lateral
-        move = False
         if self.isPressed("Left"):
             x = x - 4
-            if x < 0:
-                x = 0
+            x = max(x, 0)
             self.setX(x)
         elif self.isPressed("Right"):
             x = x + 4
@@ -34,6 +32,6 @@ class SpaceShip(Sprite):
 
         # disparamos una bala
         if self.isPressed("space"):
-            if time.time() - self.lastBullet > 0.3:
+            if time.time() - self.last_bullet > 0.3:
                 Bullet(x + 21, y - 30)
-                self.lastBullet = time.time()
+                self.last_bullet = time.time()

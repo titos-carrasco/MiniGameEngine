@@ -24,8 +24,7 @@ class Betty(Sprite):
         # movimiento lateral
         if self.isPressed("Left"):
             x = x - 4
-            if x < 0:
-                x = 0
+            x = max(x, 0)
             self.setX(x)
             if self.direccion != "Left":
                 self.direccion = "Left"

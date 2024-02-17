@@ -1,9 +1,9 @@
-from MiniGameEngine.GameWorld import GameWorld
-from MiniGameEngine.Text import Text
-
 from SpaceShip import SpaceShip
 from Alien import Alien
 from Space import Space
+from MiniGameEngine.GameWorld import GameWorld
+from MiniGameEngine.Text import Text
+
 
 
 class Game(GameWorld):
@@ -12,7 +12,7 @@ class Game(GameWorld):
         super().__init__(800, 600, title="Aliens", debug="F12")
 
         # para mostrar los FPS
-        self.statusBar = Text(
+        self.status_bar = Text(
             10,
             10,
             layer=100,
@@ -36,7 +36,7 @@ class Game(GameWorld):
 
     def onUpdate(self, dt):
         fps = round(1 / dt, 1)
-        self.statusBar.setText(text="%5.1f fps" % fps)
+        self.status_bar.setText(text=f"{fps:5.1f} fps")
         if self.isPressed("Escape"):
             self.exitGame()
 

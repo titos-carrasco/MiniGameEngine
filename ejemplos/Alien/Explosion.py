@@ -1,5 +1,3 @@
-import time
-
 from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Animator import Animator
 
@@ -19,6 +17,6 @@ class Explosion(Sprite):
             self.destroy()
             return
 
-        imagePath = self.animator.next()
-        if imagePath:
-            self.setShape(imagePath)
+        image_path = self.animator.next()
+        if image_path:
+            self.setShape(image_path)

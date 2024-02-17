@@ -1,7 +1,6 @@
+from Explosion import Explosion
 from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Animator import Animator
-
-from Explosion import Explosion
 
 
 class Alien(Sprite):
@@ -17,9 +16,9 @@ class Alien(Sprite):
 
     # manejamos la actualizacion
     def onUpdate(self, dt):
-        imagePath = self.animator.next()
-        if imagePath:
-            self.setShape(imagePath)
+        image_path = self.animator.next()
+        if image_path:
+            self.setShape(image_path)
 
     # manejamos las colisiones
     def onCollision(self, dt, gobj):

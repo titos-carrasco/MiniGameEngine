@@ -1,4 +1,3 @@
-import time
 import random
 
 from MiniGameEngine.Sprite import Sprite
@@ -22,9 +21,9 @@ class BlueBird(Sprite):
         w = self.getWidth()
         ww = self.getWorldWidth()
 
-        imagePath = self.animator.next()
-        if imagePath:
-            self.setShape(imagePath)
+        image_path = self.animator.next()
+        if image_path:
+            self.setShape(image_path)
 
         x = x + self.speed
         if x > ww:

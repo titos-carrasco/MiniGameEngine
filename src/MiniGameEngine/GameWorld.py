@@ -38,10 +38,20 @@ class GameWorld:
         if GameWorld._instance_:
             return
 
+        self._gobjects = []
+        self._images = {}
+        self._keys = {}
+        self._tick_prev = 0
+        self._fps = 0
+        self._fps_time = 0
+        self._running = False
+
         self._win = tk.Tk()
         self._win.geometry(f"{width}x{height}")
         self._win.title(title)
         self._win.resizable(False, False)
+        self._width = width
+        self._height = height
 
         self._canvas = tk.Canvas(
             self._win,
@@ -52,9 +62,6 @@ class GameWorld:
             state="disabled",
         )
         self._canvas.place(x=0, y=0)
-        self._canvas.update()
-
-        self._images = {}
 
         self._bg_pic = self._canvas.create_image(
             0, 0, image=None, anchor=tk.NW, state="hidden"
@@ -64,12 +71,6 @@ class GameWorld:
         if debug is not None:
             self._win.bind(f"<KeyRelease-{debug}>", self._doDebug)
 
-        self._keys = {}
-        self._gobjects = []
-        self._tick_prev = 0
-        self._fps = 0
-        self._fps_time = 0
-        self._running = False
         GameWorld._instance_ = self
 
     def gameLoop(self, fps: int):
@@ -85,51 +86,54 @@ class GameWorld:
         self._tick_prev = time.perf_counter()
         self._running = True
         while self._running:
-            # se sincroniza a 1/fps
-            dt = self._tick()
-
             # elimina los game objects destruidos
             gobjs = [o for o in self._gobjects if o.__status__ == "dead"]
-            [self._gobjects.remove(o) for o in gobjs]
+            if gobjs:
+                _ = [self._gobjects.remove(o) for o in gobjs]
 
             # incorpora los game objects agregados
-            [
-                (o._layer, setattr(o, "__status__", "alive"))
+            gobjs = [
+                setattr(o, "__status__", "alive")
                 for o in self._gobjects
                 if o.__status__ == "new"
             ]
+            if gobjs:
+                _ = [
+                    self._canvas.tag_raise("Layer " + str(layer), "all")
+                    for layer in {o._layer for o in self._gobjects}
+                ]
+
+            # actualiza el despliegue
+            self._win.update()
+            # self._win.update_idletasks()
+
+            # se sincroniza a 1/fps
+            dt = self._tick()
 
             # onUpdate para la app
             self.onUpdate(dt)
 
             # onUpdate para los game objects
             gobjs = [o for o in self._gobjects if o.__status__ == "alive"]
-            [o.onUpdate(dt) for o in gobjs]
+            _ = [o.onUpdate(dt) for o in gobjs]
 
             # onCollision para los game objects
             gobjs = [
                 o for o in self._gobjects if o.__status__ == "alive" and o._can_collide
             ]
-            [
+            _ = [
                 (o1.onCollision(dt, o2), o2.onCollision(dt, o1))
                 for o1, o2 in itertools.combinations(gobjs, 2)
                 if o1.collides(o2)
             ]
 
-            # actualiza el despliegue
-            self._win.update_idletasks()
-            self._win.update()
-
         self._win.destroy()
-
-        self._gobjects = None
-        self._keys = None
-        self._bg_pic = None
-        self._images = None
-        self._canvas = None
-        self._win = None
-        self._instance_ = None
-        GameWorld._instance_ = None
+        del self._win
+        del self._gobjects
+        del self._canvas
+        del self._images
+        del self._keys
+        del GameWorld._instance_
 
     def onUpdate(self, dt: float):
         """
@@ -156,7 +160,6 @@ class GameWorld:
         else:
             img = self.loadImage(bg_path)
             self._getCanvas().itemconfig(self._bg_pic, image=img, state="normal")
-        self._canvas.tag_lower(self._bg_pic, "all")
 
     def isPressed(self, key_name: str) -> bool:
         """
@@ -188,7 +191,7 @@ class GameWorld:
         Returns:
             int: Ancho del mundo de juego.
         """
-        return self._win.winfo_width()
+        return self._width
 
     def getHeight(self) -> int:
         """
@@ -197,7 +200,7 @@ class GameWorld:
         Returns:
             int: Altura del mundo de juego.
         """
-        return self._win.winfo_height()
+        return self._height
 
     def loadImage(self, image_path: str) -> tk.PhotoImage:
         """
@@ -228,16 +231,9 @@ class GameWorld:
     # ---
 
     def _addGObject(self, gobj):
-        if hasattr(gobj, "__status__"):
-            return
-        gobj.__status__ = "new"
-        self._gobjects.append(gobj)
-
-        layers = sorted(set([o._layer for o in self._gobjects]))
-        [
-            (layer, self._canvas.tag_raise("Layer " + str(layer), "all"))
-            for layer in layers
-        ]
+        if not hasattr(gobj, "__status__"):
+            gobj.__status__ = "new"
+            self._gobjects.append(gobj)
 
     def _delGObject(self, gobj):
         if hasattr(gobj, "__status__"):
@@ -268,7 +264,7 @@ class GameWorld:
     def _getCanvas(self) -> tk.Canvas:
         return self._canvas
 
-    def _doDebug(self, evt):
+    def _doDebug(self, _evt):
         items = self._canvas.find_all()
         print("Canvas items:", items)
         gobjs = sorted([(o._layer, o._element, o._tipo) for o in self._gobjects])
