@@ -11,7 +11,7 @@ class BlueBird(Sprite):
             x, y, layer=1, tipo="BlueBird", image_path="Recursos/bird-000.png"
         )
         self.setCollisions(True)
-        self.speed = random.randint(1, 6)
+        self.speed = random.randint(50, 160)
         self.animator = Animator("Recursos/bird-*.png")
         self.animator.start()
 
@@ -25,7 +25,7 @@ class BlueBird(Sprite):
         if image_path:
             self.setShape(image_path)
 
-        x = x + self.speed
+        x = x + self.speed*dt
         if x > ww:
             x = 0 - w
         self.setX(x)

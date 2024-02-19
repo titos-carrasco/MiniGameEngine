@@ -8,8 +8,8 @@ class Text(GameObject):
 
     def __init__(
         self,
-        x: int,
-        y: int,
+        x: float,
+        y: float,
         layer: int,
         text: str,
         font: str = "Arial 12",
@@ -19,8 +19,8 @@ class Text(GameObject):
         Crea una un objeto de la clase Text.
 
         Args:
-            x (int): Coordenada x del texto.
-            y (int): Coordenada y del texto.
+            x (float): Coordenada x del texto.
+            y (float): Coordenada y del texto.
             layer (int): Capa en que se colocará este texto.
             text (str): Texto para este objeto
             font (str, optional): Font a utilizar para el texto (por defecto es "Arial 12").
@@ -36,7 +36,7 @@ class Text(GameObject):
             fill=color,
             anchor=tk.NW,
             state="disabled",
-            tags=("Layer " + str(layer),),
+            tags=(f"Layer {layer}",),
         )
 
         self._setElement(gobj)

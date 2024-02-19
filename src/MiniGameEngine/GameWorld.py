@@ -10,6 +10,7 @@ class GameWorld:
 
     _instance_ = None
 
+    @staticmethod
     def _getInstance():
         return GameWorld._instance_
 
@@ -99,7 +100,7 @@ class GameWorld:
             ]
             if gobjs:
                 _ = [
-                    self._canvas.tag_raise("Layer " + str(layer), "all")
+                    self._canvas.tag_raise(f"Layer {layer}", "all")
                     for layer in {o._layer for o in self._gobjects}
                 ]
 
