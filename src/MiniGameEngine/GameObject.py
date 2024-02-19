@@ -125,10 +125,8 @@ class GameObject:
         Args:
             x (float): La coordenada x del objeto.
         """
-        dx = x - self._x
-        dy = 0
-        self._canvas.move(self._element, dx, dy)
         self._x = x
+        self._canvas.moveto(self._element, self._x, self._y)
 
     def setY(self, y: float):
         """
@@ -137,10 +135,8 @@ class GameObject:
         Args:
             y (float): La coordenada y del objeto.
         """
-        dx = 0
-        dy = y - self._y
-        self._canvas.move(self._element, dx, dy)
         self._y = y
+        self._canvas.moveto(self._element, self._x, self._y)
 
     def setPosition(self, x: float, y: float):
         """
@@ -150,10 +146,9 @@ class GameObject:
             x (float): Nueva coordenada x del sprite.
             y (float): Nueva coordenada y del sprite.
         """
-        dx = x - self._x
-        dy = y - self._y
-        self._canvas.move(self._element, dx, dy)
-        self._x, self._y = x, y
+        self._x = x
+        self._y = y
+        self._canvas.moveto(self._element, self._x, self._y)
 
     def setCollisions(self, enable: bool):
         """
