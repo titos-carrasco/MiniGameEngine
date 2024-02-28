@@ -25,9 +25,16 @@ class Game(GameWorld):
         Pato(-130, 60)
         Pato(-60, 40)
 
+        # los FPS en promedio
+        self.prom = [1 / 60] * 60
+
     def onUpdate(self, dt):
-        fps = round(1 / dt, 1)
+        self.prom.pop()
+        self.prom.insert(0, dt)
+        fps = sum(self.prom) / len(self.prom)
+        fps = round(1 / fps, 1)
         self.status_bar.setText(text=f"{fps:5.1f} fps")
+
         if self.isPressed("Escape"):
             self.exitGame()
 

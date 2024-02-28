@@ -28,20 +28,26 @@ class Game(GameWorld):
             x = random.randint(-40, 700)
             y = random.randint(20, 400)
             BlueBird(x, y)
+
+        # los FPS en promedio
+        self.prom = [1 / 60] * 60 * 5
+
+        # para detener el juego en un lapso de tiempo específico
         self.t = time.time()
 
     def onUpdate(self, dt):
+        self.prom.pop()
+        self.prom.insert(0, dt)
+        pfps = sum(self.prom) / len(self.prom)
+        pfps = round(1 / pfps, 1)
         fps = round(1 / dt, 1)
-        if fps < 59:
-            self.status_bar.setText(text=f"             {fps:5.1f} fps")
-        else:
-            self.status_bar.setText(text=f"{fps:5.1f} fps")
+        self.status_bar.setText(text=f"{pfps:5.1f} fps - {fps:5.1f} fps")
 
         if self.isPressed("Escape"):
             self.exitGame()
 
         t = time.time()
-        if t - self.t > 10:
+        if t - self.t > 20:
             self.exitGame()
 
 
