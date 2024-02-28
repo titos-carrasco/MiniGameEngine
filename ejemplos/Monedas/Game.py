@@ -14,7 +14,7 @@ class Game(GameWorld):
             10,
             10,
             layer=100,
-            text="60",
+            text=" 60.0 fps",
             font="Arial 12",
             color="black",
         )
