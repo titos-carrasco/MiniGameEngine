@@ -3,6 +3,7 @@ import time
 import itertools
 import ctypes
 import tkinter as tk
+import select
 
 
 class GameWorld:
@@ -256,7 +257,7 @@ class GameWorld:
 
         def _tick(self):
             while time.perf_counter() - self._tick_prev < self._fps_time:
-                time.sleep(0.0001)
+                select.select([], [], [], 0.0)
             now = time.perf_counter()
             dt = now - self._tick_prev
             self._tick_prev = now

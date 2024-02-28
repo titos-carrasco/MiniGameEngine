@@ -33,6 +33,8 @@ class Game(GameWorld):
     def onUpdate(self, dt):
         fps = round(1 / dt, 1)
         if fps < 59:
+            self.status_bar.setText(text=f"             {fps:5.1f} fps")
+        else:
             self.status_bar.setText(text=f"{fps:5.1f} fps")
 
         if self.isPressed("Escape"):
