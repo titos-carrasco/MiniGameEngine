@@ -25,7 +25,7 @@ class BlueBird(Sprite):
         if image_path:
             self.setShape(image_path)
 
-        x = x + self.speed*dt
+        x = x + self.speed * dt
         if x > ww:
             x = 0 - w
         self.setX(x)

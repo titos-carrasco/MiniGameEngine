@@ -19,7 +19,7 @@ class Perro(Sprite):
         if image_path:
             self.setShape(image_path)
 
-        x = x + 2
+        x = x + 120 * dt
         if x > ww:
             x = 0 - w
         self.setX(x)

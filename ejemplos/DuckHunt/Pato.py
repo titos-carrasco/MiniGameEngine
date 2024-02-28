@@ -19,7 +19,7 @@ class Pato(Sprite):
         if image_path:
             self.setShape(image_path)
 
-        x = x + 5
+        x = x + 100 * dt
         if x > ww:
             x = 0 - w
         self.setX(x)

@@ -11,7 +11,7 @@ class Bullet(Sprite):
     def onUpdate(self, dt):
         y = self.getY()
 
-        y = y - 8
+        y = y - 300 * dt
         if y < 0:
             self.destroy()
         else:

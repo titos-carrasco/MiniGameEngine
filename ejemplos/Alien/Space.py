@@ -13,7 +13,7 @@ class Space(Sprite):
     def onUpdate(self, dt):
         if time.time() - self.t < 0.03:
             return
-        y = self.getY() + 4
+        y = self.getY() + 100 * dt
         if y >= 0:
             y = -600
         self.setY(y)

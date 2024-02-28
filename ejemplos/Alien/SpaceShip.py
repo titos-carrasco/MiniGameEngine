@@ -21,11 +21,11 @@ class SpaceShip(Sprite):
 
         # movimiento lateral
         if self.isPressed("Left"):
-            x = x - 4
+            x = x - 200 * dt
             x = max(x, 0)
             self.setX(x)
         elif self.isPressed("Right"):
-            x = x + 4
+            x = x + 200 * dt
             if x + w > ww:
                 x = ww - w
             self.setX(x)
