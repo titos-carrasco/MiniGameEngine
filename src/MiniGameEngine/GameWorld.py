@@ -4,6 +4,7 @@ import itertools
 import ctypes
 import tkinter as tk
 import select
+import socket
 
 
 class GameWorld:
@@ -47,6 +48,8 @@ class GameWorld:
         self._fps = 0
         self._fps_time = 0
         self._running = False
+        self._delay = None
+        self._sock = socket.socket()
 
         self._win = tk.Tk()
         self._win.geometry(f"{width}x{height}")
@@ -75,16 +78,18 @@ class GameWorld:
 
         GameWorld._instance_ = self
 
-    def gameLoop(self, fps: int):
+    def gameLoop(self, fps: int, busy_wait: bool = False):
         """
         Inicia el loop principal del juego.
 
         Args:
             fps (int): Número de cuadros por segundo del juego.
+            bw (bool): True para indicar que el sync de cada frame se hará con espera ocupada (por defecto es False)
         """
         self._win.protocol("WM_DELETE_WINDOW", self.exitGame)
         self._fps = fps
         self._fps_time = 1 / self._fps
+        self._delay = (lambda: 0) if busy_wait else (lambda: select.select([self._sock],[],[],0.0001))
         self._tick_prev = time.perf_counter()
         self._running = True
         while self._running:
@@ -244,10 +249,11 @@ class GameWorld:
     if sys.platform == "win32":
 
         def _tick(self):
-            ctypes.windll.winmm.timeBeginPeriod(1)
-            while time.perf_counter() - self._tick_prev < self._fps_time:
-                time.sleep(0.0001)
-            ctypes.windll.winmm.timeEndPeriod(1)
+            t = self._fps_time + self._tick_prev
+            while t - time.perf_counter() > 0:
+                ctypes.windll.winmm.timeBeginPeriod(1)
+                self._delay()
+                ctypes.windll.winmm.timeEndPeriod(1)
             now = time.perf_counter()
             dt = now - self._tick_prev
             self._tick_prev = now
@@ -256,8 +262,9 @@ class GameWorld:
     else:
 
         def _tick(self):
-            while time.perf_counter() - self._tick_prev < self._fps_time:
-                select.select([], [], [], 0.0)
+            t = self._fps_time + self._tick_prev
+            while t - time.perf_counter() > 0:
+                self._delay()
             now = time.perf_counter()
             dt = now - self._tick_prev
             self._tick_prev = now
