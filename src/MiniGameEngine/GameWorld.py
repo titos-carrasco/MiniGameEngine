@@ -259,6 +259,11 @@ class GameWorld:
             self._tick_prev = now
             return dt
 
+        def _mkDelay(self, busy_wait: bool):
+            if busy_wait:
+                return lambda: 0
+            return lambda: select.select([self._sock], [], [], 0.0001)
+
     else:
 
         def _tick(self):
