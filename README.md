@@ -18,7 +18,7 @@ Mini motor de juegos escrito en python.
 ## Nota
 Tkinter es lento con muchas operaciones sobre el canvas.
 En el ejemplo *"BlueBird/"* se utilizan 30 Sprites cambiando su imagen y moviéndose 1/60 veces por segundo.
-Utilizando cProfile se observa que el método *'call'* de tkinter utiliza casi el 80% del tiempo de procesamiento
+Utilizando cProfile se observa que el método *'call'* de tkinter utiliza casi el 80% del tiempo de procesamiento en Linux
 
 
 ## Durante el desarrollo
@@ -27,4 +27,3 @@ Utilizando cProfile se observa que el método *'call'* de tkinter utiliza casi e
 * Verificación de código: ``$ pylint --module-naming-style PascalCase --method-naming-style camelCase src/MiniGameEngine/``
 * Generación de documentación: ``$ pdoc -o doc --no-search --no-show-source -d google MiniGameEngine``
 * Generación del WHL: ``$ python setup.py bdist_wheel``
-
