@@ -89,7 +89,7 @@ class GameWorld:
         self._win.protocol("WM_DELETE_WINDOW", self.exitGame)
         self._fps = fps
         self._fps_time = 1 / self._fps
-        self._delay = (lambda: 0) if busy_wait else (lambda: select.select([self._sock],[],[],0.0001))
+        self._delay = self._mkDelay(busy_wait)
         self._tick_prev = time.perf_counter()
         self._running = True
         while self._running:
@@ -269,6 +269,11 @@ class GameWorld:
             dt = now - self._tick_prev
             self._tick_prev = now
             return dt
+
+        def _mkDelay(self, busy_wait: bool):
+            if busy_wait:
+                return lambda: 0
+            return lambda: select.select([], [], [], 0.0001)
 
     def _getCanvas(self) -> tk.Canvas:
         return self._canvas
