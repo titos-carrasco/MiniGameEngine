@@ -11,7 +11,7 @@ class GameObject:
         Args:
             x (float): Coordenada x del objeto.
             y (float): Coordenada y del objeto.
-            layer (int): Capa en que se colocará este objeto.
+            layer (int): Capa en que se colocará este objeto (1-9999).
             tipo (str): Tipo del objeto.
         """
         self._gw = GameWorld._getInstance()
@@ -23,7 +23,7 @@ class GameObject:
         self._y = y
         self._width = 0
         self._height = 0
-        self._layer = layer
+        self._layer = min(max(1, layer), 9999)
         self._tipo = tipo
         self._can_collide = False
 

@@ -26,7 +26,7 @@ class Sprite(GameObject):
             image=img,
             anchor=tk.NW,
             state="disabled",
-            tags=(f"Layer {layer}",),
+            tags=(f"Layer {layer:04d}",),
         )
         self._setElement(gobj)
         self._setDimension(img.width(), img.height())

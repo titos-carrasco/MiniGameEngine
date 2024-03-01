@@ -36,7 +36,7 @@ class Text(GameObject):
             fill=color,
             anchor=tk.NW,
             state="disabled",
-            tags=(f"Layer {layer}",),
+            tags=(f"Layer {layer:04d}",),
         )
 
         self._setElement(gobj)
