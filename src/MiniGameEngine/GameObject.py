@@ -4,13 +4,13 @@ from MiniGameEngine.GameWorld import GameWorld
 class GameObject:
     """Clase que representa un objeto dentro del juego."""
 
-    def __init__(self, x: float, y: float, layer: int, tipo: str):
+    def __init__(self, x: int, y: int, layer: int, tipo: str):
         """
         Crea un objeto de la clase GameObject.
 
         Args:
-            x (float): Coordenada x del objeto.
-            y (float): Coordenada y del objeto.
+            x (int): Coordenada x del objeto.
+            y (int): Coordenada y del objeto.
             layer (int): Capa en que se colocará este objeto (1-9999).
             tipo (str): Tipo del objeto.
         """
@@ -19,8 +19,8 @@ class GameObject:
 
         self._element = None
 
-        self._x = x
-        self._y = y
+        self._x = int(x)
+        self._y = int(y)
         self._width = 0
         self._height = 0
         self._layer = min(max(1, layer), 9999)
@@ -47,29 +47,29 @@ class GameObject:
 
     # ---
 
-    def getX(self) -> float:
+    def getX(self) -> int:
         """
         Obtiene la coordenada x actual del objeto.
 
         Returns:
-            float: Coordenada x del objeto.
+            int: Coordenada x del objeto.
         """
         return self._x
 
-    def getY(self) -> float:
+    def getY(self) -> int:
         """
         Obtiene la coordenada y actual del objeto.
 
         Returns:
-            float: Coordenada y del objeto.
+            int: Coordenada y del objeto.
         """
         return self._y
 
-    def getPosition(self) -> (float, float):
+    def getPosition(self) -> (int, int):
         """Obtiene las coordenadas x e y del objeto.
 
         Returns:
-            (float, float): Las coordenadas x e y del objeto.
+            (int, int): Las coordenadas x e y del objeto.
         """
         return self._x, self._y
 
@@ -118,36 +118,36 @@ class GameObject:
         """
         return self._tipo
 
-    def setX(self, x: float):
+    def setX(self, x: int):
         """
         Establece la cooordenada x del objeto.
 
         Args:
-            x (float): La coordenada x del objeto.
+            x (int): La coordenada x del objeto.
         """
-        self._x = x
+        self._x = int(x)
         self._canvas.moveto(self._element, self._x, self._y)
 
-    def setY(self, y: float):
+    def setY(self, y: int):
         """
         Establece la cooordenada y del objeto.
 
         Args:
-            y (float): La coordenada y del objeto.
+            y (int): La coordenada y del objeto.
         """
-        self._y = y
+        self._y = int(y)
         self._canvas.moveto(self._element, self._x, self._y)
 
-    def setPosition(self, x: float, y: float):
+    def setPosition(self, x: int, y: int):
         """
         Establece la posición del sprite en el mundo de juego.
 
         Args:
-            x (float): Nueva coordenada x del sprite.
-            y (float): Nueva coordenada y del sprite.
+            x (int): Nueva coordenada x del sprite.
+            y (int): Nueva coordenada y del sprite.
         """
-        self._x = x
-        self._y = y
+        self._x = int(x)
+        self._y = int(y)
         self._canvas.moveto(self._element, self._x, self._y)
 
     def setCollisions(self, enable: bool):

@@ -6,6 +6,8 @@ import tkinter as tk
 import select
 import socket
 
+from MiniGameEngine.Camera import Camera
+
 
 class GameWorld:
     """Clase que representa el mundo dentro del mini motor de juegos."""
@@ -26,6 +28,7 @@ class GameWorld:
         bg_color: str = "gray",
         bg_path: str = None,
         debug=None,
+        world_size: (int, int) = None,
     ):
         """
         Crea un objeto de la clase GameWorld.
@@ -37,6 +40,7 @@ class GameWorld:
             bg_color (str, optional): Color de fondo de la ventana del juego (por defecto es "gray").
             bg_path (str, optional): Ruta de la imagen de fondo de la ventana del juego (por defecto es None).
             debug (str, optional): La tecla a utilizar para mostrar los detalles del mini motor de juego (por defecto es None)
+            world_size (int, int, optional): Tamaño del mundo del juego (por defecto similar al tamaño de la ventana)
         """
         if GameWorld._instance_:
             return
@@ -55,16 +59,32 @@ class GameWorld:
         self._win.geometry(f"{width}x{height}")
         self._win.title(title)
         self._win.resizable(False, False)
-        self._width = width
-        self._height = height
+        self._screen_width = width
+        self._screen_height = height
+        if world_size:
+            self._world_width = max(width, world_size[0])
+            self._world_height = max(height, world_size[1])
+        else:
+            self._world_width = width
+            self._world_height = height
 
-        self._canvas = tk.Canvas(
+        self._frame = tk.Frame(
             self._win,
-            width=width,
-            height=height,
+            width=self._world_width,
+            height=self._world_height,
             bg=bg_color,
             bd=0,
-            state="disabled",
+            highlightthickness=0,
+        )
+        self._frame.place(x=0, y=0)
+
+        self._canvas = tk.Canvas(
+            self._frame,
+            width=self._world_width,
+            height=self._world_height,
+            bg=bg_color,
+            bd=0,
+            highlightthickness=0,
         )
         self._canvas.place(x=0, y=0)
 
@@ -75,6 +95,10 @@ class GameWorld:
 
         if debug is not None:
             self._win.bind(f"<KeyRelease-{debug}>", self._doDebug)
+
+        self._camera = Camera(
+            0, 0, width, height, self._world_width, self._world_height
+        )
 
         GameWorld._instance_ = self
 
@@ -97,6 +121,7 @@ class GameWorld:
             gobjs = [o for o in self._gobjects if o.__status__ == "dead"]
             if gobjs:
                 _ = [self._gobjects.remove(o) for o in gobjs]
+                _ = [self._camera._delGameObject(o) for o in gobjs]
 
             # incorpora los game objects agregados
             gobjs = [
@@ -106,13 +131,16 @@ class GameWorld:
             ]
             if gobjs:
                 _ = [
-                    self._canvas.tag_raise(f"Layer {layer}", "all")
+                    self._canvas.tag_raise(f"Layer {layer:04d}", "all")
                     for layer in {o._layer for o in self._gobjects}
                 ]
 
+            # mueve la cámara segun su target
+            cx, cy = self._camera._followTarget()
+            self._frame.place(x=-cx, y=-cy)
+
             # actualiza el despliegue
             self._win.update()
-            # self._win.update_idletasks()
 
             # se sincroniza a 1/fps
             dt = self._tick()
@@ -198,7 +226,7 @@ class GameWorld:
         Returns:
             int: Ancho del mundo de juego.
         """
-        return self._width
+        return self._world_width
 
     def getHeight(self) -> int:
         """
@@ -207,7 +235,15 @@ class GameWorld:
         Returns:
             int: Altura del mundo de juego.
         """
-        return self._height
+        return self._world_height
+
+    def getCamera(self) -> Camera:
+        """Obtiene la cámara del mundo del juego
+
+        Returns:
+            Camera: La cámara utilizada en el mundo del juego
+        """
+        return self._camera
 
     def loadImage(self, image_path: str) -> tk.PhotoImage:
         """
@@ -246,34 +282,27 @@ class GameWorld:
         if hasattr(gobj, "__status__"):
             gobj.__status__ = "dead"
 
-    if sys.platform == "win32":
+    def _tick(self):
+        t = self._fps_time + self._tick_prev
+        while t - time.perf_counter() > 0:
+            self._delay()
+        now = time.perf_counter()
+        dt = now - self._tick_prev
+        self._tick_prev = now
+        return dt
 
-        def _tick(self):
-            t = self._fps_time + self._tick_prev
-            while t - time.perf_counter() > 0:
-                ctypes.windll.winmm.timeBeginPeriod(1)
-                self._delay()
-                ctypes.windll.winmm.timeEndPeriod(1)
-            now = time.perf_counter()
-            dt = now - self._tick_prev
-            self._tick_prev = now
-            return dt
+    if sys.platform == "win32":
 
         def _mkDelay(self, busy_wait: bool):
             if busy_wait:
                 return lambda: 0
-            return lambda: select.select([self._sock], [], [], 0.0001)
+            return lambda: [
+                ctypes.windll.winmm.timeBeginPeriod(1),
+                select.select([self._sock], [], [], 0.0001),
+                ctypes.windll.winmm.timeEndPeriod(1),
+            ]
 
     else:
-
-        def _tick(self):
-            t = self._fps_time + self._tick_prev
-            while t - time.perf_counter() > 0:
-                self._delay()
-            now = time.perf_counter()
-            dt = now - self._tick_prev
-            self._tick_prev = now
-            return dt
 
         def _mkDelay(self, busy_wait: bool):
             if busy_wait:
