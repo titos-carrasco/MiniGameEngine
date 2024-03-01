@@ -11,7 +11,7 @@ class BlueBird(Sprite):
             x, y, layer=1, tipo="BlueBird", image_path="Recursos/bird-000.png"
         )
         self.setCollisions(True)
-        self.speed = random.randint(50, 160)
+        self.speed = random.randint(100, 160)
         self.animator = Animator("Recursos/bird-*.png")
         self.animator.start()
 
