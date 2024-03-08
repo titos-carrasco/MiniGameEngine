@@ -10,28 +10,32 @@ class SpaceShip(Sprite):
         super().__init__(
             x, y, layer=1, tipo="SpaceShip", image_path="Recursos/SpaceShip.png"
         )
+        # el mundo del juego
+        self.gw = self.getGameWorld()
+
+        # instante en que se lanzó la última bala
         self.last_bullet = 0
 
     # actualizamos el estado de la Nave Espacial en cada frame
     def onUpdate(self, dt):
-        ww = self.getWorldWidth()
+        ww = self.gw.getWidth()
         w = self.getWidth()
         x = self.getX()
         y = self.getY()
 
         # movimiento lateral
-        if self.isPressed("Left"):
+        if self.gw.isPressed("Left"):
             x = x - 200 * dt
             x = max(x, 0)
             self.setX(x)
-        elif self.isPressed("Right"):
+        elif self.gw.isPressed("Right"):
             x = x + 200 * dt
             if x + w > ww:
                 x = ww - w
             self.setX(x)
 
         # disparamos una bala
-        if self.isPressed("space"):
+        if self.gw.isPressed("space"):
             if time.time() - self.last_bullet > 0.3:
                 Bullet(x + 21, y - 30)
                 self.last_bullet = time.time()

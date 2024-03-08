@@ -7,13 +7,16 @@ class Perro(Sprite):
         super().__init__(
             x, y, layer=3, tipo="Perro", image_path="Recursos/PerroCaminando-000.png"
         )
+        # el mundo del juego
+        self.gw = self.getGameWorld()
+
         self.animator = Animator("Recursos/PerroCaminando-*.png")
         self.animator.start()
 
     def onUpdate(self, dt):
         x = self.getX()
         w = self.getWidth()
-        ww = self.getWorldWidth()
+        ww = self.gw.getWidth()
 
         image_path = self.animator.next()
         if image_path:

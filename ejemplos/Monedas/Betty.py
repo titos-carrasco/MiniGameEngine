@@ -7,6 +7,9 @@ class Betty(Sprite):
         super().__init__(
             x, y, tipo="Betty", layer=layer, image_path="Recursos/BettyRight.png"
         )
+        # el mundo del juego
+        self.gw = self.getGameWorld()
+
         self.setCollisions(True)
 
         self.images = {
@@ -17,19 +20,19 @@ class Betty(Sprite):
 
     # actualizamos 1/fps veces por segundo
     def onUpdate(self, dt):
-        ww = self.getWorldWidth()
+        ww = self.gw.getWidth()
         w = self.getWidth()
         x = self.getX()
 
         # movimiento lateral
-        if self.isPressed("Left"):
+        if self.gw.isPressed("Left"):
             x = x - 200 * dt
             x = max(x, 0)
             self.setX(x)
             if self.direccion != "Left":
                 self.direccion = "Left"
                 self.setShape(self.images["Left"])
-        elif self.isPressed("Right"):
+        elif self.gw.isPressed("Right"):
             x = x + 200 * dt
             if x + w > ww:
                 x = ww - w

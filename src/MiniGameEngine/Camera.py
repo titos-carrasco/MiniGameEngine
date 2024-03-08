@@ -21,15 +21,15 @@ class Camera:
             y (int): Coordenada y de la posición de la cámara
             width (int): Ancho de la cámara
             height (int): Alto de la cámara
-            world_width: Ancho del mundo del juego
-            world_height: Alto del mundo del juego
+            world_width (int): Ancho del mundo del juego
+            world_height (int): Alto del mundo del juego
         """
         self._x = int(x)
         self._y = int(y)
-        self._width = width
-        self._height = height
-        self._world_width = world_width
-        self._world_height = world_height
+        self._width = int(width)
+        self._height = int(height)
+        self._world_width = int(world_width)
+        self._world_height = int(world_height)
 
         self._target = None
         self._gobjects = {}
@@ -96,7 +96,8 @@ class Camera:
             x (int): Posición x de la cámara
             y (int): Posición y de la cámara
         """
-        self._x, self._y = int(x), int(y)
+        x, y = int(x), int(y)
+        self._x, self._y = x, y
 
         for gobj in self._gobjects:
             ox, oy = self._gobjects[gobj]
@@ -121,6 +122,8 @@ class Camera:
             x, y = gobj.getPosition()
             self._gobjects[gobj] = x, y
             gobj.setPosition(self._x + x, self._y + y)
+
+    # ---
 
     def _delGameObject(self, gobj):
         if gobj in self._gobjects:

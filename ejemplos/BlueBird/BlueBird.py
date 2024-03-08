@@ -8,8 +8,16 @@ class BlueBird(Sprite):
     # inicializamos el Ave
     def __init__(self, x, y):
         super().__init__(
-            x, y, layer=1, tipo="BlueBird", image_path="Recursos/bird-000.png"
+            x,
+            y,
+            layer=1,
+            tipo="BlueBird",
+            image_path="Recursos/bird-000.png",
+            debug=True,
         )
+        # el mundo del juego
+        self.gw = self.getGameWorld()
+
         self.setCollisions(True)
         self.speed = random.randint(100, 160)
         self.animator = Animator("Recursos/bird-*.png")
@@ -19,7 +27,7 @@ class BlueBird(Sprite):
     def onUpdate(self, dt):
         x = self.getX()
         w = self.getWidth()
-        ww = self.getWorldWidth()
+        ww = self.gw.getWidth()
 
         image_path = self.animator.next()
         if image_path:

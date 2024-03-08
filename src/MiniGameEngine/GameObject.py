@@ -1,77 +1,78 @@
 from MiniGameEngine.GameWorld import GameWorld
+from MiniGameEngine.Rectangle import Rectangle
 
 
 class GameObject:
     """Clase que representa un objeto dentro del juego."""
 
-    def __init__(self, x: int, y: int, layer: int, tipo: str):
+    _counter_ = 0
+
+    def __init__(
+        self, x: float, y: float, width: int, height: int, layer: int, tipo: str
+    ):
         """
         Crea un objeto de la clase GameObject.
 
         Args:
-            x (int): Coordenada x del objeto.
-            y (int): Coordenada y del objeto.
+            x (float): Coordenada x del objeto.
+            y (float): Coordenada y del objeto.
+            width (int): Ancho del objeto.
+            height (int): Alto del objeto.
             layer (int): Capa en que se colocará este objeto (1-9999).
             tipo (str): Tipo del objeto.
         """
-        self._gw = GameWorld._getInstance()
-        self._canvas = self._gw._getCanvas()
+        width, height, layer = int(width), int(height), int(layer)
+        assert width > 0, "GameObject(): Ancho debe ser mayor que 0."
+        assert height > 0, "GameObject(): Alto debe ser mayor que 0."
+        assert 1 <= layer <= 9999, "GameObject(): Layer debe estar entre 1 y 9999."
 
-        self._element = None
-
-        self._x = int(x)
-        self._y = int(y)
-        self._width = 0
-        self._height = 0
-        self._layer = min(max(1, layer), 9999)
+        self._rect = Rectangle(x, y, width, height)
+        self._layer = layer
         self._tipo = tipo
         self._can_collide = False
 
-        self._gw._addGObject(self)
+        GameObject._counter_ = GameObject._counter_ + 1
+        tag = f"{layer:04d}-{GameObject._counter_:06d}"
+        self._canvas.itemconfig(self._element, tags=(tag,))
 
-    def _getGameWorld(self):
-        return self._gw
-
-    def _getCanvas(self):
-        return self._canvas
-
-    def _getElement(self):
-        return self._element
-
-    def _setElement(self, element):
-        self._element = element
-
-    def _setDimension(self, width: int, height: int):
-        self._width = int(width) if width >= 0 else 0
-        self._height = int(height) if height >= 0 else 0
+        GameWorld._getInstance()._addGObject(self)
 
     # ---
 
-    def getX(self) -> int:
+    def getX(self) -> float:
         """
         Obtiene la coordenada x actual del objeto.
 
         Returns:
-            int: Coordenada x del objeto.
+            float: Coordenada x del objeto.
         """
-        return self._x
+        return self._rect.getX()
 
-    def getY(self) -> int:
+    def getY(self) -> float:
         """
         Obtiene la coordenada y actual del objeto.
 
         Returns:
-            int: Coordenada y del objeto.
+            float: Coordenada y del objeto.
         """
-        return self._y
+        return self._rect.getY()
 
-    def getPosition(self) -> (int, int):
+    def getPosition(self) -> (float, float):
         """Obtiene las coordenadas x e y del objeto.
 
         Returns:
-            (int, int): Las coordenadas x e y del objeto.
+            (float, float): Las coordenadas x e y del objeto.
         """
-        return self._x, self._y
+        return self._rect.getPosition()
+
+    def getCoords(self) -> (float, float, float, float):
+        """
+        Retorna las coordenadas del rectángulo que rodea al objeto.
+
+        Returns:
+            float, float, float, float: El rectángulo que rodea al objeto.
+        """
+        return self._rect.getCoords()
 
     def getWidth(self) -> int:
         """
@@ -80,7 +81,7 @@ class GameObject:
         Returns:
             int: Ancho del objeto.
         """
-        return self._width
+        return self._rect.getWidth()
 
     def getHeight(self) -> int:
         """
@@ -89,23 +90,37 @@ class GameObject:
         Returns:
             int: Altura del objeto.
         """
-        return self._height
+        return self._rect.getHeight()
 
     def getDimension(self) -> (int, int):
         """
-        Retorna las dimensiones del objeto.
+        Retorna la dimensión del objeto.
 
         Returns:
             (int, int): El ancho y alto del objeto.
         """
-        return self._width, self._height
+        return self._rect.getDimension()
+
+    def getRectangle(self) -> Rectangle:
+        """
+        Retorna el rectángulo que rodea al objeto
+
+        Returns:
+            Rectangle: El rectángulo que rodea al objeto
+        """
+        return Rectangle(
+            self._rect.getX(),
+            self._rect.getY(),
+            self._rect.getWidth(),
+            self._rect.getHeight(),
+        )
 
     def getLayer(self) -> int:
         """
-        Obtiene la capa en la que se encuentra este objeto.
+        Retorna el número de la capa de este objeto
 
         Returns:
-            int: La capa en que se encuentra este objeto.
+            int: La capa en donde se ubica este objeto.
         """
         return self._layer
 
@@ -118,37 +133,46 @@ class GameObject:
         """
         return self._tipo
 
-    def setX(self, x: int):
+    def setX(self, x: float):
         """
         Establece la cooordenada x del objeto.
 
         Args:
-            x (int): La coordenada x del objeto.
+            x (float): La coordenada x del objeto.
         """
-        self._x = int(x)
-        self._canvas.moveto(self._element, self._x, self._y)
+        self._rect.setX(x)
+        self._canvas.moveto(self._element, self._rect.getX(), self._rect.getY())
 
-    def setY(self, y: int):
+    def setY(self, y: float):
         """
         Establece la cooordenada y del objeto.
 
         Args:
-            y (int): La coordenada y del objeto.
+            y (float): La coordenada y del objeto.
         """
-        self._y = int(y)
-        self._canvas.moveto(self._element, self._x, self._y)
+        self._rect.setY(y)
+        self._canvas.moveto(self._element, self._rect.getX(), self._rect.getY())
 
-    def setPosition(self, x: int, y: int):
+    def setPosition(self, x: float, y: float):
         """
         Establece la posición del sprite en el mundo de juego.
 
         Args:
-            x (int): Nueva coordenada x del sprite.
-            y (int): Nueva coordenada y del sprite.
+            x (float): Nueva coordenada x del sprite.
+            y (float): Nueva coordenada y del sprite.
         """
-        self._x = int(x)
-        self._y = int(y)
-        self._canvas.moveto(self._element, self._x, self._y)
+        self._rect.setPosition(x, y)
+        self._canvas.moveto(self._element, self._rect.getX(), self._rect.getY())
+
+    def setVisibility(self, visible: bool):
+        """
+        Cambia visibilidad del objeto
+
+        Args:
+            visible (bool): True lo muestra. False lo oculta
+        """
+        state = "disabled" if visible else "hidden"
+        self._canvas.itemconfig(self._element, state=state)
 
     def setCollisions(self, enable: bool):
         """
@@ -168,29 +192,17 @@ class GameObject:
         """
         return self._can_collide
 
-    def collides(self, obj) -> bool:
+    def collides(self, gobj) -> bool:
         """
         Determina si este GameObject colisiona con otro.
 
         Args:
-            obj (GameObject): GameObject a detectar si colisiona con este GameObject.
+            gobj (GameObject): GameObject a detectar si colisiona con este GameObject.
 
         Returns:
             bool: True si colisiona. False en caso contrario.
         """
-        o1, o2 = self, obj
-
-        o1x1 = o1._x
-        o1y1 = o1._y
-        o1x2 = o1x1 + o1._width - 1
-        o1y2 = o1y1 + o1._height - 1
-
-        o2x1 = o2._x
-        o2y1 = o2._y
-        o2x2 = o2x1 + o2._width - 1
-        o2y2 = o2y1 + o2._height - 1
-
-        return o1x1 <= o2x2 and o2x1 <= o1x2 and o1y1 <= o2y2 and o2y1 <= o1y2
+        return self._rect.intersects(gobj._rect)
 
     def onUpdate(self, dt: float):
         """
@@ -211,41 +223,28 @@ class GameObject:
 
     def destroy(self):
         """Elimina el objeto del mundo de juego."""
-        self._canvas.delete(self._element)
-        del self._element
+        self.getGameWorld()._delGObject(self)
 
-        self._gw._delGObject(self)
-        del self._canvas
-        del self._gw
+    # --
+
+    def getGameWorld(self) -> GameWorld:
+        """
+        Returna una referencia al mundo del juego
+
+        Returns:
+            GameWorld: El mundo del juego
+        """
+        return GameWorld._getInstance()
 
     # ---
 
-    def getWorldWidth(self) -> int:
-        """
-        Obtiene el ancho del mundo de juego.
+    def _setDimension(self, width: int, height: int):
+        width, height = int(width), int(height)
+        assert width > 0, "GameObject.setDimension(): Ancho debe ser mayor que 0."
+        assert height > 0, "GameObject.setDimension(): Alto debe ser mayor que 0."
 
-        Returns:
-            int: Ancho del mundo de juego.
-        """
-        return self._gw.getWidth()
+        self._rect.setDimension(width, height)
 
-    def getWorldHeight(self) -> int:
-        """
-        Obtiene la altura del mundo de juego.
-
-        Returns:
-            int: Altura del mundo de juego.
-        """
-        return self._gw.getHeight()
-
-    def isPressed(self, key_name: str) -> bool:
-        """
-        Verifica si una tecla específica está siendo presionada.
-
-        Args:
-            key_name (str): Nombre de la tecla a verificar.
-
-        Returns:
-            bool: True si la tecla está presionada, False en caso contrario.
-        """
-        return self._gw.isPressed(key_name)
+    def _destroy(self):
+        self._canvas.delete(self._element)
+        del self._rect

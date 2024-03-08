@@ -11,8 +11,8 @@ class Animator:
 
         Args:
             images_path (str): Archivos con la imágenes para la animación (ej. "image-*.png").
-            speed (float, optional): Velocidad de la animación en segundos (por defecto es 0.100).
-            repeat (bool, optional): True si la animación se repite siempre (por defecto es True).
+            speed (float, opcional): Velocidad de la animación en segundos (por defecto es 0.100).
+            repeat (bool, opcional): True si la animación se repite siempre (por defecto es True).
         """
         self._images_path = sorted(glob.glob(images_path))
         self._speed = speed

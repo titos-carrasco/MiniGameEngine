@@ -36,15 +36,36 @@ class GameWorld:
         Args:
             width (int): Ancho de la ventana del juego.
             height (int): Altura de la ventana del juego.
-            title (str, optional): Título de la ventana del juego (por defecto es "MiniGameEngine").
-            bg_color (str, optional): Color de fondo de la ventana del juego (por defecto es "gray").
-            bg_path (str, optional): Ruta de la imagen de fondo de la ventana del juego (por defecto es None).
-            debug (str, optional): La tecla a utilizar para mostrar los detalles del mini motor de juego (por defecto es None)
-            world_size (int, int, optional): Tamaño del mundo del juego (por defecto similar al tamaño de la ventana)
+            title (str, opcional): Título de la ventana del juego (por defecto es "MiniGameEngine").
+            bg_color (str, opcional): Color de fondo de la ventana del juego (por defecto es "gray").
+            bg_path (str, opcional): Ruta de la imagen de fondo de la ventana del juego (por defecto es None).
+            debug (str, opcional): La tecla a utilizar para mostrar los detalles del mini motor de juego (por defecto es None)
+            world_size (int, int, opcional): Tamaño del mundo del juego (por defecto similar al tamaño de la ventana)
         """
-        if GameWorld._instance_:
-            return
+        assert (
+            GameWorld._instance_ is None
+        ), "GameWorld(): Ya existe una instancia en ejecución."
 
+        width = int(width)
+        height = int(height)
+        assert (
+            width > 100
+        ), "Gameworld(): Ancho de la ventana debe ser mayor o igual que 100."
+        assert (
+            height > 100
+        ), "Gameworld(): Alto de la ventana debe ser mayor o igual que 100."
+
+        if world_size:
+            w, h = int(world_size[0]), int(world_size[1])
+            assert (
+                w >= width
+            ), "Gameworld(): Ancho del mundo debe ser mayor o igual que amcho de la ventana."
+            assert (
+                h >= height
+            ), "Gameworld(): Alto del mundo debe ser mayor o igual que alto de la ventana."
+            world_size = (w, h)
+
+        # las variables de control
         self._gobjects = []
         self._images = {}
         self._keys = {}
@@ -54,7 +75,9 @@ class GameWorld:
         self._running = False
         self._delay = None
         self._sock = socket.socket()
+        self._dragged = False
 
+        # la ventana principal
         self._win = tk.Tk()
         self._win.geometry(f"{width}x{height}")
         self._win.title(title)
@@ -62,8 +85,8 @@ class GameWorld:
         self._screen_width = width
         self._screen_height = height
         if world_size:
-            self._world_width = max(width, world_size[0])
-            self._world_height = max(height, world_size[1])
+            self._world_width = world_size[0]
+            self._world_height = world_size[1]
         else:
             self._world_width = width
             self._world_height = height
@@ -88,18 +111,22 @@ class GameWorld:
         )
         self._canvas.place(x=0, y=0)
 
+        # la imagen de fondo
         self._bg_pic = self._canvas.create_image(
-            0, 0, image=None, anchor=tk.NW, state="hidden"
+            0, 0, image=None, anchor=tk.NW, state="hidden", tags=("0000-000000",)
         )
         self.setBgPic(bg_path)
 
-        if debug is not None:
-            self._win.bind(f"<KeyRelease-{debug}>", self._doDebug)
-
+        # la cámara
         self._camera = Camera(
             0, 0, width, height, self._world_width, self._world_height
         )
 
+        # para depurar
+        if debug is not None:
+            self._win.bind(f"<KeyRelease-{debug}>", self._doDebug)
+
+        # solo una instancia
         GameWorld._instance_ = self
 
     def gameLoop(self, fps: int, busy_wait: bool = False):
@@ -111,6 +138,7 @@ class GameWorld:
             bw (bool): True para indicar que el sync de cada frame se hará con espera ocupada (por defecto es False)
         """
         self._win.protocol("WM_DELETE_WINDOW", self.exitGame)
+        self._win.bind("<Configure>", self._setDragged)
         self._fps = fps
         self._fps_time = 1 / self._fps
         self._delay = self._mkDelay(busy_wait)
@@ -119,9 +147,10 @@ class GameWorld:
         while self._running:
             # elimina los game objects destruidos
             gobjs = [o for o in self._gobjects if o.__status__ == "dead"]
-            if gobjs:
-                _ = [self._gobjects.remove(o) for o in gobjs]
-                _ = [self._camera._delGameObject(o) for o in gobjs]
+            _ = [
+                (self._camera._delGameObject(o), self._gobjects.remove(o), o._destroy())
+                for o in gobjs
+            ]
 
             # incorpora los game objects agregados
             gobjs = [
@@ -129,11 +158,12 @@ class GameWorld:
                 for o in self._gobjects
                 if o.__status__ == "new"
             ]
+
+            # si es necesario reordena las capas
             if gobjs:
-                _ = [
-                    self._canvas.tag_raise(f"Layer {layer:04d}", "all")
-                    for layer in {o._layer for o in self._gobjects}
-                ]
+                tags = [self._canvas.gettags(item) for item in self._canvas.find_all()]
+                for tag in sorted(set(tags)):
+                    self._canvas.tag_raise(tag[0], "all")
 
             # mueve la cámara segun su target
             cx, cy = self._camera._followTarget()
@@ -142,6 +172,11 @@ class GameWorld:
             # actualiza el despliegue
             self._win.update()
 
+            # hubo un drag de la ventana
+            if self._dragged:
+                self._dragged = False
+                self._tick_prev = time.perf_counter()
+
             # se sincroniza a 1/fps
             dt = self._tick()
 
@@ -149,8 +184,7 @@ class GameWorld:
             self.onUpdate(dt)
 
             # onUpdate para los game objects
-            gobjs = [o for o in self._gobjects if o.__status__ == "alive"]
-            _ = [o.onUpdate(dt) for o in gobjs]
+            _ = [o.onUpdate(dt) for o in self._gobjects if o.__status__ == "alive"]
 
             # onCollision para los game objects
             gobjs = [
@@ -164,10 +198,15 @@ class GameWorld:
 
         self._win.destroy()
         del self._win
-        del self._gobjects
+        del self._camera
         del self._canvas
+        del self._frame
+
+        del self._gobjects
         del self._images
         del self._keys
+        del self._sock
+
         del GameWorld._instance_
 
     def onUpdate(self, dt: float):
@@ -191,10 +230,10 @@ class GameWorld:
         """
 
         if bg_path is None:
-            self._getCanvas().itemconfig(self._bg_pic, image=None, state="hidden")
+            self._canvas.itemconfig(self._bg_pic, image=None, state="hidden")
         else:
             img = self.loadImage(bg_path)
-            self._getCanvas().itemconfig(self._bg_pic, image=img, state="normal")
+            self._canvas.itemconfig(self._bg_pic, image=img, state="normal")
 
     def isPressed(self, key_name: str) -> bool:
         """
@@ -281,6 +320,9 @@ class GameWorld:
     def _delGObject(self, gobj):
         if hasattr(gobj, "__status__"):
             gobj.__status__ = "dead"
+
+    def _setDragged(self, _):
+        self._dragged = True
 
     def _tick(self):
         t = self._fps_time + self._tick_prev

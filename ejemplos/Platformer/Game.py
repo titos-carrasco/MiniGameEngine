@@ -3,6 +3,8 @@ import cProfile
 from Heroe import Heroe
 from MiniGameEngine.GameWorld import GameWorld
 from MiniGameEngine.Text import Text
+from MiniGameEngine.Box import Box
+
 
 class Game(GameWorld):
     def __init__(self):
@@ -30,6 +32,17 @@ class Game(GameWorld):
         # el heroe
         self.heroe = Heroe(0, 414)
         self.getCamera().setTarget(self.heroe)
+
+        # el terreno
+        suelo = Box(0, 450, 3840, 10, 1, "Suelo", line_width=1, line_color="red")
+        suelo.setCollisions(True)
+
+        # un muro con suelo en la parte superior
+        muro = Box(192, 388, 64, 62, 1, "Muro", line_width=1, line_color="red")
+        muro.setCollisions(True)
+
+        suelo = Box(192, 284, 64, 4, 1, "Suelo", line_width=1, line_color="red")
+        suelo.setCollisions(True)
 
         # los FPS en promedio
         self.prom = [1] * 60
