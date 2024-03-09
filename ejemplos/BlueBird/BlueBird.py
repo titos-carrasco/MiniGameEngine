@@ -15,9 +15,6 @@ class BlueBird(Sprite):
             image_path="Recursos/bird-000.png",
             debug=True,
         )
-        # el mundo del juego
-        self.gw = self.getGameWorld()
-
         self.setCollisions(True)
         self.speed = random.randint(100, 160)
         self.animator = Animator("Recursos/bird-*.png")

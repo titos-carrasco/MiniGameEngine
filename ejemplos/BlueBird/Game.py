@@ -24,7 +24,8 @@ class Game(GameWorld):
             color="red",
         )
 
-        for i in range(30):
+        # utilizamos una variable llamada "_"
+        for _ in range(30):
             x = random.randint(-40, 700)
             y = random.randint(20, 400)
             BlueBird(x, y)

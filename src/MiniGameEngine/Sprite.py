@@ -25,10 +25,11 @@ class Sprite(GameObject):
             imagePath (str): Archivo con la imagen del sprite.
             debug (bool, opcional): True para mostrar información del objeto.
         """
-        img = self.getGameWorld().loadImage(image_path)
+        super().__init__(x, y, width=1, height=1, layer=layer, tipo=tipo)
+
+        img = self.gw.loadImage(image_path)
         width, height = img.width(), img.height()
 
-        self._canvas = self.getGameWorld()._getCanvas()
         self._element = self._canvas.create_image(
             int(x),
             int(y),
@@ -36,7 +37,9 @@ class Sprite(GameObject):
             anchor="nw",
             state="disabled",
         )
-        super().__init__(x, y, width, height, layer=layer, tipo=tipo)
+
+        self._setDimension(width, height)
+        self._addToGame()
 
         self._border = None
         if debug:
@@ -51,7 +54,7 @@ class Sprite(GameObject):
         Args:
             imagePath (str): Archivo con la nueva imagen para el sprite.
         """
-        img = self.getGameWorld().loadImage(image_path)
+        img = self.gw.loadImage(image_path)
         width, height = img.width(), img.height()
 
         self._canvas.itemconfig(self._element, image=img)
@@ -93,9 +96,9 @@ class Sprite(GameObject):
 
     # ---
 
-    def _destroy(self):
+    def _kill(self):
         if self._border:
-            self._border.destroy()
+            self._border.delete()
             del self._border
 
-        super()._destroy()
+        super()._kill()

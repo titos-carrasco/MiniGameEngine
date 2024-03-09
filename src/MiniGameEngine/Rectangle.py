@@ -178,11 +178,9 @@ class Rectangle:
         Returns:
             bool: True si este rectángulo intersecta al otro. False en caso contrario
         """
+        rx1, ry1, rx2, ry2 = rect.getCoords()
         return (
-            self._x1 <= rect._x2
-            and rect._x1 <= self._x2
-            and self._y1 <= rect._y2
-            and rect._y1 <= self._y2
+            self._x1 <= rx2 and rx1 <= self._x2 and self._y1 <= ry2 and ry1 <= self._y2
         )
 
     def intersection(self, rect):
@@ -195,8 +193,10 @@ class Rectangle:
         Returns:
             Rectangle: El rectángulo de intersección.
         """
-        x1 = max(self._x1, rect._x1)
-        y1 = max(self._y1, rect._y1)
-        x2 = min(self._x2, rect._x2)
-        y2 = min(self._y2, rect._y2)
+        rx1, ry1, rx2, ry2 = rect.getCoords()
+
+        x1 = max(self._x1, rx1)
+        y1 = max(self._y1, ry1)
+        x2 = min(self._x2, rx2)
+        y2 = min(self._y2, ry2)
         return Rectangle(x1, y1, round(x2 - x1), round(y2 - y1))

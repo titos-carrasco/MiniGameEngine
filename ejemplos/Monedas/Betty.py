@@ -7,9 +7,6 @@ class Betty(Sprite):
         super().__init__(
             x, y, tipo="Betty", layer=layer, image_path="Recursos/BettyRight.png"
         )
-        # el mundo del juego
-        self.gw = self.getGameWorld()
-
         self.setCollisions(True)
 
         self.images = {

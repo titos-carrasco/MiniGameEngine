@@ -10,9 +10,6 @@ class SpaceShip(Sprite):
         super().__init__(
             x, y, layer=1, tipo="SpaceShip", image_path="Recursos/SpaceShip.png"
         )
-        # el mundo del juego
-        self.gw = self.getGameWorld()
-
         # instante en que se lanzó la última bala
         self.last_bullet = 0
 

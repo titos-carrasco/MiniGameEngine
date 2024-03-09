@@ -13,10 +13,10 @@ class Bullet(Sprite):
 
         y = y - 300 * dt
         if y < 0:
-            self.destroy()
+            self.delete()
         else:
             self.setY(y)
 
     # manejamos las colisiones
     def onCollision(self, dt, gobj):
-        self.destroy()
+        self.delete()

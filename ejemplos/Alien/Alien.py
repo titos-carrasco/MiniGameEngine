@@ -24,6 +24,6 @@ class Alien(Sprite):
     def onCollision(self, dt, gobj):
         if gobj.getTipo() == "Bullet":
             x, y = self.getPosition()
-            self.destroy()
+            self.delete()
             Explosion(x - 2, y - 6)
             print("Alien:me dieron")

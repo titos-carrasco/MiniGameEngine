@@ -26,16 +26,17 @@ class GameObject:
         assert height > 0, "GameObject(): Alto debe ser mayor que 0."
         assert 1 <= layer <= 9999, "GameObject(): Layer debe estar entre 1 y 9999."
 
+        self.gw = GameWorld._getInstance()
+        self._canvas = self.gw._getCanvas()
+        self._add_gobject = self.gw._addGObject
+        self._del_gobject = self.gw._delGObject
+
+        self._element = 0
+
         self._rect = Rectangle(x, y, width, height)
         self._layer = layer
         self._tipo = tipo
         self._can_collide = False
-
-        GameObject._counter_ = GameObject._counter_ + 1
-        tag = f"{layer:04d}-{GameObject._counter_:06d}"
-        self._canvas.itemconfig(self._element, tags=(tag,))
-
-        GameWorld._getInstance()._addGObject(self)
 
     # ---
 
@@ -101,19 +102,14 @@ class GameObject:
         """
         return self._rect.getDimension()
 
-    def getRectangle(self) -> Rectangle:
+    def getElement(self) -> int:
         """
-        Retorna el rectángulo que rodea al objeto
+        Retorna el identificador del elemento visual de este objeto dentro del canvas.
 
         Returns:
-            Rectangle: El rectángulo que rodea al objeto
+            int: El identificador del elemento
         """
-        return Rectangle(
-            self._rect.getX(),
-            self._rect.getY(),
-            self._rect.getWidth(),
-            self._rect.getHeight(),
-        )
+        return self._element
 
     def getLayer(self) -> int:
         """
@@ -141,7 +137,9 @@ class GameObject:
             x (float): La coordenada x del objeto.
         """
         self._rect.setX(x)
-        self._canvas.moveto(self._element, self._rect.getX(), self._rect.getY())
+        self._canvas.moveto(
+            self._element, int(self._rect.getX()), int(self._rect.getY())
+        )
 
     def setY(self, y: float):
         """
@@ -151,7 +149,9 @@ class GameObject:
             y (float): La coordenada y del objeto.
         """
         self._rect.setY(y)
-        self._canvas.moveto(self._element, self._rect.getX(), self._rect.getY())
+        self._canvas.moveto(
+            self._element, int(self._rect.getX()), int(self._rect.getY())
+        )
 
     def setPosition(self, x: float, y: float):
         """
@@ -162,7 +162,9 @@ class GameObject:
             y (float): Nueva coordenada y del sprite.
         """
         self._rect.setPosition(x, y)
-        self._canvas.moveto(self._element, self._rect.getX(), self._rect.getY())
+        self._canvas.moveto(
+            self._element, int(self._rect.getX()), int(self._rect.getY())
+        )
 
     def setVisibility(self, visible: bool):
         """
@@ -221,22 +223,21 @@ class GameObject:
             gobj (GameObject): Objeto con el que colisiona.
         """
 
-    def destroy(self):
+    def delete(self):
         """Elimina el objeto del mundo de juego."""
-        self.getGameWorld()._delGObject(self)
+        self._del_gobject(self)
 
     # --
 
-    def getGameWorld(self) -> GameWorld:
+    def _addToGame(self):
         """
-        Returna una referencia al mundo del juego
-
-        Returns:
-            GameWorld: El mundo del juego
+        Agrega este GameObject a la lista de objetos del juego
         """
-        return GameWorld._getInstance()
+        GameObject._counter_ = GameObject._counter_ + 1
+        tag = f"{self._layer:04d}-{GameObject._counter_:06d}"
+        self._canvas.itemconfig(self._element, tags=(tag,))
 
-    # ---
+        self._add_gobject(self)
 
     def _setDimension(self, width: int, height: int):
         width, height = int(width), int(height)
@@ -245,6 +246,6 @@ class GameObject:
 
         self._rect.setDimension(width, height)
 
-    def _destroy(self):
+    def _kill(self):
         self._canvas.delete(self._element)
         del self._rect

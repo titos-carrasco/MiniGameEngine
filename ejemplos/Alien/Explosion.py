@@ -14,7 +14,7 @@ class Explosion(Sprite):
     def onUpdate(self, dt):
         if not self.animator.isRunning():
             self.animator = None
-            self.destroy()
+            self.delete()
             return
 
         image_path = self.animator.next()

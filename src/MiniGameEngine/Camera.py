@@ -5,8 +5,8 @@ class Camera:
 
     def __init__(
         self,
-        x: int,
-        y: int,
+        x: float,
+        y: float,
         width: int,
         height: int,
         world_width: int,
@@ -17,103 +17,47 @@ class Camera:
         Es creada internamente al crear una instancia del GameWorld
 
         Args:
-            x (int): Coordenada x de la posición de la cámara
-            y (int): Coordenada y de la posición de la cámara
+            x (float): Coordenada x de la posición de la cámara
+            y (float): Coordenada y de la posición de la cámara
             width (int): Ancho de la cámara
             height (int): Alto de la cámara
             world_width (int): Ancho del mundo del juego
             world_height (int): Alto del mundo del juego
         """
-        self._x = int(x)
-        self._y = int(y)
-        self._width = int(width)
-        self._height = int(height)
-        self._world_width = int(world_width)
-        self._world_height = int(world_height)
+        width, height = int(width), int(height)
+        assert width > 0, "Camera(): width debe ser mayor que 0."
+        assert height > 0, "Camera(): height debe ser mayor que 0."
+
+        world_width, world_height = int(world_width), int(world_height)
+        assert (
+            world_width >= width
+        ), "Camera(): world_width debe ser mayor o igual que width."
+        assert (
+            world_width >= width
+        ), "Camera(): world_width debe ser mayor o igual que width."
+
+        self._x = x
+        self._y = y
+        self._width = width
+        self._height = height
+        self._world_width = world_width
+        self._world_height = world_height
 
         self._target = None
         self._gobjects = {}
 
-    def getX(self) -> int:
-        """
-        Retorna la posición x de la cámara
-
-        Returns:
-            int: La posición x de la cámara
-        """
-        return self._x
-
-    def getY(self) -> int:
-        """
-        Retorna la posición y de la cámara
-
-        Returns:
-            int: La posición y de la cámara
-        """
-        return self._y
-
-    def getPosition(self) -> (int, int):
-        """
-        Retorna la posición x e y de la cámara
-
-        Returns:
-            int, int: La posición x e y de la cámara
-        """
-        return self._x, self._y
-
-    def getWidth(self) -> int:
-        """
-        Retorna el ancho de la cámara
-
-        Returns:
-            int: El ancho de la cámara
-        """
-        return self._width
-
-    def getHeight(self) -> int:
-        """
-        Retorna el alto de la cámara
-
-        Returns:
-            int: El alto de la cámara
-        """
-        return self._height
-
-    def getDimension(self) -> (int, int):
-        """
-        Retorna el ancho y alto de la cámara
-
-        Returns:
-            int, int: El ancho y alto de la cámara
-        """
-        return self._width, self._height
-
-    def setPosition(self, x: int, y: int):
-        """
-        Posiciona la cámara en el mundo del juego
-
-        Args:
-            x (int): Posición x de la cámara
-            y (int): Posición y de la cámara
-        """
-        x, y = int(x), int(y)
-        self._x, self._y = x, y
-
-        for gobj in self._gobjects:
-            ox, oy = self._gobjects[gobj]
-            gobj.setPosition(x + ox, y + oy)
-
-    def setTarget(self, target):
+    def setTarget(self, gobj):
         """Establece el Game Object que será seguido por la Cámara
 
         Args:
             target (GameObject): GameObject a seguri y centrar en la ventana del mundo
         """
-        self._target = target
+        self._target = gobj
 
     def addGameObject(self, gobj):
         """
-        Agrega un GameObject dentro de la zona de la cámara
+        Agrega un GameObject dentro de la zona de la cámara.
+        Las coordenadas iniciales del objeto son utilizadas dentro de la cámara
 
         Args:
             gobj (GameObject): El GameObject a agregar
@@ -123,16 +67,37 @@ class Camera:
             self._gobjects[gobj] = x, y
             gobj.setPosition(self._x + x, self._y + y)
 
-    # ---
+    def delGameObject(self, gobj):
+        """
+        Elimina un GameObject de la zona de la cámara.
 
-    def _delGameObject(self, gobj):
+        Args:
+            gobj (GameObject): El GameObject a eliminar
+        """
         if gobj in self._gobjects:
             del self._gobjects[gobj]
 
-    # coloca el GameObject al centro de la cámara
-    def _followTarget(self):
+    def setPosition(self, x: float, y: float):
+        """
+        Posiciona la cámara en el mundo del juego
+
+        Args:
+            x (float): Posición x de la cámara
+            y (float): Posición y de la cámara
+        """
+        self._x, self._y = x, y
+
+        for item in self._gobjects.items():
+            gobj, (ox, oy) = item
+            gobj.setPosition(x + ox, y + oy)
+
+    def moveToTarget(self):
+        """
+        Desplaza la cámara hacia su target dejándolo en el centro de ella.
+        """
         if self._target is None:
             return 0, 0
+
         xt, yt = self._target.getPosition()
         wt, ht = self._target.getDimension()
 
@@ -143,13 +108,11 @@ class Camera:
             x = 0
         elif x + self._width >= self._world_width:
             x = self._world_width - self._width
-        x = x
 
         if y < 0:
             y = 0
         elif y + self._height >= self._world_height:
             y = self._world_height - self._height
-        y = y
 
         self.setPosition(x, y)
 

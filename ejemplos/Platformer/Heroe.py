@@ -5,12 +5,15 @@ from MiniGameEngine.Box import Box
 class Heroe(Sprite):
     def __init__(self, x, y):
         super().__init__(
-            x, y, layer=2, tipo="Heroe", image_path="Recursos/Heroe/Right-001.png", debug=True
+            x,
+            y,
+            layer=2,
+            tipo="Heroe",
+            image_path="Recursos/Heroe/Right-001.png",
+            debug=True,
         )
-        # el mundo del juego
-        self.gw = self.getGameWorld()
-
         self.setCollisions(True)
+
         self.box = Box(
             1,
             1,
@@ -26,7 +29,7 @@ class Heroe(Sprite):
 
         self.vy = 0
         self.fy = -300
-        self.g = 0
+        self.g = 800
 
         self.last_position = self.getPosition()
 
@@ -34,7 +37,6 @@ class Heroe(Sprite):
         x, y = self.getPosition()
         ww = self.gw.getWidth()
         w = self.getWidth()
-
 
         self.box.setVisibility(False)
         self.last_position = x, y
@@ -58,12 +60,12 @@ class Heroe(Sprite):
         self.setY(y)
 
     def onCollision(self, dt, gobj):
-        r1 = self.getRectangle()
-        r2 = gobj.getRectangle()
-        #r = r1.intersection(r2)
+        #r1 = self.getRectangle()
+        #r2 = gobj.getRectangle()
+        # r = r1.intersection(r2)
 
-        #self.box.setPosition(r.getX(), r.getY())
-        #self.box.setDimension(r.getWidth(), r.getHeight())
+        # self.box.setPosition(r.getX(), r.getY())
+        # self.box.setDimension(r.getWidth(), r.getHeight())
         self.box.setVisibility(True)
 
         x, y = self.getPosition()

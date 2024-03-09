@@ -33,6 +33,11 @@ class Box(GameObject):
             fill_color (str, opcional): Color de relleno del rectángulo (por defecto None).
         """
         width, height = int(width), int(height)
+        assert width > 0, "Box(): width debe ser mayor que 0."
+        assert height > 0, "Box(): height debe ser mayor que 0."
+
+        super().__init__(x, y, width, height, layer=layer, tipo=tipo)
+
         x1, y1, x2, y2 = (
             int(x),
             int(y),
@@ -40,7 +45,6 @@ class Box(GameObject):
             int(y) + height - 1,
         )
 
-        self._canvas = self.getGameWorld()._getCanvas()
         self._element = self._canvas.create_rectangle(
             x1,
             y1,
@@ -51,7 +55,8 @@ class Box(GameObject):
             fill=fill_color,
             state="disabled",
         )
-        super().__init__(x1, y1, width, height, layer=layer, tipo=tipo)
+
+        self._addToGame()
 
     def setDimension(self, width: int, height: int):
         """
@@ -61,6 +66,9 @@ class Box(GameObject):
             width (int): Ancho del rectángulo.
             height (int): Alto del rectángulo.
         """
+        assert width > 0, "Box.setDimension(): width debe ser mayor que 0."
+        assert height > 0, "Box.setDimension(): height debe ser mayor que 0."
+
         self._setDimension(int(width), int(height))
 
         x1, y1, x2, y2 = self.getCoords()

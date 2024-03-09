@@ -26,7 +26,8 @@ class Text(GameObject):
             font (str, opcional): Font a utilizar para el texto (por defecto es "Arial 12").
             color (str, opcional): Color a utilizar para el texto (por defecto es "black").
         """
-        self._canvas = self.getGameWorld()._getCanvas()
+        super().__init__(x, y, width=1, height=1, layer=layer, tipo=tipo)
+
         self._element = self._canvas.create_text(
             int(x),
             int(y),
@@ -37,10 +38,8 @@ class Text(GameObject):
             state="disabled",
         )
 
-        bbox = self._canvas.bbox(self._element)
-        width = bbox[2] - bbox[0] + 1
-        height = bbox[3] - bbox[1] + 1
-        super().__init__(x, y, width, height, layer=layer, tipo=tipo)
+        self._updateDimension()
+        self._addToGame()
 
     def setText(self, text: str):
         """

@@ -7,13 +7,18 @@ class Animator:
 
     def __init__(self, images_path: str, speed: float = 0.100, repeat=True):
         """
-        Crea un objeto de la clase ImageAnimator.
+        Crea un objeto de la clase Animator.
 
         Args:
             images_path (str): Archivos con la imágenes para la animación (ej. "image-*.png").
             speed (float, opcional): Velocidad de la animación en segundos (por defecto es 0.100).
             repeat (bool, opcional): True si la animación se repite siempre (por defecto es True).
         """
+        assert (
+            images_path
+        ), "Animator(): images_path debe contener los nombres de los archivos de imágenes."
+        assert speed > 0, "Animator(): speed debe ser mayor que 0."
+
         self._images_path = sorted(glob.glob(images_path))
         self._speed = speed
         self._repeat = repeat
@@ -28,6 +33,7 @@ class Animator:
         Args:
             speed (float): Velocidad de la animación en segundos.
         """
+        assert speed > 0, "Animator.setSpeed(): speed debe ser mayor que 0."
         self._speed = speed
 
     def setRepeat(self, repeat: bool):

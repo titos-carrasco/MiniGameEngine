@@ -48,18 +48,14 @@ class GameWorld:
 
         width = int(width)
         height = int(height)
-        assert (
-            width > 100
-        ), "Gameworld(): Ancho de la ventana debe ser mayor o igual que 100."
-        assert (
-            height > 100
-        ), "Gameworld(): Alto de la ventana debe ser mayor o igual que 100."
+        assert width > 0, "Gameworld(): Ancho de la ventana debe ser mayor que 0"
+        assert height > 0, "Gameworld(): Alto de la ventana debe ser mayor que 0."
 
         if world_size:
             w, h = int(world_size[0]), int(world_size[1])
             assert (
                 w >= width
-            ), "Gameworld(): Ancho del mundo debe ser mayor o igual que amcho de la ventana."
+            ), "Gameworld(): Ancho del mundo debe ser mayor o igual que ancho de la ventana."
             assert (
                 h >= height
             ), "Gameworld(): Alto del mundo debe ser mayor o igual que alto de la ventana."
@@ -148,7 +144,7 @@ class GameWorld:
             # elimina los game objects destruidos
             gobjs = [o for o in self._gobjects if o.__status__ == "dead"]
             _ = [
-                (self._camera._delGameObject(o), self._gobjects.remove(o), o._destroy())
+                (self._camera.delGameObject(o), self._gobjects.remove(o), o._kill())
                 for o in gobjs
             ]
 
@@ -166,7 +162,7 @@ class GameWorld:
                     self._canvas.tag_raise(tag[0], "all")
 
             # mueve la cámara segun su target
-            cx, cy = self._camera._followTarget()
+            cx, cy = self._camera.moveToTarget()
             self._frame.place(x=-cx, y=-cy)
 
             # actualiza el despliegue
@@ -188,7 +184,7 @@ class GameWorld:
 
             # onCollision para los game objects
             gobjs = [
-                o for o in self._gobjects if o.__status__ == "alive" and o._can_collide
+                o for o in self._gobjects if o.__status__ == "alive" and o.canCollide()
             ]
             _ = [
                 (o1.onCollision(dt, o2), o2.onCollision(dt, o1))
@@ -255,9 +251,6 @@ class GameWorld:
             )
         return self._keys[key_name]
 
-    def _setPressed(self, key_name: str, pressed):
-        self._keys[key_name] = pressed
-
     def getWidth(self) -> int:
         """
         Obtiene el ancho del mundo de juego.
@@ -312,6 +305,9 @@ class GameWorld:
 
     # ---
 
+    def _setPressed(self, key_name: str, pressed):
+        self._keys[key_name] = pressed
+
     def _addGObject(self, gobj):
         if not hasattr(gobj, "__status__"):
             gobj.__status__ = "new"
@@ -357,5 +353,7 @@ class GameWorld:
     def _doDebug(self, _evt):
         items = self._canvas.find_all()
         print("Canvas items:", items)
-        gobjs = sorted([(o._layer, o._element, o._tipo) for o in self._gobjects])
+        gobjs = sorted(
+            [(o.getLayer(), o.getElement(), o.getTipo()) for o in self._gobjects]
+        )
         print("gObjects:", gobjs)
