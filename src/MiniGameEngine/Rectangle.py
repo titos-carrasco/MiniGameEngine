@@ -191,12 +191,14 @@ class Rectangle:
             rect (Rectangle): El rectángulo contra el que se determinará la intersección.
 
         Returns:
-            Rectangle: El rectángulo de intersección.
+            Rectangle: El rectángulo de intersección. None si no existe intersección
         """
-        rx1, ry1, rx2, ry2 = rect.getCoords()
+        x1, y1, x2, y2 = rect.getCoords()
 
-        x1 = max(self._x1, rx1)
-        y1 = max(self._y1, ry1)
-        x2 = min(self._x2, rx2)
-        y2 = min(self._y2, ry2)
-        return Rectangle(x1, y1, round(x2 - x1), round(y2 - y1))
+        x1 = max(self._x1, x1)
+        y1 = max(self._y1, y1)
+        x2 = min(self._x2, x2)
+        y2 = min(self._y2, y2)
+        if y1 <= y2 and x1 <= x2:
+            return Rectangle(x1, y1, int(x2 - x1 + 1), int(y2 - y1 + 1))
+        return None
