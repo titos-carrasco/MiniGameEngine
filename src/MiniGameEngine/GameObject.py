@@ -206,6 +206,18 @@ class GameObject:
         """
         return self._rect.intersects(gobj._rect)
 
+    def intersection(self, gobj) -> Rectangle:
+        """
+        Retorna el rectángulo de intersección de este GameObject con otro
+
+        Args:
+            gobj (GameObject): El GameObject para determinar la intersección
+
+        Returns:
+            Rectangle: El rectángulo de intersección. None en caso de no intersectar
+        """
+        return self._rect.intersection(gobj._rect)
+
     def onUpdate(self, dt: float):
         """
         Llamado en cada actualización del juego para el objeto.
