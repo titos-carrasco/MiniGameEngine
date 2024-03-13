@@ -38,18 +38,11 @@ class Box(GameObject):
 
         super().__init__(x, y, width, height, layer=layer, tipo=tipo)
 
-        x1, y1, x2, y2 = (
+        self._element = self._canvas.create_rectangle(
             int(x),
             int(y),
             int(x) + width - 1,
             int(y) + height - 1,
-        )
-
-        self._element = self._canvas.create_rectangle(
-            x1,
-            y1,
-            x2,
-            y2,
             width=line_width,
             outline=line_color,
             fill=fill_color,
@@ -72,4 +65,4 @@ class Box(GameObject):
         self._setDimension(int(width), int(height))
 
         x1, y1, x2, y2 = self.getCoords()
-        self._canvas.coords(self._element, x1, y1, x2, y2)
+        self._canvas.coords(self._element, int(x1), int(y1), int(x2), int(y2))
