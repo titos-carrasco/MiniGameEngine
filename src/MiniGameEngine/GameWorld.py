@@ -163,7 +163,7 @@ class GameWorld:
 
             # mueve la cámara segun su target
             cx, cy = self._camera.moveToTarget()
-            self._frame.place(x=-cx, y=-cy)
+            self._frame.place(x=int(-cx), y=int(-cy))
 
             # actualiza el despliegue
             self._win.update()
