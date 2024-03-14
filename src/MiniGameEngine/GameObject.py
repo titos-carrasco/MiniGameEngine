@@ -1,5 +1,4 @@
 from MiniGameEngine.GameWorld import GameWorld
-from MiniGameEngine.Rectangle import Rectangle
 
 
 class GameObject:
@@ -8,7 +7,14 @@ class GameObject:
     _counter_ = 0
 
     def __init__(
-        self, x: float, y: float, width: int, height: int, layer: int, tipo: str
+        self,
+        x: float,
+        y: float,
+        width: int,
+        height: int,
+        layer: int,
+        tipo: str,
+        debug: bool = False,
     ):
         """
         Crea un objeto de la clase GameObject.
@@ -20,23 +26,30 @@ class GameObject:
             height (int): Alto del objeto.
             layer (int): Capa en que se colocará este objeto (1-9999).
             tipo (str): Tipo del objeto.
+            debug (bool, opcional): True para mostrar información del objeto.
         """
-        width, height, layer = int(width), int(height), int(layer)
-        assert width > 0, "GameObject(): Ancho debe ser mayor que 0."
-        assert height > 0, "GameObject(): Alto debe ser mayor que 0."
+        assert width >= 1, "GameObject.init(): Ancho debe ser mayor o igual a 1."
+        assert height >= 1, "GameObject.init(): Alto debe ser mayor o igual a 1."
+
+        self._width = int(width)
+        self._height = int(height)
+        self._x1 = x
+        self._y1 = y
+        self._x2 = self._x1 + self._width - 1
+        self._y2 = self._y1 + self._height - 1
+
         assert 1 <= layer <= 9999, "GameObject(): Layer debe estar entre 1 y 9999."
+        self._layer = int(layer)
+
+        self._tipo = tipo
+        self._debug = debug
+        self._border = None
+
+        self._item = 0
+        self._can_collide = False
 
         self.gw = GameWorld._getInstance()
         self._canvas = self.gw._getCanvas()
-        self._add_gobject = self.gw._addGObject
-        self._del_gobject = self.gw._delGObject
-
-        self._element = 0
-
-        self._rect = Rectangle(x, y, width, height)
-        self._layer = layer
-        self._tipo = tipo
-        self._can_collide = False
 
     # ---
 
@@ -47,7 +60,7 @@ class GameObject:
         Returns:
             float: Coordenada x del objeto.
         """
-        return self._rect.getX()
+        return self._x1
 
     def getY(self) -> float:
         """
@@ -56,7 +69,7 @@ class GameObject:
         Returns:
             float: Coordenada y del objeto.
         """
-        return self._rect.getY()
+        return self._y1
 
     def getPosition(self) -> (float, float):
         """Obtiene las coordenadas x e y del objeto.
@@ -64,7 +77,7 @@ class GameObject:
         Returns:
             (float, float): Las coordenadas x e y del objeto.
         """
-        return self._rect.getPosition()
+        return self._x1, self._y1
 
     def getCoords(self) -> (float, float, float, float):
         """
@@ -73,7 +86,7 @@ class GameObject:
         Returns:
             float, float, float, float: El rectángulo que rodea al objeto.
         """
-        return self._rect.getCoords()
+        return self._x1, self._y1, self._x2, self._y2
 
     def getWidth(self) -> int:
         """
@@ -82,7 +95,7 @@ class GameObject:
         Returns:
             int: Ancho del objeto.
         """
-        return self._rect.getWidth()
+        return self._width
 
     def getHeight(self) -> int:
         """
@@ -91,7 +104,7 @@ class GameObject:
         Returns:
             int: Altura del objeto.
         """
-        return self._rect.getHeight()
+        return self._height
 
     def getDimension(self) -> (int, int):
         """
@@ -100,16 +113,16 @@ class GameObject:
         Returns:
             (int, int): El ancho y alto del objeto.
         """
-        return self._rect.getDimension()
+        return self._width, self._height
 
-    def getElement(self) -> int:
+    def getItem(self) -> int:
         """
-        Retorna el identificador del elemento visual de este objeto dentro del canvas.
+        Retorna el identificador del componente visual de este objeto dentro del canvas.
 
         Returns:
-            int: El identificador del elemento
+            int: El identificador del item
         """
-        return self._element
+        return self._item
 
     def getLayer(self) -> int:
         """
@@ -129,43 +142,6 @@ class GameObject:
         """
         return self._tipo
 
-    def setX(self, x: float):
-        """
-        Establece la cooordenada x del objeto.
-
-        Args:
-            x (float): La coordenada x del objeto.
-        """
-        self._rect.setX(x)
-        self._canvas.moveto(
-            self._element, int(self._rect.getX()), int(self._rect.getY())
-        )
-
-    def setY(self, y: float):
-        """
-        Establece la cooordenada y del objeto.
-
-        Args:
-            y (float): La coordenada y del objeto.
-        """
-        self._rect.setY(y)
-        self._canvas.moveto(
-            self._element, int(self._rect.getX()), int(self._rect.getY())
-        )
-
-    def setPosition(self, x: float, y: float):
-        """
-        Establece la posición del sprite en el mundo de juego.
-
-        Args:
-            x (float): Nueva coordenada x del sprite.
-            y (float): Nueva coordenada y del sprite.
-        """
-        self._rect.setPosition(x, y)
-        self._canvas.moveto(
-            self._element, int(self._rect.getX()), int(self._rect.getY())
-        )
-
     def setVisibility(self, visible: bool):
         """
         Cambia visibilidad del objeto
@@ -174,7 +150,7 @@ class GameObject:
             visible (bool): True lo muestra. False lo oculta
         """
         state = "disabled" if visible else "hidden"
-        self._canvas.itemconfig(self._element, state=state)
+        self._canvas.itemconfig(self._item, state=state)
 
     def setCollisions(self, enable: bool):
         """
@@ -194,29 +170,40 @@ class GameObject:
         """
         return self._can_collide
 
-    def collides(self, gobj) -> bool:
+    def intersects(self, gobj) -> bool:
         """
-        Determina si este GameObject colisiona con otro.
+        Determina si este objeto intersecta con otro.
 
         Args:
-            gobj (GameObject): GameObject a detectar si colisiona con este GameObject.
+            gobj (GameObject): El objeto contra el que se verificará la intersección.
 
         Returns:
-            bool: True si colisiona. False en caso contrario.
+            bool: True si este objeto intersecta al otro. False en caso contrario
         """
-        return self._rect.intersects(gobj._rect)
+        rx1, ry1, rx2, ry2 = gobj.getCoords()
+        return (
+            self._x1 <= rx2 and rx1 <= self._x2 and self._y1 <= ry2 and ry1 <= self._y2
+        )
 
-    def intersection(self, gobj) -> Rectangle:
+    def intersection(self, gobj) -> (int, int, int, int):
         """
-        Retorna el rectángulo de intersección de este GameObject con otro
+        Determina las coordenadas de intersección de este objeto con otro.
 
         Args:
-            gobj (GameObject): El GameObject para determinar la intersección
+            gobj (GameObject): El objeto contra el que se determinará la intersección.
 
         Returns:
-            Rectangle: El rectángulo de intersección. None en caso de no intersectar
+            (int, int, int, int): Las coordenadas de intersección. None si no existe intersección
         """
-        return self._rect.intersection(gobj._rect)
+        x1, y1, x2, y2 = gobj.getCoords()
+
+        x1 = max(self._x1, x1)
+        y1 = max(self._y1, y1)
+        x2 = min(self._x2, x2)
+        y2 = min(self._y2, y2)
+        if y1 <= y2 and x1 <= x2:
+            return (x1, y1, x2 - x1 + 1, y2 - y1 + 1)
+        return None
 
     def onUpdate(self, dt: float):
         """
@@ -237,27 +224,78 @@ class GameObject:
 
     def delete(self):
         """Elimina el objeto del mundo de juego."""
-        self._del_gobject(self)
+        self.gw._delGObject(self)
 
     # --
 
-    def _addToGame(self):
-        """
-        Agrega este GameObject a la lista de objetos del juego
-        """
-        GameObject._counter_ = GameObject._counter_ + 1
-        tag = f"{self._layer:04d}-{GameObject._counter_:06d}"
-        self._canvas.itemconfig(self._element, tags=(tag,))
-
-        self._add_gobject(self)
-
-    def _setDimension(self, width: int, height: int):
-        width, height = int(width), int(height)
-        assert width > 0, "GameObject.setDimension(): Ancho debe ser mayor que 0."
-        assert height > 0, "GameObject.setDimension(): Alto debe ser mayor que 0."
-
-        self._rect.setDimension(width, height)
-
     def _kill(self):
-        self._canvas.delete(self._element)
-        del self._rect
+        if self._border:
+            self._border.delete()
+            del self._border
+            del self._debug
+
+        self._canvas.delete(self._item)
+        del self._canvas
+        del self.gw
+
+    def _addToGame(self):
+        GameObject._counter_ = GameObject._counter_ + 1
+
+        tag = f"{self._layer:04d}-{GameObject._counter_:06d}"
+        self._canvas.itemconfig(self._item, tags=(tag,))
+
+        self.gw._addGObject(self)
+
+        if self._debug:
+            from MiniGameEngine.Box import Box
+
+            self._border = Box(
+                self._x1,
+                self._y1,
+                self._width,
+                self._height,
+                self._layer,
+                tipo="",
+                border=1,
+                border_color="red",
+            )
+
+    def _setX(self, x):
+        self._x1 = x
+        self._x2 = self._x1 + self._width - 1
+
+        if self._border:
+            self._border.setX(x)
+
+    def _setY(self, y):
+        self._y1 = y
+        self._y2 = self._y1 + self._height - 1
+
+        if self._border:
+            self._border.setY(y)
+
+    def _setPosition(self, x, y):
+        self._x1 = x
+        self._y1 = y
+        self._x2 = self._x1 + self._width - 1
+        self._y2 = self._y1 + self._height - 1
+
+        if self._border:
+            self._border.setPosition(x, y)
+
+    def _setDimension(self, width, height):
+        assert (
+            width >= 1
+        ), "GameObject._setDimension(): Ancho debe ser mayor o igual a 1."
+        assert (
+            height >= 1
+        ), "GameObject._setDimension(): Alto debe ser mayor o igual a 1."
+
+        self._width = int(width)
+        self._x2 = self._x1 + self._width - 1
+
+        self._height = int(height)
+        self._y2 = self._y1 + self._height - 1
+
+        if self._border:
+            self._border.setDimension(self._width, self._height)

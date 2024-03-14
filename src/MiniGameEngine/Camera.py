@@ -5,8 +5,8 @@ class Camera:
 
     def __init__(
         self,
-        x: float,
-        y: float,
+        x: int,
+        y: int,
         width: int,
         height: int,
         world_width: int,
@@ -17,8 +17,8 @@ class Camera:
         Es creada internamente al crear una instancia del GameWorld
 
         Args:
-            x (float): Coordenada x de la posición de la cámara
-            y (float): Coordenada y de la posición de la cámara
+            x (int): Coordenada x de la posición de la cámara
+            y (int): Coordenada y de la posición de la cámara
             width (int): Ancho de la cámara
             height (int): Alto de la cámara
             world_width (int): Ancho del mundo del juego
@@ -77,15 +77,15 @@ class Camera:
         if gobj in self._gobjects:
             del self._gobjects[gobj]
 
-    def setPosition(self, x: float, y: float):
+    def setPosition(self, x: int, y: int):
         """
         Posiciona la cámara en el mundo del juego
 
         Args:
-            x (float): Posición x de la cámara
-            y (float): Posición y de la cámara
+            x (int): Posición x de la cámara
+            y (int): Posición y de la cámara
         """
-        self._x, self._y = x, y
+        self._x, self._y = int(x), int(y)
 
         for item in self._gobjects.items():
             gobj, (ox, oy) = item

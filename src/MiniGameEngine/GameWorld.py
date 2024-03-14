@@ -163,7 +163,7 @@ class GameWorld:
 
             # mueve la cámara segun su target
             cx, cy = self._camera.moveToTarget()
-            self._frame.place(x=int(-cx), y=int(-cy))
+            self._frame.place(x=-cx, y=-cy)
 
             # actualiza el despliegue
             self._win.update()
@@ -189,7 +189,7 @@ class GameWorld:
             _ = [
                 (o1.onCollision(dt, o2), o2.onCollision(dt, o1))
                 for o1, o2 in itertools.combinations(gobjs, 2)
-                if o1.collides(o2)
+                if o1.intersects(o2)
             ]
 
         self._win.destroy()
