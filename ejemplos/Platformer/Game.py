@@ -24,25 +24,27 @@ class Game(GameWorld):
             10,
             layer=100,
             text="      fps",
-            font="Arial 10",
+            font=("Courier New", 10),
             color="black",
+            debug=True,
         )
         self.getCamera().addGameObject(self.status_bar)
 
         # el heroe
-        self.heroe = Heroe(0, 414)
+        self.heroe = Heroe(0, 390)
         self.getCamera().setTarget(self.heroe)
 
         # el terreno
-        suelo = Box(0, 450, 3840, 10, 1, "Suelo", line_width=1, line_color="red")
+        suelo = Box(0, 448, 3840, 8, 1, "Suelo", border=0, debug=True)
         suelo.setCollisions(True)
+        suelo.setPosition(0, 448)
 
         # un muro con suelo en la parte superior
-        muro = Box(192, 388, 64, 62, 1, "Muro", line_width=1, line_color="red")
-        muro.setCollisions(True)
-
-        suelo = Box(192, 284, 64, 4, 1, "Suelo", line_width=1, line_color="red")
+        suelo = Box(192, 384, 64, 8, 1, "Suelo", border=0, debug=True)
         suelo.setCollisions(True)
+
+        muro = Box(192, 390, 64, 58, 1, "Muro", border=0, debug=True)
+        muro.setCollisions(True)
 
         # los FPS en promedio
         self.prom = [1] * 60
@@ -62,4 +64,5 @@ class Game(GameWorld):
 
 # -- show time
 game = Game()
-cProfile.run("game.gameLoop(60,)", sort="cumtime")
+game.gameLoop(60)
+# cProfile.run("game.gameLoop(60)", sort="cumtime")

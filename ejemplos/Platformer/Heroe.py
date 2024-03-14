@@ -1,5 +1,6 @@
 from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Box import Box
+import time
 
 
 class Heroe(Sprite):
@@ -14,71 +15,60 @@ class Heroe(Sprite):
         )
         self.setCollisions(True)
 
-        self.box = Box(
-            1,
-            1,
-            width=10,
-            height=10,
-            layer=5,
-            tipo=None,
-            line_width=1,
-            line_color="yellow",
-            fill_color="yellow",
-        )
-        self.box.setVisibility(False)
+        self.box = Box(0, 0, 1, 1, 2, "", 0, None, "yellow")
 
-        self.vy = 0
-        self.fy = -300
-        self.g = 800
-
-        self.last_position = self.getPosition()
+        self.JUMP_FORCE = 300
+        self.GRAVITY = 10
+        self.yVelocity = 300
+        self.xVelocity = 300
 
     def onUpdate(self, dt):
         x, y = self.getPosition()
-        ww = self.gw.getWidth()
-        w = self.getWidth()
+        w, h = self.getDimension()
+        ww, hh = self.gw.getWidth(), self.gw.getHeight()
 
         self.box.setVisibility(False)
-        self.last_position = x, y
 
         # movimiento lateral
         if self.gw.isPressed("Left"):
-            x = x - 200 * dt
-            x = max(x, 0)
+            x = x - self.xVelocity * dt
+            if x < 0:
+                x = 0
             self.setX(x)
-        if self.gw.isPressed("Right"):
-            x = x + 200 * dt
-            x = min(x, ww - w)
+        elif self.gw.isPressed("Right"):
+            x = x + self.xVelocity * dt
+            if x + w >= ww:
+                x = ww - w
             self.setX(x)
 
         # movimiento vertical
         if self.gw.isPressed("space"):
-            self.vy = self.fy
+            self.yVelocity = -self.JUMP_FORCE
 
-        y = y + self.vy * dt
-        self.vy = self.vy + self.g * dt
+        y = y + self.yVelocity * dt
         self.setY(y)
+        self.yVelocity = self.yVelocity + self.GRAVITY
 
     def onCollision(self, dt, gobj):
-        #r1 = self.getRectangle()
-        #r2 = gobj.getRectangle()
-        # r = r1.intersection(r2)
-
-        # self.box.setPosition(r.getX(), r.getY())
-        # self.box.setDimension(r.getWidth(), r.getHeight())
+        tipo = gobj.getTipo()
+        rx, ry, rw, rh = self.intersection(gobj)
+        self.box.setPosition(rx, ry)
+        self.box.setDimension(rw, rh)
         self.box.setVisibility(True)
 
         x, y = self.getPosition()
-        h = self.getHeight()
-        tipo = gobj.getTipo()
+        w, h = self.getDimension()
+
+        gx, gy = gobj.getPosition()
+        gw, gh = gobj.getDimension()
 
         if tipo == "Suelo":
-            oy = gobj.getY()
-            dy = y + h - 1 - oy
-            if dy >= 0 and dy <= 10000:
-                y = oy - h
-                self.setY(y)
-                self.vy = 0
+            if y + h > gy:
+                self.setY(gy - h)
+                self.yVelocity = 0
+
         elif tipo == "Muro":
-            x, y = self.last_position
-            self.setPosition(x, y)
+            if x > gx:
+                self.setX(gx + gw)
+            else:
+                self.setX(gx - w)
