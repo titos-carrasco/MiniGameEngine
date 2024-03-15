@@ -1,4 +1,5 @@
 import sys
+import os
 import time
 import itertools
 import ctypes
@@ -177,17 +178,24 @@ class GameWorld:
             dt = self._tick()
 
             # onUpdate para la app
-            self.onUpdate(dt)
+            self.onUpdate(dt, self._fps_time)
 
             # onUpdate para los game objects
-            _ = [o.onUpdate(dt) for o in self._gobjects if o.__status__ == "alive"]
+            _ = [
+                o.onUpdate(dt, self._fps_time)
+                for o in self._gobjects
+                if o.__status__ == "alive"
+            ]
 
             # onCollision para los game objects
             gobjs = [
                 o for o in self._gobjects if o.__status__ == "alive" and o.canCollide()
             ]
             _ = [
-                (o1.onCollision(dt, o2), o2.onCollision(dt, o1))
+                (
+                    o1.onCollision(dt, self._fps_time, o2),
+                    o2.onCollision(dt, self._fps_time, o1),
+                )
                 for o1, o2 in itertools.combinations(gobjs, 2)
                 if o1.intersects(o2)
             ]
@@ -205,12 +213,13 @@ class GameWorld:
 
         del GameWorld._instance_
 
-    def onUpdate(self, dt: float):
+    def onUpdate(self, dt: float, dt_optimal: float):
         """
         Llamada por cada ciclo dentro del loop (fps veces por segundo).
 
         Args:
             dt (float): Tiempo en segundos desde la última llamada.
+            dt_optimal (float): Tiempo en segundos óptimo desde la última llamada (1/fps).
         """
 
     def exitGame(self):
@@ -302,6 +311,21 @@ class GameWorld:
             list[tk.PhotoImage] : Arreglo con las imágenes cargadas.
         """
         return [self.loadImage(path) for path in images_paths]
+
+    def setPriority(self, *args):
+        """
+        Establece el orden de procesamiento de onUpdate/onCollision para los GameObject según su tipo.
+
+        Args:
+            *args (str, str, ...): Los tipos de GameObjetos a priorizar separados por coma.
+        """
+        # los que tienen prioridad
+        gobjs = [o for tipo in args for o in self._gobjects if (tipo == o._tipo)]
+
+        # el resto
+        gobjs = gobjs + [o for o in self._gobjects if o not in gobjs]
+
+        self._gobjects = gobjs
 
     # ---
 

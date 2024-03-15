@@ -22,11 +22,11 @@ class Text(GameObject):
             x (float): Coordenada x del texto.
             y (float): Coordenada y del texto.
             layer (int): Capa en que se colocará este texto.
-            tipo (str, opcional): Tipo del objeto.
+            tipo (str, opcional): Tipo de texto.
             text (str, opcional): Texto para este objeto
             font (str, opcional): Font a utilizar para el texto (por defecto es "Arial 12").
             color (str, opcional): Color a utilizar para el texto (por defecto es "black").
-            debug (bool, opcional): True para mostrar información del objeto.
+            debug (bool, opcional): True para mostrar información del texto.
         """
         super().__init__(x, y, width=1, height=1, layer=layer, tipo=tipo, debug=debug)
 
@@ -42,44 +42,10 @@ class Text(GameObject):
         )
 
         # registramos su tamaño
-        self._updateDimension()
+        self._setDimension()
 
         # lo agregamos al juego
         self._addToGame()
-
-    def setX(self, x: float):
-        """
-        Establece la cooordenada x del objeto.
-
-        Args:
-            x (float): La coordenada x del objeto.
-        """
-        self._setX(x)
-        x, y = self.getPosition()
-        self._canvas.moveto(self._item, int(x), int(y))
-
-    def setY(self, y: float):
-        """
-        Establece la cooordenada y del objeto.
-
-        Args:
-            y (float): La coordenada y del objeto.
-        """
-        self._setY(y)
-        x, y = self.getPosition()
-        self._canvas.moveto(self._item, int(x), int(y))
-
-    def setPosition(self, x: float, y: float):
-        """
-        Establece la posición del sprite en el mundo de juego.
-
-        Args:
-            x (float): Nueva coordenada x del sprite.
-            y (float): Nueva coordenada y del sprite.
-        """
-        self._setPosition(x, y)
-        x, y = self.getPosition()
-        self._canvas.moveto(self._item, int(x), int(y))
 
     def setText(self, text: str):
         """
@@ -89,7 +55,7 @@ class Text(GameObject):
             text (str): El nuevo texto del objeto.
         """
         self._canvas.itemconfig(self._item, text=text)
-        self._updateDimension()
+        self._setDimension()
 
     def setFont(self, font: str):
         """
@@ -99,8 +65,8 @@ class Text(GameObject):
         Args:
             font (str): El nuevo tipo de letra, tamaño y atributo del texto del objeto.
         """
-        self._canvas.itemconfig(self._element, font=font)
-        self._updateDimension()
+        self._canvas.itemconfig(self._item, font=font)
+        self._setDimension()
 
     def setColor(self, color: str):
         """
@@ -109,13 +75,12 @@ class Text(GameObject):
         Args:
             color (str): El nuevo color para el texto del objeto.
         """
-        self._canvas.itemconfig(self._element, fill=color)
+        self._canvas.itemconfig(self._item, fill=color)
 
     # ---
 
-    def _updateDimension(self):
+    def _setDimension(self):
         bbox = self._canvas.bbox(self._item)
         width = bbox[2] - bbox[0] + 1
         height = bbox[3] - bbox[1] + 1
-
-        self._setDimension(width, height)
+        super()._setDimension(width, height)

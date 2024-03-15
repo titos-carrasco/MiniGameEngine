@@ -11,7 +11,7 @@ class Explosion(Sprite):
         self.setShape(self.animator.start())
 
     # actualizamos 1/fps veces por segundo
-    def onUpdate(self, dt):
+    def onUpdate(self, dt, dt_optimal):
         if not self.animator.isRunning():
             self.animator = None
             self.delete()

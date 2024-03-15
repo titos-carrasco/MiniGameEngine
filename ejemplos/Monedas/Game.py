@@ -27,7 +27,7 @@ class Game(GameWorld):
         # los FPS en promedio
         self.prom = [1 / 60] * 60
 
-    def onUpdate(self, dt):
+    def onUpdate(self, dt, dt_optimal):
         self.prom.pop()
         self.prom.insert(0, dt)
         fps = sum(self.prom) / len(self.prom)

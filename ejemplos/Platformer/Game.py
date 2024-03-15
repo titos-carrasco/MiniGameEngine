@@ -1,9 +1,10 @@
-import cProfile
-
 from Heroe import Heroe
 from MiniGameEngine.GameWorld import GameWorld
 from MiniGameEngine.Text import Text
 from MiniGameEngine.Box import Box
+
+from Coin import Coin
+from Base import Base
 
 
 class Game(GameWorld):
@@ -14,7 +15,7 @@ class Game(GameWorld):
             576,
             title="Platformer",
             bg_color="light blue",
-            bg_path="Recursos/Tiled/Mundo.png",
+            bg_path="Recursos/Map/Mundo.png",
             world_size=(3840, 576),
         )
 
@@ -23,15 +24,16 @@ class Game(GameWorld):
             10,
             10,
             layer=100,
+            tipo ="FPS",
             text="      fps",
             font=("Courier New", 10),
             color="black",
-            debug=True,
+            debug=False,
         )
         self.getCamera().addGameObject(self.status_bar)
 
         # el heroe
-        self.heroe = Heroe(0, 390)
+        self.heroe = Heroe(300, 100)
         self.getCamera().setTarget(self.heroe)
 
         # el terreno
@@ -40,16 +42,25 @@ class Game(GameWorld):
         suelo.setPosition(0, 448)
 
         # un muro con suelo en la parte superior
+        self.muro = Box(192, 390, 64, 58, 1, "Muro", border=0, debug=True)
+        self.muro.setCollisions(True)
+
         suelo = Box(192, 384, 64, 8, 1, "Suelo", border=0, debug=True)
         suelo.setCollisions(True)
 
-        muro = Box(192, 390, 64, 58, 1, "Muro", border=0, debug=True)
-        muro.setCollisions(True)
+        # una moneda bien arriba
+        coin = Coin(350, 100)
+
+        # una base movil para alcanzar la moneda
+        base = Base(300, 300)
+
+        # la prioridad en los eventos onUpdate y onCollision
+        self.setPriority("Base", "Suelo", "Heroe")
 
         # los FPS en promedio
         self.prom = [1] * 60
 
-    def onUpdate(self, dt):
+    def onUpdate(self, dt, dt_optimal):
         # mostramos los FPS
         self.prom.pop()
         self.prom.insert(0, dt)
@@ -65,4 +76,3 @@ class Game(GameWorld):
 # -- show time
 game = Game()
 game.gameLoop(60)
-# cProfile.run("game.gameLoop(60)", sort="cumtime")

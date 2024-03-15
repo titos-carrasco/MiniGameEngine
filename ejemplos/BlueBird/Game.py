@@ -36,7 +36,7 @@ class Game(GameWorld):
         # para detener el juego en un lapso de tiempo específico
         self.t = time.time()
 
-    def onUpdate(self, dt):
+    def onUpdate(self, dt, dt_optimal):
         self.prom.pop()
         self.prom.insert(0, dt)
         pfps = sum(self.prom) / len(self.prom)

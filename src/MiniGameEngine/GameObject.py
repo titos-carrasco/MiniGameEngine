@@ -1,3 +1,5 @@
+import tkinter as tk
+
 from MiniGameEngine.GameWorld import GameWorld
 
 
@@ -142,6 +144,78 @@ class GameObject:
         """
         return self._tipo
 
+    def setX(self, x: float):
+        """
+        Establece la cooordenada x del objeto.
+
+        Args:
+            x (float): La coordenada x del objeto.
+        """
+        if self._x1 == x:
+            return
+
+        self._x1 = x
+        self._x2 = self._x1 + self._width - 1
+
+        try:
+            self._canvas.coords(self._item, int(self._x1), int(self._y1))
+        except tk.TclError:
+            self._canvas.coords(
+                self._item, int(self._x1), int(self._y1), int(self._x2), int(self._y2)
+            )
+
+        if self._border:
+            self._border.setX(x)
+
+    def setY(self, y: float):
+        """
+        Establece la cooordenada y del objeto.
+
+        Args:
+            y (float): La coordenada y del objeto.
+        """
+        if self._y1 == y:
+            return
+
+        self._y1 = y
+        self._y2 = self._y1 + self._height - 1
+
+        try:
+            self._canvas.coords(self._item, int(self._x1), int(self._y1))
+        except tk.TclError:
+            self._canvas.coords(
+                self._item, int(self._x1), int(self._y1), int(self._x2), int(self._y2)
+            )
+
+        if self._border:
+            self._border.setY(y)
+
+    def setPosition(self, x: float, y: float):
+        """
+        Establece la posición del objeto en el mundo de juego.
+
+        Args:
+            x (float): Nueva coordenada x del objeto.
+            y (float): Nueva coordenada y del objeto.
+        """
+        if self._x1 == x and self._y1 == y:
+            return
+
+        self._x1 = x
+        self._y1 = y
+        self._x2 = self._x1 + self._width - 1
+        self._y2 = self._y1 + self._height - 1
+
+        try:
+            self._canvas.coords(self._item, int(self._x1), int(self._y1))
+        except tk.TclError:
+            self._canvas.coords(
+                self._item, int(self._x1), int(self._y1), int(self._x2), int(self._y2)
+            )
+
+        if self._border:
+            self._border.setPosition(x, y)
+
     def setVisibility(self, visible: bool):
         """
         Cambia visibilidad del objeto
@@ -205,20 +279,22 @@ class GameObject:
             return (x1, y1, x2 - x1 + 1, y2 - y1 + 1)
         return None
 
-    def onUpdate(self, dt: float):
+    def onUpdate(self, dt: float, dt_optimal: float):
         """
         Llamado en cada actualización del juego para el objeto.
 
         Args:
             dt (float): Tiempo en segundos desde la ultima llamada.
+            dt_optimal (float): Tiempo en segundos óptimo desde la última llamada (1/fps).
         """
 
-    def onCollision(self, dt: float, gobj):
+    def onCollision(self, dt: float, dt_optimal: float, gobj):
         """
         Llamado cuando el objeto colisiona con otro objeto.
 
         Args:
             dt (float): Tiempo en segundos desde la ultima llamada.
+            dt_optimal (float): Tiempo en segundos óptimo desde la última llamada (1/fps).
             gobj (GameObject): Objeto con el que colisiona.
         """
 
@@ -255,35 +331,22 @@ class GameObject:
                 self._width,
                 self._height,
                 self._layer,
-                tipo="",
+                tipo="Debug",
                 border=1,
                 border_color="red",
             )
 
-    def _setX(self, x):
-        self._x1 = x
-        self._x2 = self._x1 + self._width - 1
+    def _setDimension(self, width: int, height: int):
+        """
+        Modifica tamaño del GameObject.
 
-        if self._border:
-            self._border.setX(x)
+        Args:
+            width (int): Ancho de la caja.
+            height (int): Alto de la caja.
+        """
+        if self._width == width and self._height == height:
+            return
 
-    def _setY(self, y):
-        self._y1 = y
-        self._y2 = self._y1 + self._height - 1
-
-        if self._border:
-            self._border.setY(y)
-
-    def _setPosition(self, x, y):
-        self._x1 = x
-        self._y1 = y
-        self._x2 = self._x1 + self._width - 1
-        self._y2 = self._y1 + self._height - 1
-
-        if self._border:
-            self._border.setPosition(x, y)
-
-    def _setDimension(self, width, height):
         assert (
             width >= 1
         ), "GameObject._setDimension(): Ancho debe ser mayor o igual a 1."

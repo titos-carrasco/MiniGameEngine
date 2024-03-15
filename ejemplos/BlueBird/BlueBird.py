@@ -21,7 +21,7 @@ class BlueBird(Sprite):
         self.animator.start()
 
     # actualizamos 1/fps veces por segundo
-    def onUpdate(self, dt):
+    def onUpdate(self, dt, dt_optimal):
         x = self.getX()
         w = self.getWidth()
         ww = self.gw.getWidth()
@@ -30,7 +30,7 @@ class BlueBird(Sprite):
         if image_path:
             self.setShape(image_path)
 
-        x = x + self.speed * dt
+        x = x + self.speed * dt_optimal
         if x > ww:
             x = 0 - w
         self.setX(x)

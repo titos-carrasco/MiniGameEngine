@@ -71,7 +71,7 @@ class Animator:
             str: Ruta con la imagen si es que se avanzó al siguiente cuadro. None en caso contrario.
         """
         if not self._running:
-            return None
+            return self.start()
 
         t = time.perf_counter()
         if t - self._t < self._speed:
@@ -89,9 +89,18 @@ class Animator:
 
     def isRunning(self) -> bool:
         """
-        Determina si el Animator se encuentra en ejecución
+        Determina si el Animator se encuentra en ejecución.
 
         Returns:
-            bool: True si está ejecutando. False en caso contrario
+            bool: True si está ejecutando. False en caso contrario.
         """
         return self._running
+
+    def getPaths(self) -> []:
+        """
+        Retorna la lista de nombres de archivos de imágenes de este animador.
+
+        Returns:
+            []: La lista de nombres de archivos
+        """
+        return self._images_path

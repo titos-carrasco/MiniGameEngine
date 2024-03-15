@@ -16,21 +16,21 @@ class Betty(Sprite):
         self.direccion = "Right"
 
     # actualizamos 1/fps veces por segundo
-    def onUpdate(self, dt):
+    def onUpdate(self, dt, dt_optimal):
         ww = self.gw.getWidth()
         w = self.getWidth()
         x = self.getX()
 
         # movimiento lateral
         if self.gw.isPressed("Left"):
-            x = x - 200 * dt
+            x = x - 200 * dt_optimal
             x = max(x, 0)
             self.setX(x)
             if self.direccion != "Left":
                 self.direccion = "Left"
                 self.setShape(self.images["Left"])
         elif self.gw.isPressed("Right"):
-            x = x + 200 * dt
+            x = x + 200 * dt_optimal
             if x + w > ww:
                 x = ww - w
             self.setX(x)
@@ -39,5 +39,5 @@ class Betty(Sprite):
                 self.setShape(self.images["Right"])
 
     # manejamos las colisiones
-    def onCollision(self, dt, gobj):
+    def onCollision(self, dt, dt_optimal, gobj):
         print("Betty: Colisione con", gobj.getTipo())

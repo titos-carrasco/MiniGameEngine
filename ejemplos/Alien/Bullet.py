@@ -8,15 +8,15 @@ class Bullet(Sprite):
         self.setCollisions(True)
 
     # actualizamos el estado de la Bala en cada frame
-    def onUpdate(self, dt):
+    def onUpdate(self, dt, dt_optimal):
         y = self.getY()
 
-        y = y - 300 * dt
+        y = y - 300 * dt_optimal
         if y < 0:
             self.delete()
         else:
             self.setY(y)
 
     # manejamos las colisiones
-    def onCollision(self, dt, gobj):
+    def onCollision(self, dt, dt_optimal, gobj):
         self.delete()

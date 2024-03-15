@@ -10,7 +10,7 @@ class Perro(Sprite):
         self.animator = Animator("Recursos/PerroCaminando-*.png")
         self.animator.start()
 
-    def onUpdate(self, dt):
+    def onUpdate(self, dt, dt_optimal):
         x = self.getX()
         w = self.getWidth()
         ww = self.gw.getWidth()
@@ -19,7 +19,7 @@ class Perro(Sprite):
         if image_path:
             self.setShape(image_path)
 
-        x = x + 120 * dt
+        x = x + 120 * dt_optimal
         if x > ww:
             x = 0 - w
         self.setX(x)

@@ -37,20 +37,12 @@ class Box(GameObject):
         super().__init__(x, y, width, height, layer=layer, tipo=tipo, debug=debug)
         width, height = self.getDimension()
 
-        # ajustamos el ancho del borde
-        border = int(border)
-        if border == 0:
-            line_color = None
-
-        # necesario por la forma en que tk maneja el rectángulo
-        fix = int((border + 1) / 2)
-
         # creamos la caja
         self._item = self._canvas.create_rectangle(
-            int(x + border - fix),
-            int(y + border - fix),
-            int(x + width - fix),
-            int(y + height - fix),
+            int(x),
+            int(y),
+            int(x + width - 1),
+            int(y + height - 1),
             width=border,
             outline=border_color,
             fill=fill_color,
@@ -60,40 +52,6 @@ class Box(GameObject):
         # la agregamos al juego
         self._addToGame()
 
-    def setX(self, x: float):
-        """
-        Establece la cooordenada x de la caja.
-
-        Args:
-            x (float): La coordenada x de la caja.
-        """
-        self._setX(x)
-        x1, y1, x2, y2 = self.getCoords()
-        self._canvas.coords(self._item, int(x1), int(y1), int(x2), int(y2))
-
-    def setY(self, y: float):
-        """
-        Establece la cooordenada y de la caja.
-
-        Args:
-            y (float): La coordenada y de la caja.
-        """
-        self._setY(y)
-        x1, y1, x2, y2 = self.getCoords()
-        self._canvas.coords(self._item, int(x1), int(y1), int(x2), int(y2))
-
-    def setPosition(self, x: float, y: float):
-        """
-        Establece la posición de la caja en el mundo de juego.
-
-        Args:
-            x (float): Nueva coordenada x de la caja.
-            y (float): Nueva coordenada y de la caja.
-        """
-        self._setPosition(x, y)
-        x1, y1, x2, y2 = self.getCoords()
-        self._canvas.coords(self._item, int(x1), int(y1), int(x2), int(y2))
-
     def setDimension(self, width: int, height: int):
         """
         Modifica tamaño de la caja.
@@ -102,7 +60,7 @@ class Box(GameObject):
             width (int): Ancho de la caja.
             height (int): Alto de la caja.
         """
-        self._setDimension(width, height)
+        super()._setDimension(width, height)
 
         x1, y1, x2, y2 = self.getCoords()
         self._canvas.coords(self._item, int(x1), int(y1), int(x2), int(y2))

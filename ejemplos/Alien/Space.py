@@ -10,10 +10,10 @@ class Space(Sprite):
         )
         self.t = time.time()
 
-    def onUpdate(self, dt):
+    def onUpdate(self, dt, dt_optimal):
         if time.time() - self.t < 0.03:
             return
-        y = self.getY() + 100 * dt
+        y = self.getY() + 100 * dt_optimal
         if y >= 0:
             y = -600
         self.setY(y)

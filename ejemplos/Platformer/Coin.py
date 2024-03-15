@@ -1,17 +1,16 @@
-from Explosion import Explosion
 from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Animator import Animator
 
 
-class Alien(Sprite):
-    # inicializamos el Alien
+class Coin(Sprite):
+    # inicializamos la Moneda
     def __init__(self, x, y):
         super().__init__(
-            x, y, layer=1, tipo="Alien", image_path="Recursos/Alien-002.png"
+            x, y, layer=1, tipo="Coin", image_path="Recursos/Tiles/coin1.png"
         )
         self.setCollisions(True)
 
-        self.animator = Animator("Recursos/Alien-*.png", speed=0.6)
+        self.animator = Animator("Recursos/Tiles/coin*.png", speed=0.1)
         self.animator.start()
 
     # manejamos la actualizacion
@@ -22,8 +21,4 @@ class Alien(Sprite):
 
     # manejamos las colisiones
     def onCollision(self, dt, dt_optimal, gobj):
-        if gobj.getTipo() == "Bullet":
-            x, y = self.getPosition()
-            self.delete()
-            Explosion(x - 2, y - 6)
-            print("Alien:me dieron")
+        pass

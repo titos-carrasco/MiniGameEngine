@@ -1,6 +1,6 @@
-from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Box import Box
-import time
+from MiniGameEngine.Sprite import Sprite
+from MiniGameEngine.Animator import Animator
 
 
 class Heroe(Sprite):
@@ -10,62 +10,73 @@ class Heroe(Sprite):
             y,
             layer=2,
             tipo="Heroe",
-            image_path="Recursos/Heroe/Right-001.png",
-            debug=True,
+            image_path="Recursos/Heroe/Idle.png",
+            debug=False,
         )
         self.setCollisions(True)
 
-        self.box = Box(0, 0, 1, 1, 2, "", 0, None, "yellow")
+        self.jump_force = 500
+        self.gravity = 20
+        self.y_velocity = 90            # debe ser mayor que cualquier velocidad en Y de las Bases
+        self.dy = self.y_velocity
+        self.x_velocity = 250
+        self.dx = 0
+        self.on_ground = False
 
-        self.JUMP_FORCE = 300
-        self.GRAVITY = 10
-        self.yVelocity = 300
-        self.xVelocity = 300
+        self.shape_idle = "Recursos/Heroe/Idle.png"
+        self.anim_left = Animator("Recursos/Heroe/Left-*.png")
+        self.anim_right = Animator("Recursos/Heroe/Right-*.png")
 
-    def onUpdate(self, dt):
+    def onUpdate(self, dt, dt_optimal):
         x, y = self.getPosition()
         w, h = self.getDimension()
         ww, hh = self.gw.getWidth(), self.gw.getHeight()
 
-        self.box.setVisibility(False)
+        if self.on_ground:
+            # movimiento lateral
+            if self.gw.isPressed("Left"):
+                self.dx = -self.x_velocity * dt_optimal
+            elif self.gw.isPressed("Right"):
+                self.dx = self.x_velocity * dt_optimal
+            else:
+                self.dx = 0
 
-        # movimiento lateral
-        if self.gw.isPressed("Left"):
-            x = x - self.xVelocity * dt
-            if x < 0:
-                x = 0
-            self.setX(x)
-        elif self.gw.isPressed("Right"):
-            x = x + self.xVelocity * dt
-            if x + w >= ww:
-                x = ww - w
-            self.setX(x)
+            if self.dx > 0:
+                shape = self.anim_right.next()
+            elif self.dx < 0:
+                shape = self.anim_left.next()
+            else:
+                shape = self.shape_idle
+            if shape:
+                self.setShape(shape)
 
-        # movimiento vertical
-        if self.gw.isPressed("space"):
-            self.yVelocity = -self.JUMP_FORCE
+            # solicitud de salto
+            if self.gw.isPressed("space"):
+                self.dy = -self.jump_force
+                self.dx = self.dx * 0.3
 
-        y = y + self.yVelocity * dt
-        self.setY(y)
-        self.yVelocity = self.yVelocity + self.GRAVITY
+        # actualizamos coordenadas
+        y = y + self.dy * dt_optimal
+        self.dy = self.dy + self.gravity
 
-    def onCollision(self, dt, gobj):
-        tipo = gobj.getTipo()
-        rx, ry, rw, rh = self.intersection(gobj)
-        self.box.setPosition(rx, ry)
-        self.box.setDimension(rw, rh)
-        self.box.setVisibility(True)
+        x = min(max(0, x + self.dx), ww - w)
 
+        self.setPosition(x, y)
+        self.on_ground = False
+
+    def onCollision(self, dt, dt_optimal, gobj):
         x, y = self.getPosition()
         w, h = self.getDimension()
 
         gx, gy = gobj.getPosition()
         gw, gh = gobj.getDimension()
+        tipo = gobj.getTipo()
 
         if tipo == "Suelo":
-            if y + h > gy:
+            if self.y_velocity >= 0:
                 self.setY(gy - h)
-                self.yVelocity = 0
+                self.dy = self.y_velocity
+                self.on_ground = True
 
         elif tipo == "Muro":
             if x > gx:
