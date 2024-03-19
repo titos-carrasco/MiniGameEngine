@@ -49,6 +49,8 @@ class GameObject:
 
         self._item = 0
         self._can_collide = False
+        self._collider = [self._x1, self._y1, self._x2, self._y2]
+        self._dcollider = [0, 0, 0, 0]
 
         self.gw = GameWorld._getInstance()
         self._canvas = self.gw._getCanvas()
@@ -144,6 +146,19 @@ class GameObject:
         """
         return self._tipo
 
+    def getCollider(self) -> (float, float, float, float):
+        """_summary_
+
+        returns:
+            (float, float, float, float): Las coordenas del colisionador
+        """
+        return (
+            self._collider[0],
+            self._collider[1],
+            self._collider[2],
+            self._collider[3],
+        )
+
     def setX(self, x: float):
         """
         Establece la cooordenada x del objeto.
@@ -164,8 +179,7 @@ class GameObject:
                 self._item, int(self._x1), int(self._y1), int(self._x2), int(self._y2)
             )
 
-        if self._border:
-            self._border.setX(x)
+        self._setCollider()
 
     def setY(self, y: float):
         """
@@ -187,8 +201,7 @@ class GameObject:
                 self._item, int(self._x1), int(self._y1), int(self._x2), int(self._y2)
             )
 
-        if self._border:
-            self._border.setY(y)
+        self._setCollider()
 
     def setPosition(self, x: float, y: float):
         """
@@ -213,8 +226,7 @@ class GameObject:
                 self._item, int(self._x1), int(self._y1), int(self._x2), int(self._y2)
             )
 
-        if self._border:
-            self._border.setPosition(x, y)
+        self._setCollider()
 
     def setVisibility(self, visible: bool):
         """
@@ -235,6 +247,23 @@ class GameObject:
         """
         self._can_collide = enable
 
+    def setCollider(self, dx1: int, dy1: int, dx2: int, dy2: int):
+        """
+        Ajusta el colisionador restando de su dimensión los desplazamientos entregados.
+
+        Args:
+            dx1 (int): Desplazamiento costado izquierdo.
+            dy1 (int): Desplazamiento costado superior.
+            dx2 (int): Desplazamiento costado derecho.
+            dy2 (int): Desplazamiento costado inferior.
+        """
+        assert (
+            dx1 >= 0 and dy1 >= 0 and dx2 >= 0 and dy2 >= 0
+        ), "GameObject.setCollider(): Los valores deben ser mayores o iguales a 0."
+
+        self._dcollider = [int(dx1), int(dy1), int(dx2), int(dy2)]
+        self._setCollider()
+
     def canCollide(self) -> bool:
         """
         Determina si tiene habilitadas las colisiones
@@ -254,30 +283,10 @@ class GameObject:
         Returns:
             bool: True si este objeto intersecta al otro. False en caso contrario
         """
-        rx1, ry1, rx2, ry2 = gobj.getCoords()
-        return (
-            self._x1 <= rx2 and rx1 <= self._x2 and self._y1 <= ry2 and ry1 <= self._y2
-        )
+        rx1, ry1, rx2, ry2 = gobj.getCollider()
+        x1, y1, x2, y2 = self._collider
 
-    def intersection(self, gobj) -> (int, int, int, int):
-        """
-        Determina las coordenadas de intersección de este objeto con otro.
-
-        Args:
-            gobj (GameObject): El objeto contra el que se determinará la intersección.
-
-        Returns:
-            (int, int, int, int): Las coordenadas de intersección. None si no existe intersección
-        """
-        x1, y1, x2, y2 = gobj.getCoords()
-
-        x1 = max(self._x1, x1)
-        y1 = max(self._y1, y1)
-        x2 = min(self._x2, x2)
-        y2 = min(self._y2, y2)
-        if y1 <= y2 and x1 <= x2:
-            return (x1, y1, x2 - x1 + 1, y2 - y1 + 1)
-        return None
+        return x1 <= rx2 and rx1 <= x2 and y1 <= ry2 and ry1 <= y2
 
     def onUpdate(self, dt: float, dt_optimal: float):
         """
@@ -302,13 +311,14 @@ class GameObject:
         """Elimina el objeto del mundo de juego."""
         self.gw._delGObject(self)
 
+        if self._border:
+            self._border.delete()
+
     # --
 
     def _kill(self):
-        if self._border:
-            self._border.delete()
-            del self._border
-            del self._debug
+        del self._border
+        del self._debug
 
         self._canvas.delete(self._item)
         del self._canvas
@@ -328,13 +338,14 @@ class GameObject:
             self._border = Box(
                 self._x1,
                 self._y1,
-                self._width,
-                self._height,
+                1,
+                1,
                 self._layer,
                 tipo="Debug",
                 border=1,
                 border_color="red",
             )
+            self._setCollider()
 
     def _setDimension(self, width: int, height: int):
         """
@@ -360,5 +371,20 @@ class GameObject:
         self._height = int(height)
         self._y2 = self._y1 + self._height - 1
 
+        self._setCollider()
+
+    def _setCollider(self):
+        x1 = self._x1 + self._dcollider[0]
+        y1 = self._y1 + self._dcollider[1]
+        x2 = self._x2 - self._dcollider[2]
+        y2 = self._y2 - self._dcollider[3]
+
+        assert (
+            x2 >= x1 and y2 >= y1
+        ), "GameObject.setCollider(): Los valores entregados no generan un colisionador válido."
+
+        self._collider = [x1, y1, x2, y2]
+
         if self._border:
-            self._border.setDimension(self._width, self._height)
+            self._border.setPosition(x1, y1)
+            self._border.setDimension(x2 - x1 + 1, y2 - y1 + 1)

@@ -79,7 +79,7 @@ class Text(GameObject):
 
     # ---
 
-    def _setDimension(self):
+    def _setDimension(self, width=0, height=0):
         bbox = self._canvas.bbox(self._item)
         width = bbox[2] - bbox[0] + 1
         height = bbox[3] - bbox[1] + 1
