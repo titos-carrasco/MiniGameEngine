@@ -1,10 +1,11 @@
 from Heroe import Heroe
+from Coin import Coin
+from Base import Base
+from Escalera import Escalera
+
 from MiniGameEngine.GameWorld import GameWorld
 from MiniGameEngine.Text import Text
 from MiniGameEngine.Box import Box
-
-from Coin import Coin
-from Base import Base
 
 
 class Game(GameWorld):
@@ -24,7 +25,7 @@ class Game(GameWorld):
             10,
             10,
             layer=100,
-            tipo ="FPS",
+            tipo="FPS",
             text="      fps",
             font=("Courier New", 10),
             color="black",
@@ -33,7 +34,7 @@ class Game(GameWorld):
         self.getCamera().addGameObject(self.status_bar)
 
         # el heroe
-        self.heroe = Heroe(300, 100)
+        self.heroe = Heroe(600, 100)
         self.getCamera().setTarget(self.heroe)
 
         # el terreno
@@ -49,13 +50,17 @@ class Game(GameWorld):
         suelo.setCollisions(True)
 
         # una moneda bien arriba
-        coin = Coin(350, 100)
+        Coin(350, 100)
 
-        # una base movil para alcanzar la moneda
-        base = Base(300, 300)
+        # algunas bases móviles
+        Base(300, 260, 1, distance_y=70, vy=90)
+        Base(600, 300, 1, distance_x=120, vx=90)
+
+        # algunas escaleras
+        Escalera(800,320)
 
         # la prioridad en los eventos onUpdate y onCollision
-        self.setPriority("Base", "Suelo", "Heroe")
+        self.setPriority("Base", "Heroe", "Suelo")
 
         # los FPS en promedio
         self.prom = [1] * 60

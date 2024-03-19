@@ -1,22 +1,47 @@
 from MiniGameEngine.Sprite import Sprite
-from MiniGameEngine.Box import Box
+
 
 class Base(Sprite):
     # inicializamos la base
-    def __init__(self, x, y):
-        super().__init__(x, y, layer=1, tipo="Base", image_path="Recursos/Base.png")
+    def __init__(self, x, y, layer, distance_x=0, vx=0, distance_y=0, vy=0):
+        super().__init__(
+            x,
+            y,
+            layer=layer,
+            tipo="Base",
+            image_path="Recursos/Base.png",
+            debug=True,
+        )
+        self.distance_x = distance_x
+        self.distance_y = distance_y
+        self.vx = -vx
+        self.vy = -vy
 
-        self.suelo = Box(x+8, y, 112, 8, 1, "Suelo", border=0, debug=True)
-        self.suelo.setCollisions(True)
+        self.setCollider(6, 0, 6, 54)
+        self.setCollisions(True)
 
-        self.dy = -90
+        self.origin_x = x
+        self.origin_y = y
+        self.dx = 0
+        self.dy = 0
+
+    def getDisplacement(self):
+        return self.dx, self.dy
 
     # manejamos la actualizacion
     def onUpdate(self, dt, dt_optimal):
-        y = self.getY() + self.dy * dt_optimal
+        x_ = self.getX()
+        x = x_ + int(self.vx * dt_optimal)
+        self.dx = x_ - x
 
-        if y < 200 or y > 300:
-            self.dy = self.dy * -1
+        if x < self.origin_x - self.distance_x or x > self.origin_x + self.distance_x:
+            self.vx = self.vx * -1
 
-        self.setY(y)
-        self.suelo.setY(y)
+        y_ = self.getY()
+        y = y_ + int(self.vy * dt_optimal)
+        self.dy = y_ - y
+
+        if y < self.origin_y - self.distance_y or y > self.origin_y + self.distance_y:
+            self.vy = self.vy * -1
+
+        self.setPosition(x, y)
