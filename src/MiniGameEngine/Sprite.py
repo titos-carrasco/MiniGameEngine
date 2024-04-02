@@ -10,7 +10,7 @@ class Sprite(GameObject):
         y: float,
         layer: int,
         tipo: str,
-        image_path: str,
+        image_path: str = None,
         debug: bool = False,
     ):
         """
@@ -21,7 +21,7 @@ class Sprite(GameObject):
             y (float): Coordenada y del sprite.
             layer (int): Capa en que se colocará este sprite.
             tipo (str): Tipo de sprite.
-            image_path (str): Archivo con la imagen del sprite.
+            image_path (str, opcional): Archivo con la imagen del sprite.
             debug (bool, opcional): True para mostrar información del sprite.
         """
         super().__init__(x, y, width=1, height=1, layer=layer, tipo=tipo, debug=debug)
@@ -36,7 +36,8 @@ class Sprite(GameObject):
 
         # cargamos la imagen
         self._image = None
-        self.setShape(image_path)
+        if image_path:
+            self.setShape(image_path)
 
         # lo agregamos al juego
         self._addToGame()
