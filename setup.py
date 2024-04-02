@@ -10,7 +10,7 @@ SETUP = {
     "name": "MiniGameEngine",
     "package_dir": {"": "src"},
     "packages": ["MiniGameEngine"],
-    "version": "0.5.0",
+    "version": "0.5.1",
 }
 
 setup(**SETUP)
