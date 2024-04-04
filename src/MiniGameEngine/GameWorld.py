@@ -378,6 +378,6 @@ class GameWorld:
         items = self._canvas.find_all()
         print("Canvas items:", items)
         gobjs = sorted(
-            [(o.getLayer(), o.getElement(), o.getTipo()) for o in self._gobjects]
+            [(o.getLayer(), o.getItem(), o.getTipo()) for o in self._gobjects]
         )
         print("gObjects:", gobjs)
