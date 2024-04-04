@@ -4,7 +4,7 @@ from MiniGameEngine.GameWorld import GameWorld
 
 
 class GameObject:
-    """Clase que representa un objeto dentro del juego."""
+    """Clase (abstracta) que representa un objeto dentro del juego."""
 
     _counter_ = 0
 
@@ -172,12 +172,17 @@ class GameObject:
         self._x1 = x
         self._x2 = self._x1 + self._width - 1
 
-        try:
-            self._canvas.coords(self._item, int(self._x1), int(self._y1))
-        except tk.TclError:
-            self._canvas.coords(
-                self._item, int(self._x1), int(self._y1), int(self._x2), int(self._y2)
-            )
+        if self._item:
+            try:
+                self._canvas.coords(self._item, int(self._x1), int(self._y1))
+            except tk.TclError:
+                self._canvas.coords(
+                    self._item,
+                    int(self._x1),
+                    int(self._y1),
+                    int(self._x2),
+                    int(self._y2),
+                )
 
         self._setCollider()
 
@@ -194,12 +199,17 @@ class GameObject:
         self._y1 = y
         self._y2 = self._y1 + self._height - 1
 
-        try:
-            self._canvas.coords(self._item, int(self._x1), int(self._y1))
-        except tk.TclError:
-            self._canvas.coords(
-                self._item, int(self._x1), int(self._y1), int(self._x2), int(self._y2)
-            )
+        if self._item:
+            try:
+                self._canvas.coords(self._item, int(self._x1), int(self._y1))
+            except tk.TclError:
+                self._canvas.coords(
+                    self._item,
+                    int(self._x1),
+                    int(self._y1),
+                    int(self._x2),
+                    int(self._y2),
+                )
 
         self._setCollider()
 
@@ -219,12 +229,17 @@ class GameObject:
         self._x2 = self._x1 + self._width - 1
         self._y2 = self._y1 + self._height - 1
 
-        try:
-            self._canvas.coords(self._item, int(self._x1), int(self._y1))
-        except tk.TclError:
-            self._canvas.coords(
-                self._item, int(self._x1), int(self._y1), int(self._x2), int(self._y2)
-            )
+        if self._item:
+            try:
+                self._canvas.coords(self._item, int(self._x1), int(self._y1))
+            except tk.TclError:
+                self._canvas.coords(
+                    self._item,
+                    int(self._x1),
+                    int(self._y1),
+                    int(self._x2),
+                    int(self._y2),
+                )
 
         self._setCollider()
 
@@ -235,8 +250,9 @@ class GameObject:
         Args:
             visible (bool): True lo muestra. False lo oculta
         """
-        state = "disabled" if visible else "hidden"
-        self._canvas.itemconfig(self._item, state=state)
+        if self._item:
+            state = "disabled" if visible else "hidden"
+            self._canvas.itemconfig(self._item, state=state)
 
     def setCollisions(self, enable: bool):
         """
@@ -320,15 +336,19 @@ class GameObject:
         del self._border
         del self._debug
 
-        self._canvas.delete(self._item)
+        if self._item:
+            self._canvas.delete(self._item)
+            self._item = 0
+
         del self._canvas
         del self.gw
 
     def _addToGame(self):
         GameObject._counter_ = GameObject._counter_ + 1
 
-        tag = f"{self._layer:04d}-{GameObject._counter_:06d}"
-        self._canvas.itemconfig(self._item, tags=(tag,))
+        if self._item:
+            tag = f"{self._layer:04d}-{GameObject._counter_:06d}"
+            self._canvas.itemconfig(self._item, tags=(tag,))
 
         self.gw._addGObject(self)
 

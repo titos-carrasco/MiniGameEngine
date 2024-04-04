@@ -4,8 +4,8 @@ from Base import Base
 from Escalera import Escalera
 
 from MiniGameEngine.GameWorld import GameWorld
+from MiniGameEngine.EmptyObject import EmptyObject
 from MiniGameEngine.Text import Text
-from MiniGameEngine.Box import Box
 
 
 class Game(GameWorld):
@@ -18,6 +18,7 @@ class Game(GameWorld):
             bg_color="light blue",
             bg_path="Recursos/Map/Mundo.png",
             world_size=(3840, 576),
+            debug="F12",
         )
 
         # para mostrar los FPS dentro de la cámara
@@ -38,15 +39,14 @@ class Game(GameWorld):
         self.getCamera().setTarget(self.heroe)
 
         # el terreno
-        suelo = Box(0, 448, 3840, 8, 1, "Suelo", border=0, debug=True)
+        suelo = EmptyObject(0, 448, 3840, 8, 1, "Suelo", debug=True)
         suelo.setCollisions(True)
-        suelo.setPosition(0, 448)
 
         # un muro con suelo en la parte superior
-        self.muro = Box(192, 390, 64, 58, 1, "Muro", border=0, debug=True)
+        self.muro = EmptyObject(192, 390, 64, 58, 1, "Muro", debug=True)
         self.muro.setCollisions(True)
 
-        suelo = Box(192, 384, 64, 8, 1, "Suelo", border=0, debug=True)
+        suelo = EmptyObject(192, 384, 64, 8, 1, "Suelo", debug=True)
         suelo.setCollisions(True)
 
         # una moneda bien arriba
@@ -57,7 +57,7 @@ class Game(GameWorld):
         Base(600, 300, 1, distance_x=120, vx=90)
 
         # algunas escaleras
-        Escalera(800,320)
+        Escalera(800, 320)
 
         # la prioridad en los eventos onUpdate y onCollision
         self.setPriority("Base", "Heroe", "Suelo")
