@@ -5,13 +5,12 @@ from MiniGameEngine.Animator import Animator
 class Coin(Sprite):
     # inicializamos la Moneda
     def __init__(self, x, y):
-        super().__init__(
-            x, y, layer=1, tipo="Coin", image_path="Recursos/Tiles/coin1.png"
-        )
+        super().__init__(x, y, layer=1, tipo="Coin")
         self.setCollisions(True)
 
         self.animator = Animator("Recursos/Tiles/coin*.png", speed=0.1)
-        self.animator.start()
+        image_path = self.animator.start()
+        self.setShape(image_path)
 
     # manejamos la actualizacion
     def onUpdate(self, dt, dt_optimal):

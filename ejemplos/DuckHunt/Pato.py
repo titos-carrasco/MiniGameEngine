@@ -4,11 +4,10 @@ from MiniGameEngine.Animator import Animator
 
 class Pato(Sprite):
     def __init__(self, x, y):
-        super().__init__(
-            x, y, layer=1, tipo="Pato", image_path="Recursos/PatoVolando-000.png"
-        )
+        super().__init__(x, y, layer=1, tipo="Pato")
         self.animator = Animator("Recursos/PatoVolando-*.png")
-        self.animator.start()
+        image_path = self.animator.start()
+        self.setShape(image_path)
 
     def onUpdate(self, dt, dt_optimal):
         x = self.getX()

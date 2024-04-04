@@ -3,7 +3,7 @@ from MiniGameEngine.GameObject import GameObject
 
 class Box(GameObject):
     """
-    Clase que representa una caja y que se puede utilizar como un colisionador transparente.
+    Clase que representa una caja.
     """
 
     def __init__(

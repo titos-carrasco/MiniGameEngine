@@ -4,11 +4,10 @@ from MiniGameEngine.Animator import Animator
 
 class Perro(Sprite):
     def __init__(self, x, y):
-        super().__init__(
-            x, y, layer=3, tipo="Perro", image_path="Recursos/PerroCaminando-000.png"
-        )
+        super().__init__(x, y, layer=3, tipo="Perro")
         self.animator = Animator("Recursos/PerroCaminando-*.png")
-        self.animator.start()
+        image_path = self.animator.start()
+        self.setShape(image_path)
 
     def onUpdate(self, dt, dt_optimal):
         x = self.getX()

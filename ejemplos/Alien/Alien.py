@@ -6,13 +6,12 @@ from MiniGameEngine.Animator import Animator
 class Alien(Sprite):
     # inicializamos el Alien
     def __init__(self, x, y):
-        super().__init__(
-            x, y, layer=1, tipo="Alien", image_path="Recursos/Alien-002.png"
-        )
+        super().__init__(x, y, layer=1, tipo="Alien")
         self.setCollisions(True)
 
         self.animator = Animator("Recursos/Alien-*.png", speed=0.6)
-        self.animator.start()
+        image_path = self.animator.start()
+        self.setShape(image_path)
 
     # manejamos la actualizacion
     def onUpdate(self, dt, dt_optimal):

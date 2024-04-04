@@ -12,13 +12,13 @@ class BlueBird(Sprite):
             y,
             layer=1,
             tipo="BlueBird",
-            image_path="Recursos/bird-000.png",
             debug=True,
         )
         self.setCollisions(True)
         self.speed = random.randint(100, 160)
         self.animator = Animator("Recursos/bird-*.png")
-        self.animator.start()
+        image_path = self.animator.start()
+        self.setShape(image_path)
 
     # actualizamos 1/fps veces por segundo
     def onUpdate(self, dt, dt_optimal):
