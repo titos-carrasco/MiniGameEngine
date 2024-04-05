@@ -1,5 +1,6 @@
 import glob
 import time
+from typing import List
 
 
 class Animator:
@@ -96,7 +97,7 @@ class Animator:
         """
         return self._running
 
-    def getPaths(self) -> []:
+    def getPaths(self) -> List[str]:
         """
         Retorna la lista de nombres de archivos de imágenes de este animador.
 
