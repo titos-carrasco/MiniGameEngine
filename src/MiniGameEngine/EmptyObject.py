@@ -30,3 +30,13 @@ class EmptyObject(GameObject):
 
         # lo agregamos al juego
         self._addToGame()
+
+    def setDimension(self, width: int, height: int):
+        """
+        Modifica tamaño del objeto.
+
+        Args:
+            width (int): Ancho del objeto.
+            height (int): Alto del objeto.
+        """
+        super()._setDimension(width, height)
