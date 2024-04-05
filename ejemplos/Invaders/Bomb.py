@@ -6,7 +6,9 @@ class Bomb(Sprite):
     def __init__(self, x, y):
         super().__init__(x, y, layer=1, tipo="Bomb")
 
-        self.setCollisions(True)
+        # iniciador de colisiones
+        self.setCollisionFlag(self.COLLISION_INITIATOR)
+
         self.animator = Animator("Recursos/Bomb-*.png", speed=0.1)
         image_path = self.animator.start()
         self.setShape(image_path)

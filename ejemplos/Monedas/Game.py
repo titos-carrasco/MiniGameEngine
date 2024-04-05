@@ -14,6 +14,7 @@ class Game(GameWorld):
             10,
             10,
             layer=100,
+            tipo="StatusBar",
             text=" 60.0 fps",
             font="Arial 12",
             color="black",

@@ -8,11 +8,14 @@ from MiniGameEngine.Text import Text
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(720, 375, title="Duck Hunt", bg_path="Recursos/Fondo.png")
+        super().__init__(
+            720, 375, title="Duck Hunt", bg_path="Recursos/Fondo.png", debug="F12"
+        )
         self.status_bar = Text(
             4,
             4,
             layer=100,
+            tipo="StatusBar",
             text=" 60.0 fps",
             font="Arial 12",
             color="black",

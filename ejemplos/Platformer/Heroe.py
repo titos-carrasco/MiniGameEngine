@@ -12,9 +12,11 @@ class Heroe(Sprite):
             image_path="Recursos/Heroe/Idle.png",
             debug=False,
         )
+
+        # iniciadfor de colisiones
         self.dc = 4
         self.setCollider(self.dc, 0, self.dc, 0)
-        self.setCollisions(True)
+        self.setCollisionFlag(self.COLLISION_INITIATOR)
 
         self.jump_force = 500
         self.gravity = 20

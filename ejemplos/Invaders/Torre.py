@@ -20,7 +20,9 @@ class Torre:
 class TorrePart(Sprite):
     def __init__(self, x, y, image_part):
         super().__init__(x, y, layer=1, tipo="TorrePart", image_path=image_part)
-        self.setCollisions(True)
+
+        # receptor de colisiones
+        self.setCollisionFlag(self.COLLISION_RECEIVER)
 
     def onCollision(self, dt, dt_optimal, gobj):
         self.delete()

@@ -8,13 +8,14 @@ from MiniGameEngine.Text import Text
 
 class Game(GameWorld):
     def __init__(self):
-        super().__init__(640, 480, title="Galaxian")
+        super().__init__(640, 480, title="Galaxian", debug="F12")
 
         # para mostrar los FPS
         self.status_bar = Text(
             10,
             10,
             layer=100,
+            tipo="StatusBar",
             text=" 60.0 fps",
             font="Arial 10",
             color="white",

@@ -7,7 +7,9 @@ class Betty(Sprite):
         super().__init__(
             x, y, tipo="Betty", layer=layer, image_path="Recursos/BettyRight.png"
         )
-        self.setCollisions(True)
+
+        # iniciador de colisiones
+        self.setCollisionFlag(self.COLLISION_INITIATOR)
 
         self.images = {
             "Right": "Recursos/BettyRight.png",

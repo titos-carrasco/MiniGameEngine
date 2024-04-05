@@ -17,8 +17,9 @@ class Base(Sprite):
         self.vx = -vx
         self.vy = -vy
 
+        # receptor de colisiones
         self.setCollider(6, 0, 6, 54)
-        self.setCollisions(True)
+        self.setCollisionFlag(self.COLLISION_RECEIVER)
 
         self.origin_x = x
         self.origin_y = y

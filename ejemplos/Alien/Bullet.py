@@ -5,7 +5,9 @@ class Bullet(Sprite):
     # inicializamos la Bala
     def __init__(self, x, y):
         super().__init__(x, y, layer=1, tipo="Bullet", image_path="Recursos/Bullet.png")
-        self.setCollisions(True)
+
+        # iniciador de colisiones
+        self.setCollisionFlag(self.COLLISION_INITIATOR)
 
     # actualizamos el estado de la Bala en cada frame
     def onUpdate(self, dt, dt_optimal):

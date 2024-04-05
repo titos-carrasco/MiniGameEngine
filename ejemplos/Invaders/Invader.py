@@ -12,7 +12,9 @@ class Invader(Sprite):
     def __init__(self, x, y, images_path):
         super().__init__(x, y, layer=1, tipo="Invader")
 
-        self.setCollisions(True)
+        # receptor de colisiones
+        self.setCollisionFlag(self.COLLISION_RECEIVER)
+
         self.cnt = 0
         self.dx = 4
         self.speed = 1.0

@@ -19,6 +19,7 @@ class Game(GameWorld):
             2,
             2,
             layer=100,
+            tipo="StatusBar",
             text=" 60.0 fps",
             font=("Courier New", 12),
             color="red",

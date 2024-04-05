@@ -26,7 +26,7 @@ class Game(GameWorld):
             10,
             10,
             layer=100,
-            tipo="FPS",
+            tipo="StatusBar",
             text="      fps",
             font=("Courier New", 10),
             color="black",
@@ -40,14 +40,14 @@ class Game(GameWorld):
 
         # el terreno
         suelo = EmptyObject(0, 448, 3840, 8, 1, "Suelo", debug=True)
-        suelo.setCollisions(True)
+        suelo.setCollisionFlag(suelo.COLLISION_RECEIVER)
 
         # un muro con suelo en la parte superior
         self.muro = EmptyObject(192, 390, 64, 58, 1, "Muro", debug=True)
-        self.muro.setCollisions(True)
+        suelo.setCollisionFlag(suelo.COLLISION_RECEIVER)
 
         suelo = EmptyObject(192, 384, 64, 8, 1, "Suelo", debug=True)
-        suelo.setCollisions(True)
+        suelo.setCollisionFlag(suelo.COLLISION_RECEIVER)
 
         # una moneda bien arriba
         Coin(350, 100)

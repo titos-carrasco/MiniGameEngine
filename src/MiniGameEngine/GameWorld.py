@@ -6,6 +6,7 @@ import ctypes
 import tkinter as tk
 import select
 import socket
+from typing import Tuple
 
 from MiniGameEngine.Camera import Camera
 
@@ -29,7 +30,7 @@ class GameWorld:
         bg_color: str = "gray",
         bg_path: str = None,
         debug=None,
-        world_size: (int, int) = None,
+        world_size: Tuple[int, int] = None,
     ):
         """
         Crea un objeto de la clase GameWorld.
@@ -64,6 +65,7 @@ class GameWorld:
 
         # las variables de control
         self._gobjects = []
+        self._gobjects_colliders = []
         self._images = {}
         self._keys = {}
         self._tick_prev = 0
@@ -155,6 +157,8 @@ class GameWorld:
                 for o in self._gobjects
                 if o.__status__ == "new"
             ]
+            if gobjs:
+                self._regenColliders()
 
             # si es necesario reordena las capas
             if gobjs:
@@ -188,15 +192,12 @@ class GameWorld:
             ]
 
             # onCollision para los game objects
-            gobjs = [
-                o for o in self._gobjects if o.__status__ == "alive" and o.canCollide()
-            ]
             _ = [
                 (
                     o1.onCollision(dt, self._fps_time, o2),
                     o2.onCollision(dt, self._fps_time, o1),
                 )
-                for o1, o2 in itertools.combinations(gobjs, 2)
+                for o1, o2 in self._gobjects_colliders
                 if o1.intersects(o2)
             ]
 
@@ -373,6 +374,26 @@ class GameWorld:
 
     def _getCanvas(self) -> tk.Canvas:
         return self._canvas
+
+    def _regenColliders(self):
+        gobjs_initiator = [
+            o
+            for o in self._gobjects
+            if o.__status__ == "alive" and (o.getCollisionFlag() & 0x01)
+        ]
+        gobjs_receiver = [
+            o
+            for o in self._gobjects
+            if o.__status__ == "alive" and (o.getCollisionFlag() & 0x02)
+        ]
+
+        self._gobjects_colliders = []
+        _ = [
+            self._gobjects_colliders.append((o1, o2))
+            for o1 in gobjs_initiator
+            for o2 in gobjs_receiver
+            if o1 != o2 and (o2, o1) not in self._gobjects_colliders
+        ]
 
     def _doDebug(self, _evt):
         items = self._canvas.find_all()

@@ -13,5 +13,6 @@ class Escalera(Sprite):
             debug=True,
         )
 
+        # receptor de colisiones
         self.setCollider(30, 10, 30, 0)
-        self.setCollisions(True)
+        self.setCollisionFlag(self.COLLISION_RECEIVER)

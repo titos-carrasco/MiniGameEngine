@@ -11,7 +11,9 @@ class Alien(Sprite):
     # inicializamos el Alien
     def __init__(self, x, y, images_path, get_target):
         super().__init__(x, y, layer=1, tipo="Alien")
-        self.setCollisions(True)
+
+        # iniciador y receptor de colisiones
+        self.setCollisionFlag(self.COLLISION_INITIATOR + self.COLLISION_RECEIVER)
 
         self.animator = Animator(images_path, speed=0.4)
         image_path = self.animator.start()

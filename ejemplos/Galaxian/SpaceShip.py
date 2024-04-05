@@ -12,7 +12,9 @@ class SpaceShip(Sprite):
         super().__init__(
             x, y, layer=2, tipo="SpaceShip", image_path="Recursos/SpaceShip.png"
         )
-        self.setCollisions(True)
+
+        # receptor de colisiones
+        self.setCollisionFlag(self.COLLISION_RECEIVER)
 
         # instante en que se lanzó la última bala
         self.last_bullet = 0

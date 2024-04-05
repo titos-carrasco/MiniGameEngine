@@ -1,10 +1,15 @@
 import tkinter as tk
+from typing import Tuple
 
 from MiniGameEngine.GameWorld import GameWorld
 
 
 class GameObject:
     """Clase (abstracta) que representa un objeto dentro del juego."""
+
+    COLLISION_NONE = 0
+    COLLISION_INITIATOR = 1
+    COLLISION_RECEIVER = 2
 
     _counter_ = 0
 
@@ -48,7 +53,7 @@ class GameObject:
         self._border = None
 
         self._item = 0
-        self._can_collide = False
+        self._collision_flag = 0
         self._collider = [self._x1, self._y1, self._x2, self._y2]
         self._dcollider = [0, 0, 0, 0]
 
@@ -75,7 +80,7 @@ class GameObject:
         """
         return self._y1
 
-    def getPosition(self) -> (float, float):
+    def getPosition(self) -> Tuple[float, float]:
         """Obtiene las coordenadas x e y del objeto.
 
         Returns:
@@ -83,7 +88,7 @@ class GameObject:
         """
         return self._x1, self._y1
 
-    def getCoords(self) -> (float, float, float, float):
+    def getCoords(self) -> Tuple[float, float, float, float]:
         """
         Retorna las coordenadas del rectángulo que rodea al objeto.
 
@@ -110,7 +115,7 @@ class GameObject:
         """
         return self._height
 
-    def getDimension(self) -> (int, int):
+    def getDimension(self) -> Tuple[int, int]:
         """
         Retorna la dimensión del objeto.
 
@@ -146,7 +151,21 @@ class GameObject:
         """
         return self._tipo
 
-    def getCollider(self) -> (float, float, float, float):
+    def getCollisionFlag(self) -> int:
+        """
+        Retorna el flag de colisiones
+
+        0: no participa de colisiones
+        1: participa como iniciador de una colisión
+        2: participa como receptor de una colisión
+        3: ambas situaciones
+
+        Returns:
+            (int): El tipo de colisión en el que participa.
+        """
+        return self._collision_flag
+
+    def getCollider(self) -> Tuple[float, float, float, float]:
         """_summary_
 
         returns:
@@ -254,14 +273,20 @@ class GameObject:
             state = "disabled" if visible else "hidden"
             self._canvas.itemconfig(self._item, state=state)
 
-    def setCollisions(self, enable: bool):
+    def setCollisionFlag(self, collision_flag: int):
         """
         Habilita o deshabilita participar del procesamiento de colisiones.
 
+        0: no participa de colisiones
+        1: participa como iniciador de una colisión
+        2: participa como receptor de una colisión
+        3: ambas situaciones
+
         Args:
-            enable (bool): True para habilitar, False para deshabilitar.
+            collision_flag: El tipo de colision a procesar.
         """
-        self._can_collide = enable
+        self._collision_flag = collision_flag
+        self.gw._regenColliders()
 
     def setCollider(self, dx1: int, dy1: int, dx2: int, dy2: int):
         """
@@ -279,15 +304,6 @@ class GameObject:
 
         self._dcollider = [int(dx1), int(dy1), int(dx2), int(dy2)]
         self._setCollider()
-
-    def canCollide(self) -> bool:
-        """
-        Determina si tiene habilitadas las colisiones
-
-        Returns:
-            bool: True si las colisiones están habilitadas. False en caso contrario
-        """
-        return self._can_collide
 
     def intersects(self, gobj) -> bool:
         """

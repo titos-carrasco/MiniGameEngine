@@ -14,7 +14,10 @@ class BlueBird(Sprite):
             tipo="BlueBird",
             debug=True,
         )
-        self.setCollisions(True)
+
+        # iniciador y receptos de colisiones
+        self.setCollisionFlag(self.COLLISION_INITIATOR + self.COLLISION_RECEIVER)
+
         self.speed = random.randint(100, 160)
         self.animator = Animator("Recursos/bird-*.png")
         image_path = self.animator.start()

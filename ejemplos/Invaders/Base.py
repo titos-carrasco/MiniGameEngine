@@ -7,7 +7,9 @@ from MiniGameEngine.Sprite import Sprite
 class Base(Sprite):
     def __init__(self, x, y):
         super().__init__(x, y, layer=1, tipo="Base", image_path="Recursos/Base.png")
-        self.setCollisions(True)
+
+        # receptor de colisiones
+        self.setCollisionFlag(self.COLLISION_RECEIVER)
 
         # instante en que se lanzó el último misil
         self.last_missil = 0
