@@ -39,7 +39,7 @@ class Game(GameWorld):
         self.getCamera().setTarget(self.car)
 
         # los perseguidores
-        enemy1 = Enemy(340, 1300, self.getTargetPosition)
+        Enemy(340, 1300, self.getTargetPosition)
 
         # los FPS en promedio
         self.prom = [1] * 60
@@ -72,7 +72,7 @@ class Game(GameWorld):
         box = EmptyObject(5 * 24, 24 * 60, 24 * 32, 24 * 4, 1, "Muro", debug=False)
         box.setCollisionFlag(box.COLLISION_RECEIVER)
 
-        f = open("Terreno.txt", "r")
+        f = open("Terreno.txt", "r", encoding="ASCII")
         muros = f.readlines()
         f.close()
 
