@@ -286,7 +286,7 @@ class GameObject:
             collision_flag: El tipo de colision a procesar.
         """
         self._collision_flag = collision_flag
-        self.gw._regenColliders()
+        self.gw._setRegenColliders()
 
     def setCollider(self, dx1: int, dy1: int, dx2: int, dy2: int):
         """

@@ -66,6 +66,7 @@ class GameWorld:
         # las variables de control
         self._gobjects = []
         self._gobjects_colliders = []
+        self._regen_colliders = False
         self._images = {}
         self._keys = {}
         self._tick_prev = 0
@@ -157,14 +158,34 @@ class GameWorld:
                 for o in self._gobjects
                 if o.__status__ == "new"
             ]
-            if gobjs:
-                self._regenColliders()
 
             # si es necesario reordena las capas
             if gobjs:
                 tags = [self._canvas.gettags(item) for item in self._canvas.find_all()]
                 for tag in sorted(set(tags)):
                     self._canvas.tag_raise(tag[0], "all")
+
+            # regenera el arreglo de objetos que pueden colisionar
+            if self._regen_colliders:
+                gobjs_initiator = [
+                    o
+                    for o in self._gobjects
+                    if o.__status__ == "alive" and (o.getCollisionFlag() & 0x01)
+                ]
+                gobjs_receiver = [
+                    o
+                    for o in self._gobjects
+                    if o.__status__ == "alive" and (o.getCollisionFlag() & 0x02)
+                ]
+
+                self._gobjects_colliders = []
+                _ = [
+                    self._gobjects_colliders.append((o1, o2))
+                    for o1 in gobjs_initiator
+                    for o2 in gobjs_receiver
+                    if o1 != o2 and (o2, o1) not in self._gobjects_colliders
+                ]
+                self._regen_colliders = False
 
             # mueve la cámara segun su target
             cx, cy = self._camera.moveToTarget()
@@ -198,6 +219,7 @@ class GameWorld:
                     o2.onCollision(dt, self._fps_time, o1),
                 )
                 for o1, o2 in self._gobjects_colliders
+                if o1.__status__ == "alive" and o2.__status__ == "alive"
                 if o1.intersects(o2)
             ]
 
@@ -208,6 +230,7 @@ class GameWorld:
         del self._frame
 
         del self._gobjects
+        del self._gobjects_colliders
         del self._images
         del self._keys
         del self._sock
@@ -320,6 +343,12 @@ class GameWorld:
         Args:
             *args (str, str, ...): Los tipos de GameObjetos a priorizar separados por coma.
         """
+
+        # solo se permite antes de iniciar el loop
+        assert (
+            not self._running
+        ), "No se permite esta operación una vez que el juego entra en ejecución"
+
         # los que tienen prioridad
         gobjs = [o for tipo in args for o in self._gobjects if (tipo == o._tipo)]
 
@@ -338,9 +367,15 @@ class GameWorld:
             gobj.__status__ = "new"
             self._gobjects.append(gobj)
 
+            if gobj.getCollisionFlag():
+                self._regen_colliders = True
+
     def _delGObject(self, gobj):
         if hasattr(gobj, "__status__"):
             gobj.__status__ = "dead"
+
+            if gobj.getCollisionFlag():
+                self._regen_colliders = True
 
     def _setDragged(self, _):
         self._dragged = True
@@ -375,30 +410,17 @@ class GameWorld:
     def _getCanvas(self) -> tk.Canvas:
         return self._canvas
 
-    def _regenColliders(self):
-        gobjs_initiator = [
-            o
-            for o in self._gobjects
-            if o.__status__ == "alive" and (o.getCollisionFlag() & 0x01)
-        ]
-        gobjs_receiver = [
-            o
-            for o in self._gobjects
-            if o.__status__ == "alive" and (o.getCollisionFlag() & 0x02)
-        ]
-
-        self._gobjects_colliders = []
-        _ = [
-            self._gobjects_colliders.append((o1, o2))
-            for o1 in gobjs_initiator
-            for o2 in gobjs_receiver
-            if o1 != o2 and (o2, o1) not in self._gobjects_colliders
-        ]
+    def _setRegenColliders(self):
+        self._regen_colliders = True
 
     def _doDebug(self, _evt):
         items = self._canvas.find_all()
         print("Canvas items:", items)
+
         gobjs = sorted(
             [(o.getLayer(), o.getItem(), o.getTipo()) for o in self._gobjects]
         )
         print("gObjects:", gobjs)
+
+        gobjs = [(o1.getTipo(), o2.getTipo()) for o1, o2 in self._gobjects_colliders]
+        print("gObjects_colliders:", gobjs)
