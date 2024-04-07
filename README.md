@@ -11,7 +11,16 @@ Mini motor de juegos escrito en python.
 
 ![Texto Alternativo](images/DuckHunt.png)
 
+![Texto Alternativo](images/Galaxian.png)
+
+![Texto Alternativo](images/Invaders.png)
+
 ![Texto Alternativo](images/Monedas.png)
+
+![Texto Alternativo](images/Platformer.png)
+
+![Texto Alternativo](images/RallyX.png)
+
 
 *La imágenes utilizadas en los ejemplos fueron obtenidas desde https://opengameart.org/*
 
