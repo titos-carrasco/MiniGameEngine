@@ -21,6 +21,17 @@ class Game(GameWorld):
             color="white",
         )
 
+        self.puntaje = 0
+        self.status_bar_points = Text(
+            600,
+            10,
+            layer=100,
+            tipo="Puntaje",
+            text=f"{self.puntaje:03d}",
+            font=("Comic Sans MS", 10),
+            color="white",
+        )
+
         # agregamos a los actores
         x = 140
         y = 80
@@ -47,8 +58,13 @@ class Game(GameWorld):
         fps = round(1 / fps, 1)
         self.status_bar.setText(text=f"{fps:5.1f} fps")
 
+        self.status_bar_points.setText(text=f"{self.puntaje:03d}")
+
         if self.isPressed("Escape"):
             self.exitGame()
+
+    def addPoints(self, points):
+        self.puntaje = self.puntaje + points
 
 
 # -- show time

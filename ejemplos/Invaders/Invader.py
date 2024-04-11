@@ -51,6 +51,7 @@ class Invader(Sprite):
     # manejamos las colisiones
     def onCollision(self, dt, dt_optimal, gobj):
         if gobj.getTipo() == "Missil":
+            self.gw.addPoints(10)
             x, y = self.getPosition()
             self.delete()
             Animation(x - 2, y - 6, "Recursos/Invader-Explosion.png", duration=0.4)
