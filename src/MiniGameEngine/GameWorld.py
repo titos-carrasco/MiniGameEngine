@@ -1,12 +1,10 @@
 import sys
-import os
 import time
-import itertools
 import ctypes
 import tkinter as tk
 import select
 import socket
-from typing import Tuple
+from typing import Dict, Tuple
 
 from MiniGameEngine.Camera import Camera
 
@@ -31,6 +29,7 @@ class GameWorld:
         bg_path: str = None,
         debug=None,
         world_size: Tuple[int, int] = None,
+        skin: Dict[str, int] = None,
     ):
         """
         Crea un objeto de la clase GameWorld.
@@ -79,7 +78,6 @@ class GameWorld:
 
         # la ventana principal
         self._win = tk.Tk()
-        self._win.geometry(f"{width}x{height}")
         self._win.title(title)
         self._win.resizable(False, False)
         self._screen_width = width
@@ -91,8 +89,22 @@ class GameWorld:
             self._world_width = width
             self._world_height = height
 
+        # debemos poner una carcasa
+        if skin:
+            img = self.loadImage(skin["path"])
+            self._win.geometry(f"{img.width()}x{img.height()}")
+
+            _label = tk.Label(self._win, image=img, borderwidth=0, highlightthickness=0)
+            _label.pack()
+
+            _parent = tk.Frame(self._win, width=self._screen_width, height=self._screen_height, bd=0, highlightthickness=0)
+            _parent.place(x=skin["x"], y=skin["y"])
+        else:
+            self._win.geometry(f"{width}x{height}")
+            _parent = self._win
+
         self._frame = tk.Frame(
-            self._win,
+            _parent,
             width=self._world_width,
             height=self._world_height,
             bg=bg_color,
