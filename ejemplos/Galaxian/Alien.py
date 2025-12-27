@@ -1,8 +1,8 @@
 from random import randint
-from Animation import Animation
 from Utils import bz
 from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Animator import Animator
+from MiniGameEngine.Animation import Animation
 
 
 class Alien(Sprite):
@@ -13,9 +13,7 @@ class Alien(Sprite):
         # iniciador y receptor de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR + self.COLLISION_RECEIVER)
 
-        self.animator = Animator(images_path, speed=0.4)
-        image_path = self.animator.start()
-        self.setShape(image_path)
+        self.animator = Animator(images_path, self, speed=0.4)
 
         self.get_target = get_target
         self.attacking = False
@@ -24,9 +22,7 @@ class Alien(Sprite):
     # manejamos la actualizacion
     def onUpdate(self, dt, dt_optimal):
         # su forma
-        image_path = self.animator.next()
-        if image_path:
-            self.setShape(image_path)
+        self.animator.next()
 
         # si no está atacando vemos si iniciamos un ataque
         if not self.attacking:
@@ -67,6 +63,4 @@ class Alien(Sprite):
         if tipo in ["Bullet", "SpaceShip"]:
             x, y = self.getPosition()
             self.delete()
-            Animation(
-                x - 4, y - 4, "Recursos/AlienExplosion-*.png", speed=0.1, duration=0.4
-            )
+            Animation(x - 4, y - 4, "Recursos/AlienExplosion-*.png", speed=0.1)

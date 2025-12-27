@@ -1,9 +1,9 @@
 import time
 import random
-from Animation import Animation
 from Bomb import Bomb
 from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Animator import Animator
+from MiniGameEngine.Animation import Animation
 
 
 class Invader(Sprite):
@@ -17,18 +17,14 @@ class Invader(Sprite):
         self.dx = 4
         self.speed = 0.3
 
-        self.animator = Animator(images_path, speed=self.speed)
-        image_path = self.animator.start()
-        self.setShape(image_path)
+        self.animator = Animator(images_path, self, speed=self.speed)
 
         self.t = time.time()
         self.last_bomb = time.time()
 
     # manejamos la actualizacion
     def onUpdate(self, dt, dt_optimal):
-        image_path = self.animator.next()
-        if image_path:
-            self.setShape(image_path)
+        self.animator.next()
 
         if time.time() - self.t < self.speed:
             return
@@ -52,4 +48,4 @@ class Invader(Sprite):
             self.gw.addPoints(10)
             x, y = self.getPosition()
             self.delete()
-            Animation(x - 2, y - 6, "Recursos/Invader-Explosion.png", duration=0.4)
+            Animation(x - 2, y - 6, "Recursos/Invader-Explosion.png")

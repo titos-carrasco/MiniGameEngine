@@ -10,15 +10,11 @@ class Coin(Sprite):
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER)
 
-        self.animator = Animator("Recursos/Tiles/coin*.png", speed=0.1)
-        image_path = self.animator.start()
-        self.setShape(image_path)
+        self.animator = Animator("Recursos/Tiles/coin*.png", self)
 
     # manejamos la actualizacion
     def onUpdate(self, dt, dt_optimal):
-        image_path = self.animator.next()
-        if image_path:
-            self.setShape(image_path)
+        self.animator.next()
 
     # manejamos las colisiones
     def onCollision(self, dt, dt_optimal, gobj):

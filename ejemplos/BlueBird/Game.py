@@ -1,7 +1,6 @@
 import random
 import time
 import cProfile
-
 from BlueBird import BlueBird
 from MiniGameEngine.Text import Text
 from MiniGameEngine.GameWorld import GameWorld

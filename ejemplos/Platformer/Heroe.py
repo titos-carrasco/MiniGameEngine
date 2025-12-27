@@ -28,8 +28,8 @@ class Heroe(Sprite):
         self.on_stairs = False
 
         self.shape_idle = "Recursos/Heroe/Idle.png"
-        self.anim_left = Animator("Recursos/Heroe/Left-*.png")
-        self.anim_right = Animator("Recursos/Heroe/Right-*.png")
+        self.anim_left = Animator("Recursos/Heroe/Left-*.png", self)
+        self.anim_right = Animator("Recursos/Heroe/Right-*.png", self)
 
     def onUpdate(self, dt, dt_optimal):
         x, y = self.getPosition()
@@ -55,13 +55,11 @@ class Heroe(Sprite):
                 self.dx = 0
 
             if self.dx > 0:
-                shape = self.anim_right.next()
+                self.anim_right.next()
             elif self.dx < 0:
-                shape = self.anim_left.next()
+                self.anim_left.next()
             else:
-                shape = self.shape_idle
-            if shape:
-                self.setShape(shape)
+                self.setShape(self.shape_idle)
 
             # solicitud de salto
             if self.on_ground and self.gw.isPressed("space"):

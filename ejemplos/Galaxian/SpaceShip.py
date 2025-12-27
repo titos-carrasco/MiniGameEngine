@@ -1,6 +1,6 @@
 import time
 from Bullet import Bullet
-from Animation import Animation
+from MiniGameEngine.Animation import Animation
 from MiniGameEngine.Sprite import Sprite
 
 
@@ -50,9 +50,7 @@ class SpaceShip(Sprite):
         self.delete()
         self.alive = False
 
-        Animation(
-            x - 24, y - 24, "Recursos/SpaceShipExplosion-*.png", speed=0.1, duration=0.4
-        )
+        Animation(x - 24, y - 24, "Recursos/SpaceShipExplosion-*.png", speed=0.1)
 
     def isAlive(self):
         return self.alive

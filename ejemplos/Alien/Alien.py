@@ -1,6 +1,6 @@
-from Explosion import Explosion
 from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Animator import Animator
+from MiniGameEngine.Animation import Animation
 
 
 class Alien(Sprite):
@@ -11,20 +11,16 @@ class Alien(Sprite):
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER)
 
-        self.animator = Animator("Recursos/Alien-*.png", speed=0.6)
-        image_path = self.animator.start()
-        self.setShape(image_path)
+        self.animator = Animator("Recursos/Alien-*.png", self, speed=0.6)
 
     # manejamos la actualizacion
     def onUpdate(self, dt, dt_optimal):
-        image_path = self.animator.next()
-        if image_path:
-            self.setShape(image_path)
+        self.animator.next()
 
     # manejamos las colisiones
     def onCollision(self, dt, dt_optimal, gobj):
         if gobj.getTipo() == "Bullet":
             x, y = self.getPosition()
-            self.delete()
-            Explosion(x - 2, y - 6)
+            Animation(x - 2, y - 6, "Recursos/Explosion-*.png", speed=0.1)
             print("Alien:me dieron")
+            self.delete()

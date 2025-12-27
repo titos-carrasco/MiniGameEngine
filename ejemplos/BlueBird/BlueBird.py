@@ -18,9 +18,7 @@ class BlueBird(Sprite):
         self.setCollisionFlag(self.COLLISION_INITIATOR + self.COLLISION_RECEIVER)
 
         self.speed = random.randint(100, 160)
-        self.animator = Animator("Recursos/bird-*.png")
-        image_path = self.animator.start()
-        self.setShape(image_path)
+        self.animator = Animator("Recursos/bird-*.png", self)
 
     # actualizamos 1/fps veces por segundo
     def onUpdate(self, dt, dt_optimal):
@@ -28,9 +26,7 @@ class BlueBird(Sprite):
         w = self.getWidth()
         ww = self.gw.getWidth()
 
-        image_path = self.animator.next()
-        if image_path:
-            self.setShape(image_path)
+        self.animator.next()
 
         x = x + self.speed * dt_optimal
         if x > ww:
