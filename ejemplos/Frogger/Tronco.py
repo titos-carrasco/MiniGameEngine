@@ -18,7 +18,7 @@ class Tronco(Sprite):
         self.dir = 1 if direccion == "R" else -1
         self.speed = speed
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, dt, _dt_optimal):
         x = self.getX()
         x = x + self.speed * self.dir * dt
 
