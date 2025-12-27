@@ -19,6 +19,7 @@ class BlueBird(Sprite):
 
         self.speed = random.randint(100, 160)
         self.animator = Animator("Recursos/bird-*.png", self)
+        self.animator.start()
 
     # actualizamos 1/fps veces por segundo
     def onUpdate(self, dt, dt_optimal):

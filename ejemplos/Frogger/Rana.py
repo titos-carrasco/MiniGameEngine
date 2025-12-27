@@ -5,13 +5,7 @@ from MiniGameEngine.Sprite import Sprite
 class Rana(Sprite):
     # inicializamos el objeto
     def __init__(self, x, y, layer, speed):
-        super().__init__(
-            x,
-            y,
-            layer=layer,
-            tipo="Rana",
-            image_path="Recursos/RanaU-001.png",
-        )
+        super().__init__(x, y, layer=layer, tipo="Rana")
 
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
@@ -25,6 +19,7 @@ class Rana(Sprite):
         self.animator_right = Animator("Recursos/RanaR*.png", self)
         self.animator_idle = Animator("Recursos/RanaU-001.png", self)
         self.animator = self.animator_idle
+        self.animator.start()
 
     def onUpdate(self, dt, dt_optimal):
         x, y = self.getPosition()
@@ -33,12 +28,14 @@ class Rana(Sprite):
             if self.moving != "U":
                 self.moving = "U"
                 self.animator = self.animator_up
+                self.animator.start()
             y = y - self.speed * dt
             self.setY(y)
         elif self.gw.isPressed("Down"):
             if self.moving != "D":
                 self.moving = "D"
                 self.animator = self.animator_down
+                self.animator.start()
             y = y + self.speed * dt
             if y > self.ymax:
                 y = self.ymax
@@ -47,12 +44,14 @@ class Rana(Sprite):
             if self.moving != "L":
                 self.moving = "L"
                 self.animator = self.animator_left
+                self.animator.start()
             x = max(x - self.speed * dt, 0)
             self.setX(x)
         elif self.gw.isPressed("Right"):
             if self.moving != "R":
                 self.moving = "R"
                 self.animator = self.animator_right
+                self.animator.start()
             x = x + self.speed * dt
             if x > self.gw.getWidth() - self.getWidth():
                 x = self.gw.getWidth() - self.getWidth()
@@ -60,5 +59,6 @@ class Rana(Sprite):
         elif self.moving != "-":
             self.moving = "-"
             self.animator = self.animator_idle
+            self.animator.start()
 
         self.animator.next()

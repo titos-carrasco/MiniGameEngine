@@ -9,11 +9,16 @@ class Heroe(Sprite):
             y,
             layer=2,
             tipo="Heroe",
-            image_path="Recursos/Heroe/Idle.png",
             debug=False,
         )
 
-        # iniciadfor de colisiones
+        self.anim_idle = Animator("Recursos/Heroe/Idle.png", self)
+        self.anim_left = Animator("Recursos/Heroe/Left-*.png", self)
+        self.anim_right = Animator("Recursos/Heroe/Right-*.png", self)
+        self.animator = self.anim_idle
+        self.animator.start()
+
+        # iniciador de colisiones
         self.dc = 4
         self.setCollider(self.dc, 0, self.dc, 0)
         self.setCollisionFlag(self.COLLISION_INITIATOR)
@@ -26,10 +31,6 @@ class Heroe(Sprite):
         self.dx = 0
         self.on_ground = False
         self.on_stairs = False
-
-        self.shape_idle = "Recursos/Heroe/Idle.png"
-        self.anim_left = Animator("Recursos/Heroe/Left-*.png", self)
-        self.anim_right = Animator("Recursos/Heroe/Right-*.png", self)
 
     def onUpdate(self, dt, dt_optimal):
         x, y = self.getPosition()
@@ -48,18 +49,22 @@ class Heroe(Sprite):
 
             # movimiento lateral
             if self.gw.isPressed("Left"):
+                if self.animator != self.anim_left:
+                    self.animator = self.anim_left
+                    self.animator.start()
                 self.dx = -self.velocity_x * dt_optimal
             elif self.gw.isPressed("Right"):
+                if self.animator != self.anim_right:
+                    self.animator = self.anim_right
+                    self.animator.start()
                 self.dx = self.velocity_x * dt_optimal
             else:
+                if self.animator != self.anim_idle:
+                    self.animator = self.anim_idle
+                    self.animator.start()
                 self.dx = 0
 
-            if self.dx > 0:
-                self.anim_right.next()
-            elif self.dx < 0:
-                self.anim_left.next()
-            else:
-                self.setShape(self.shape_idle)
+            self.animator.next()
 
             # solicitud de salto
             if self.on_ground and self.gw.isPressed("space"):

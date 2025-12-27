@@ -11,6 +11,7 @@ class Coin(Sprite):
         self.setCollisionFlag(self.COLLISION_RECEIVER)
 
         self.animator = Animator("Recursos/Tiles/coin*.png", self)
+        self.animator.start()
 
     # manejamos la actualizacion
     def onUpdate(self, dt, dt_optimal):

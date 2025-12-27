@@ -6,6 +6,7 @@ class Pato(Sprite):
     def __init__(self, x, y):
         super().__init__(x, y, layer=1, tipo="Pato")
         self.animator = Animator("Recursos/PatoVolando-*.png", self)
+        self.animator.start()
 
     def onUpdate(self, dt, dt_optimal):
         x = self.getX()

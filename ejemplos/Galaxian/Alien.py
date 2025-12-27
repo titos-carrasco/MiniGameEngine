@@ -14,6 +14,7 @@ class Alien(Sprite):
         self.setCollisionFlag(self.COLLISION_INITIATOR + self.COLLISION_RECEIVER)
 
         self.animator = Animator(images_path, self, speed=0.4)
+        self.animator.start()
 
         self.get_target = get_target
         self.attacking = False

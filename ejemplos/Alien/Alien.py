@@ -12,6 +12,7 @@ class Alien(Sprite):
         self.setCollisionFlag(self.COLLISION_RECEIVER)
 
         self.animator = Animator("Recursos/Alien-*.png", self, speed=0.6)
+        self.animator.start()
 
     # manejamos la actualizacion
     def onUpdate(self, dt, dt_optimal):

@@ -10,6 +10,7 @@ class Bomb(Sprite):
         self.setCollisionFlag(self.COLLISION_INITIATOR)
 
         self.animator = Animator("Recursos/Bomb-*.png", self, speed=0.1)
+        self.animator.start()
 
     # actualizamos el estado de la bomba en cada frame
     def onUpdate(self, dt, dt_optimal):

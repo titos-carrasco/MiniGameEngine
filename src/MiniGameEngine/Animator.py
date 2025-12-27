@@ -30,7 +30,6 @@ class Animator:
         self._idx = 0
         self._t = 0
         self._running = False
-        self.start()
 
     def setSpeed(self, speed: float):
         """
@@ -85,7 +84,6 @@ class Animator:
         if self._idx >= len(self._images_path):
             if not self._repeat:
                 self.stop()
-                self._running = False
                 return False
             self._idx = 0
 

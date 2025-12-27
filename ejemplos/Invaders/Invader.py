@@ -18,6 +18,7 @@ class Invader(Sprite):
         self.speed = 0.3
 
         self.animator = Animator(images_path, self, speed=self.speed)
+        self.animator.start()
 
         self.t = time.time()
         self.last_bomb = time.time()
