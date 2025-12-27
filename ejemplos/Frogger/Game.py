@@ -1,12 +1,25 @@
 from Tronco import Tronco
 from Vehiculo import Vehiculo
 from Rana import Rana
+from MiniGameEngine.Text import Text
 from MiniGameEngine.GameWorld import GameWorld
 
 
 class Game(GameWorld):
     def __init__(self):
         super().__init__(640, 730, title="Frogger", bg_path="Recursos/Fondo.png")
+        self.gw = GameWorld._getInstance()
+
+        # para mostrar los FPS
+        self.status_bar = Text(
+            10,
+            10,
+            layer=100,
+            tipo="StatusBar",
+            text=" 60.0 fps",
+            font="Arial 10",
+            color="white",
+        )
 
         # agregamos a los actores
         Tronco(0, 146, 1, "2", "R", 80)
@@ -42,12 +55,13 @@ class Game(GameWorld):
         Vehiculo(50 + 480, 580, 1, "Auto", "L", 100)
         Vehiculo(50 + 640, 580, 1, "Auto", "L", 100)
 
-        Rana(300, 644, 2, speed=200)
-
+        Rana(300, 644, 2, speed=150)
 
     def onUpdate(self, dt, dt_optimal):
         if self.isPressed("Escape"):
             self.exitGame()
+        fps = self.gw.getFPS()
+        self.status_bar.setText(text=f"{fps:5.1f} fps")
 
 
 # -- show time
