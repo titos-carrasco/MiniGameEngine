@@ -27,7 +27,7 @@ class GameWorld:
         title: str = "MiniGameEngine",
         bg_color: str = "gray",
         bg_path: str = None,
-        debug=None,
+        key_debug: str = None,
         world_size: Tuple[int, int] = None,
         skin: Dict[str, int] = None,
     ):
@@ -40,7 +40,7 @@ class GameWorld:
             title (str, opcional): Título de la ventana del juego (por defecto es "MiniGameEngine").
             bg_color (str, opcional): Color de fondo de la ventana del juego (por defecto es "gray").
             bg_path (str, opcional): Ruta de la imagen de fondo de la ventana del juego (por defecto es None).
-            debug (str, opcional): La tecla a utilizar para mostrar los detalles del mini motor de juego (por defecto es None)
+            key_debug (str, opcional): La tecla a utilizar para mostrar los detalles del mini motor de juego (por defecto es None)
             world_size (int, int, opcional): Tamaño del mundo del juego (por defecto similar al tamaño de la ventana)
         """
         assert (
@@ -97,7 +97,13 @@ class GameWorld:
             _label = tk.Label(self._win, image=img, borderwidth=0, highlightthickness=0)
             _label.pack()
 
-            _parent = tk.Frame(self._win, width=self._screen_width, height=self._screen_height, bd=0, highlightthickness=0)
+            _parent = tk.Frame(
+                self._win,
+                width=self._screen_width,
+                height=self._screen_height,
+                bd=0,
+                highlightthickness=0,
+            )
             _parent.place(x=skin["x"], y=skin["y"])
         else:
             self._win.geometry(f"{width}x{height}")
@@ -135,8 +141,8 @@ class GameWorld:
         )
 
         # para depurar
-        if debug is not None:
-            self._win.bind(f"<KeyRelease-{debug}>", self._doDebug)
+        if key_debug is not None:
+            self._win.bind(f"<KeyRelease-{key_debug}>", self._doDebug)
 
         # solo una instancia
         GameWorld._instance_ = self
@@ -427,12 +433,12 @@ class GameWorld:
 
     def _doDebug(self, _evt):
         items = self._canvas.find_all()
-        print("Canvas items:", items)
+        print("Canvas items:", items, flush=True)
 
         gobjs = sorted(
             [(o.getLayer(), o.getItem(), o.getTipo()) for o in self._gobjects]
         )
-        print("gObjects:", gobjs)
+        print("gObjects:", gobjs, flush=True)
 
         gobjs = [(o1.getTipo(), o2.getTipo()) for o1, o2 in self._gobjects_colliders]
-        print("gObjects_colliders:", gobjs)
+        print("gObjects_colliders:", gobjs, flush=True)
