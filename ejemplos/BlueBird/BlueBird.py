@@ -1,5 +1,4 @@
 import random
-
 from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Animator import Animator
 

@@ -1,14 +1,14 @@
 from SpaceShip import SpaceShip
 from Space import Space
 from Alien import Alien
-
-from MiniGameEngine.GameWorld import GameWorld
 from MiniGameEngine.Text import Text
+from MiniGameEngine.GameWorld import GameWorld
 
 
 class Game(GameWorld):
     def __init__(self):
-        super().__init__(640, 480, title="Galaxian", debug="F12")
+        super().__init__(640, 480, title="Galaxian", key_debug="F12")
+        self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
         self.status_bar = Text(
@@ -36,18 +36,11 @@ class Game(GameWorld):
             Alien(128 + i * 40, 100 + 40 * 3, "Recursos/Alien3-*.png", self.getTarget)
             Alien(128 + i * 40, 100 + 40 * 4, "Recursos/Alien3-*.png", self.getTarget)
 
-        # los FPS en promedio
-        self.prom = [1 / 60] * 60
-
     def onUpdate(self, dt, dt_optimal):
-        self.prom.pop()
-        self.prom.insert(0, dt)
-        fps = sum(self.prom) / len(self.prom)
-        fps = round(1 / fps, 1)
-        self.status_bar.setText(text=f"{fps:5.1f} fps")
-
         if self.isPressed("Escape"):
             self.exitGame()
+        fps = self.gw.getFPS()
+        self.status_bar.setText(text=f"{fps:5.1f} fps")
 
     # utilizada por los alien para obtener las coordenadas del target
     def getTarget(self):

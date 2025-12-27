@@ -1,9 +1,7 @@
 import time
 import random
-
 from Animation import Animation
 from Bomb import Bomb
-
 from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Animator import Animator
 
@@ -17,7 +15,7 @@ class Invader(Sprite):
 
         self.cnt = 0
         self.dx = 4
-        self.speed = 1.0
+        self.speed = 0.3
 
         self.animator = Animator(images_path, speed=self.speed)
         image_path = self.animator.start()

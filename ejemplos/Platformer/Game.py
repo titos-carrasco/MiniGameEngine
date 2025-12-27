@@ -2,10 +2,9 @@ from Heroe import Heroe
 from Coin import Coin
 from Base import Base
 from Escalera import Escalera
-
-from MiniGameEngine.GameWorld import GameWorld
 from MiniGameEngine.EmptyObject import EmptyObject
 from MiniGameEngine.Text import Text
+from MiniGameEngine.GameWorld import GameWorld
 
 
 class Game(GameWorld):
@@ -18,10 +17,11 @@ class Game(GameWorld):
             bg_color="light blue",
             bg_path="Recursos/Map/Mundo.png",
             world_size=(3840, 576),
-            debug="F12",
+            key_debug="F12",
         )
+        self.gw = GameWorld._getInstance()
 
-        # para mostrar los FPS dentro de la cámara
+        # para mostrar los FPS
         self.status_bar = Text(
             10,
             10,
@@ -30,8 +30,9 @@ class Game(GameWorld):
             text="      fps",
             font=("Courier New", 10),
             color="black",
-            debug=False,
         )
+
+        # la camara
         self.getCamera().addGameObject(self.status_bar)
 
         # el heroe
@@ -62,20 +63,11 @@ class Game(GameWorld):
         # la prioridad en los eventos onUpdate y onCollision
         self.setPriority("Base", "Heroe", "Suelo")
 
-        # los FPS en promedio
-        self.prom = [1] * 60
-
     def onUpdate(self, dt, dt_optimal):
-        # mostramos los FPS
-        self.prom.pop()
-        self.prom.insert(0, dt)
-        fps = sum(self.prom) / len(self.prom)
-        fps = round(1 / fps, 1)
-        self.status_bar.setText(text=f"{fps:5.1f} fps")
-
-        # verificamos si debemos abortar el juego
         if self.isPressed("Escape"):
             self.exitGame()
+        fps = self.gw.getFPS()
+        self.status_bar.setText(text=f"{fps:5.1f} fps")
 
 
 # -- show time

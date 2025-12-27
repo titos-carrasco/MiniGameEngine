@@ -1,30 +1,17 @@
 import random
-
 from Human import Human
 from Paleta import Paleta
 from Ball import Ball
-
-
-from MiniGameEngine.GameWorld import GameWorld
-from MiniGameEngine.Text import Text
 from MiniGameEngine.Sprite import Sprite
+from MiniGameEngine.Text import Text
+from MiniGameEngine.GameWorld import GameWorld
 
 
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(640, 384, title="Pong", bg_color="black", debug="F12")
-
-        # para mostrar los FPS
-        self.status_bar = Text(
-            10,
-            10,
-            layer=100,
-            tipo="StatusBar",
-            text=" 60.0 fps",
-            font="Arial 10",
-            color="white",
-        )
+        super().__init__(640, 384, title="Pong", bg_color="black", key_debug="F12")
+        self.ball = None
 
         # el puntaje
         self.puntaje1 = 0
@@ -56,30 +43,19 @@ class Game(GameWorld):
         self.player1 = Paleta(40, 160)
         self.player2 = Human(600, 160)
 
-        # los FPS en promedio
-        self.prom = [1 / 60] * 60
-
         # para controlar el juego
         self.playing = False
 
     def onUpdate(self, dt, dt_optimal):
-        # mostramos los FPS
-        self.prom.pop()
-        self.prom.insert(0, dt)
-        fps = sum(self.prom) / len(self.prom)
-        fps = round(1 / fps, 1)
-        self.status_bar.setText(text=f"{fps:5.1f} fps")
+        if self.isPressed("Escape"):
+            self.exitGame()
 
         # mostramos el puntaje
         self.puntaje1_text.setText(text=f"{self.puntaje1:02d}")
         self.puntaje2_text.setText(text=f"{self.puntaje2:02d}")
 
-        # abortamos el juego
-        if self.isPressed("Escape"):
-            self.exitGame()
-
         # lanzamos una pelota
-        elif not self.playing and self.isPressed("space"):
+        if not self.playing and self.isPressed("space"):
             self.playing = True
             speed_x = random.choice([-200, 200])
             speed_y = random.choice([-200, 200])

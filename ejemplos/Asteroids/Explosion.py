@@ -1,6 +1,4 @@
-import time
 import random
-
 from MiniGameEngine.Sprite import Sprite
 
 

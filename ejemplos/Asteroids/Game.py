@@ -1,14 +1,14 @@
 from SpaceShip import SpaceShip
 from Asteroid import Asteroid
-
-from MiniGameEngine.GameWorld import GameWorld
 from MiniGameEngine.Text import Text
+from MiniGameEngine.GameWorld import GameWorld
 
 
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(800, 600, title="Asteroids", bg_color="black", debug="F12")
+        super().__init__(800, 600, title="Asteroids", bg_color="black", key_debug="F12")
+        self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
         self.status_bar = Text(
@@ -29,22 +29,15 @@ class Game(GameWorld):
         for i in range(self.count):
             Asteroid()
 
-        # los FPS en promedio
-        self.prom = [1 / 60] * 60
-
     def message(self, msg, gobj):
         if msg == "Asteroide Out":
             Asteroid()
 
     def onUpdate(self, dt, dt_optimal):
-        self.prom.pop()
-        self.prom.insert(0, dt)
-        fps = sum(self.prom) / len(self.prom)
-        fps = round(1 / fps, 1)
-        self.status_bar.setText(text=f"{fps:5.1f} fps")
-
         if self.isPressed("Escape"):
             self.exitGame()
+        fps = self.gw.getFPS()
+        self.status_bar.setText(text=f"{fps:5.1f} fps")
 
 
 # -- show time

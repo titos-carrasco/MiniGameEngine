@@ -1,5 +1,4 @@
 import time
-
 from Smoke import Smoke
 from MiniGameEngine.Sprite import Sprite
 

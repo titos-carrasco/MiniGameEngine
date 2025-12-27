@@ -1,8 +1,6 @@
 from random import randint
-
 from Animation import Animation
 from Utils import bz
-
 from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Animator import Animator
 

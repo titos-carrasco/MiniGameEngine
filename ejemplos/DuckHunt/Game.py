@@ -1,8 +1,8 @@
 from Pasto import Pasto
 from Perro import Perro
 from Pato import Pato
-from MiniGameEngine.GameObject import GameWorld
 from MiniGameEngine.Text import Text
+from MiniGameEngine.GameObject import GameWorld
 
 
 class Game(GameWorld):
@@ -15,6 +15,9 @@ class Game(GameWorld):
             bg_path="Recursos/Fondo.png",
             skin={"path": "Recursos/Skin2.png", "x": 15, "y": 14},
         )
+        self.gw = GameWorld._getInstance()
+
+        # para mostrar los FPS
         self.status_bar = Text(
             4,
             4,
@@ -32,18 +35,11 @@ class Game(GameWorld):
         Pato(-130, 20)
         Pato(-60, 10)
 
-        # los FPS en promedio
-        self.prom = [1 / 60] * 60
-
     def onUpdate(self, dt, dt_optimal):
-        self.prom.pop()
-        self.prom.insert(0, dt)
-        fps = sum(self.prom) / len(self.prom)
-        fps = round(1 / fps, 1)
-        self.status_bar.setText(text=f"{fps:5.1f} fps")
-
         if self.isPressed("Escape"):
             self.exitGame()
+        fps = self.gw.getFPS()
+        self.status_bar.setText(text=f"{fps:5.1f} fps")
 
 
 # -- show time

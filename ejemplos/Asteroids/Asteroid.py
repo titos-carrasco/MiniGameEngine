@@ -1,5 +1,4 @@
 import random
-
 from Explosion import Explosion
 from MiniGameEngine.Sprite import Sprite
 

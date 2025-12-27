@@ -1,8 +1,6 @@
 import time
-
 from Bullet import Bullet
 from Animation import Animation
-
 from MiniGameEngine.Sprite import Sprite
 
 

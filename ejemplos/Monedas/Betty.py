@@ -1,3 +1,4 @@
+from datetime import datetime
 from MiniGameEngine.Sprite import Sprite
 
 
@@ -42,4 +43,6 @@ class Betty(Sprite):
 
     # manejamos las colisiones
     def onCollision(self, dt, dt_optimal, gobj):
-        print("Betty: Colisione con", gobj.getTipo())
+        print(
+            datetime.now().strftime("%H:%M:%S"), "Betty: Colisione con", gobj.getTipo()
+        )

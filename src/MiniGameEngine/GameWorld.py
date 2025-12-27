@@ -71,6 +71,7 @@ class GameWorld:
         self._tick_prev = 0
         self._fps = 0
         self._fps_time = 0
+        self._fps_acum = []
         self._running = False
         self._delay = None
         self._sock = socket.socket()
@@ -159,6 +160,7 @@ class GameWorld:
         self._win.bind("<Configure>", self._setDragged)
         self._fps = fps
         self._fps_time = 1 / self._fps
+        self._fps_acum = [self._fps_time] * fps
         self._delay = self._mkDelay(busy_wait)
         self._tick_prev = time.perf_counter()
         self._running = True
@@ -219,6 +221,10 @@ class GameWorld:
 
             # se sincroniza a 1/fps
             dt = self._tick()
+
+            # acumulamos para reportar los FPS
+            self._fps_acum.pop()
+            self._fps_acum.insert(0, dt)
 
             # onUpdate para la app
             self.onUpdate(dt, self._fps_time)
@@ -327,6 +333,16 @@ class GameWorld:
             Camera: La cámara utilizada en el mundo del juego
         """
         return self._camera
+
+    def getFPS(self) -> float:
+        """Obtienele los FPS actuales
+
+        Returns:
+            float: Los FPS actuales
+        """
+        fps = sum(self._fps_acum) / len(self._fps_acum)
+        fps = round(1 / fps, 1)
+        return fps
 
     def loadImage(self, image_path: str) -> tk.PhotoImage:
         """

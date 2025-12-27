@@ -1,9 +1,8 @@
 from Car import Car
 from Enemy import Enemy
-
-from MiniGameEngine.GameWorld import GameWorld
-from MiniGameEngine.Text import Text
 from MiniGameEngine.EmptyObject import EmptyObject
+from MiniGameEngine.Text import Text
+from MiniGameEngine.GameWorld import GameWorld
 
 
 class Game(GameWorld):
@@ -15,13 +14,11 @@ class Game(GameWorld):
             title="Rally X",
             bg_path="Recursos/Fondo.png",
             world_size=(1008, 1536),
-            debug="F12",
+            key_debug="F12",
         )
+        self.gw = GameWorld._getInstance()
 
-        # agregamos via programación los muros
-        self._addBorders()
-
-        # para mostrar los FPS dentro de la cámara
+        # para mostrar los FPS
         self.status_bar = Text(
             10,
             10,
@@ -32,6 +29,11 @@ class Game(GameWorld):
             color="black",
             debug=False,
         )
+
+        # agregamos via programación los muros
+        self._addBorders()
+
+        # colocamos los FPS en la camara
         self.getCamera().addGameObject(self.status_bar)
 
         # el heroe
@@ -41,20 +43,11 @@ class Game(GameWorld):
         # los perseguidores
         Enemy(340, 1300, self.getTargetPosition)
 
-        # los FPS en promedio
-        self.prom = [1] * 60
-
     def onUpdate(self, dt, dt_optimal):
-        # mostramos los FPS
-        self.prom.pop()
-        self.prom.insert(0, dt)
-        fps = sum(self.prom) / len(self.prom)
-        fps = round(1 / fps, 1)
-        self.status_bar.setText(text=f"{fps:5.1f} fps")
-
-        # verificamos si debemos abortar el juego
         if self.isPressed("Escape"):
             self.exitGame()
+        fps = self.gw.getFPS()
+        self.status_bar.setText(text=f"{fps:5.1f} fps")
 
     def getTargetPosition(self):
         if self.car:

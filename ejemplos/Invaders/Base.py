@@ -1,5 +1,4 @@
 import time
-
 from Missil import Missil
 from MiniGameEngine.Sprite import Sprite
 
