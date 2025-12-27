@@ -1,6 +1,6 @@
 import random
 import time
-import cProfile
+#import cProfile
 from BlueBird import BlueBird
 from MiniGameEngine.Text import Text
 from MiniGameEngine.GameWorld import GameWorld
@@ -46,5 +46,5 @@ class Game(GameWorld):
 
 # -- show time
 game = Game()
-# game.gameLoop(60)
-cProfile.run("game.gameLoop(60)", sort="cumtime")
+game.gameLoop(60)
+#cProfile.run("game.gameLoop(60)", sort="cumtime")

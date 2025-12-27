@@ -11,7 +11,7 @@ class BlueBird(Sprite):
             y,
             layer=1,
             tipo="BlueBird",
-            debug=True,
+            debug=False,
         )
 
         # iniciador y receptos de colisiones
