@@ -1,8 +1,5 @@
-import sys
 import time
-import ctypes
 import tkinter as tk
-import select
 import socket
 from typing import Dict, Tuple
 
@@ -42,6 +39,7 @@ class GameWorld:
             bg_path (str, opcional): Ruta de la imagen de fondo de la ventana del juego (por defecto es None).
             key_debug (str, opcional): La tecla a utilizar para mostrar los detalles del mini motor de juego (por defecto es None)
             world_size (int, int, opcional): Tamaño del mundo del juego (por defecto similar al tamaño de la ventana)
+            skin: (dict, opcional): Skin a usar. Ej. skin={"path": "Recursos/Skin2.png", "x": 15, "y": 14}
         """
         assert (
             GameWorld._instance_ is None
@@ -73,7 +71,6 @@ class GameWorld:
         self._fps_time = 0
         self._fps_acum = []
         self._running = False
-        self._delay = None
         self._sock = socket.socket()
         self._dragged = False
 
@@ -161,7 +158,6 @@ class GameWorld:
         self._fps = fps
         self._fps_time = 1 / self._fps
         self._fps_acum = [self._fps_time] * fps
-        self._delay = self._mkDelay(busy_wait)
         self._tick_prev = time.perf_counter()
         self._running = True
         while self._running:
@@ -415,31 +411,21 @@ class GameWorld:
         self._dragged = True
 
     def _tick(self):
-        t = self._fps_time + self._tick_prev
-        while t - time.perf_counter() > 0:
-            self._delay()
-        now = time.perf_counter()
+        t = self._tick_prev + self._fps_time
+
+        while True:
+            now = time.perf_counter()
+            remaining = t - now
+            if remaining <= 0:
+                break
+            elif remaining > 0.002:
+                time.sleep(0.001)
+            else:
+                time.sleep(0)
+
         dt = now - self._tick_prev
         self._tick_prev = now
         return dt
-
-    if sys.platform == "win32":
-
-        def _mkDelay(self, busy_wait: bool):
-            if busy_wait:
-                return lambda: 0
-            return lambda: [
-                ctypes.windll.winmm.timeBeginPeriod(1),
-                select.select([self._sock], [], [], 0.0001),
-                ctypes.windll.winmm.timeEndPeriod(1),
-            ]
-
-    else:
-
-        def _mkDelay(self, busy_wait: bool):
-            if busy_wait:
-                return lambda: 0
-            return lambda: select.select([], [], [], 0.0001)
 
     def _getCanvas(self) -> tk.Canvas:
         return self._canvas
