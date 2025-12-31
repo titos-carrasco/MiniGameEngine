@@ -145,7 +145,7 @@ class GameWorld:
         # solo una instancia
         GameWorld._instance_ = self
 
-    def gameLoop(self, fps: int, busy_wait: bool = False):
+    def gameLoop(self, fps: int):
         """
         Inicia el loop principal del juego.
 
@@ -418,7 +418,7 @@ class GameWorld:
             remaining = t - now
             if remaining <= 0:
                 break
-            elif remaining > 0.002:
+            if remaining > 0.002:
                 time.sleep(0.001)
             else:
                 time.sleep(0)
