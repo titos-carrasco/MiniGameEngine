@@ -3,8 +3,8 @@ from MiniGameEngine.Sprite import Sprite
 
 class Bullet(Sprite):
     # inicializamos la Bala
-    def __init__(self, x, y):
-        super().__init__(x, y, layer=2, tipo="Bullet", image_path="Recursos/Bullet.png")
+    def __init__(self, x, y, layer):
+        super().__init__(x, y, layer=layer, tipo="Bullet", image_path="Recursos/Bullet.png")
 
         # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
@@ -19,5 +19,5 @@ class Bullet(Sprite):
             self.setY(y)
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, _gobj):
         self.delete()

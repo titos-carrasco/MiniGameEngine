@@ -6,10 +6,8 @@ from MiniGameEngine.Sprite import Sprite
 
 class SpaceShip(Sprite):
     # inicializamos la Nave Espacial
-    def __init__(self, x, y):
-        super().__init__(
-            x, y, layer=2, tipo="SpaceShip", image_path="Recursos/SpaceShip.png"
-        )
+    def __init__(self, x, y, layer):
+        super().__init__(x, y, layer=layer, tipo="SpaceShip", image_path="Recursos/SpaceShip.png")
 
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER)
@@ -21,7 +19,7 @@ class SpaceShip(Sprite):
         self.alive = True
 
     # actualizamos el estado de la Nave Espacial en cada frame
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, dt_optimal):
         ww = self.gw.getWidth()
         w = self.getWidth()
         x = self.getX()
@@ -41,11 +39,11 @@ class SpaceShip(Sprite):
         # disparamos una bala
         if self.gw.isPressed("space"):
             if time.time() - self.last_bullet > 0.3:
-                Bullet(x + 12, y - 6)
+                Bullet(x + 12, y - 6, layer=self.getLayer())
                 self.last_bullet = time.time()
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, _gobj):
         x, y = self.getPosition()
         self.delete()
         self.alive = False

@@ -7,7 +7,7 @@ class Rana(Sprite):
     def __init__(self, x, y, layer, speed):
         super().__init__(x, y, layer=layer, tipo="Rana")
 
-        # receptor de colisiones
+        # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
 
         self.ymax = y
@@ -21,7 +21,7 @@ class Rana(Sprite):
         self.animator = self.animator_idle
         self.animator.start()
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, dt, _dt_optimal):
         x, y = self.getPosition()
 
         if self.gw.isPressed("Up"):

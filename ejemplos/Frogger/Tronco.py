@@ -4,13 +4,7 @@ from MiniGameEngine.Sprite import Sprite
 class Tronco(Sprite):
     # inicializamos el objeto
     def __init__(self, x, y, layer, skin, direccion, speed):
-        super().__init__(
-            x,
-            y,
-            layer=layer,
-            tipo="Tronco",
-            image_path=f"Recursos/Tronco{skin}.png",
-        )
+        super().__init__(x, y, layer=layer, tipo="Tronco", image_path=f"Recursos/Tronco{skin}.png")
 
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER)

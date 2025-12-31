@@ -4,14 +4,7 @@ from MiniGameEngine.Sprite import Sprite
 class Base(Sprite):
     # inicializamos la base
     def __init__(self, x, y, layer, distance_x=0, vx=0, distance_y=0, vy=0):
-        super().__init__(
-            x,
-            y,
-            layer=layer,
-            tipo="Base",
-            image_path="Recursos/Base.png",
-            debug=True,
-        )
+        super().__init__(x, y, layer=layer, tipo="Base", image_path="Recursos/Base.png", debug=True)
         self.distance_x = distance_x
         self.distance_y = distance_y
         self.vx = -vx
@@ -30,7 +23,7 @@ class Base(Sprite):
         return self.dx, self.dy
 
     # manejamos la actualizacion
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, dt_optimal):
         x_ = self.getX()
         x = x_ + int(self.vx * dt_optimal)
         self.dx = x_ - x

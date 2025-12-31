@@ -3,10 +3,8 @@ from MiniGameEngine.Sprite import Sprite
 
 class Bullet(Sprite):
     # inicializamos la Bala
-    def __init__(self, x, y, dx, dy):
-        super().__init__(
-            x, y, layer=1, tipo="Bullet", image_path="Recursos/Bullet.png", debug=False
-        )
+    def __init__(self, x, y, layer, dx, dy):
+        super().__init__(x, y, layer=layer, tipo="Bullet", image_path="Recursos/Bullet.png", debug=False)
 
         # ajustamos colisionador
         self.setCollider(13, 13, 13, 13)
@@ -19,7 +17,7 @@ class Bullet(Sprite):
         self.dy = dy
 
     # actualizamos el estado de la Bala en cada frame
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, dt, _dt_optimal):
         x, y = self.getPosition()
 
         x = x + dt * self.dx * 200
@@ -31,7 +29,7 @@ class Bullet(Sprite):
             self.setPosition(x, y)
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, gobj):
         tipo = gobj.getTipo()
         if tipo == "Asteroide":
             self.delete()

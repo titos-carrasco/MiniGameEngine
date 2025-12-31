@@ -10,33 +10,25 @@ class Game(GameWorld):
         super().__init__(640, 480, title="Galaxian", key_debug="F12")
         self.gw = GameWorld._getInstance()
 
+        Space(layer=1)
         # para mostrar los FPS
-        self.status_bar = Text(
-            10,
-            10,
-            layer=100,
-            tipo="StatusBar",
-            text=" 60.0 fps",
-            font="Arial 10",
-            color="white",
-        )
+        self.status_bar = Text(10, 10, layer=100, tipo="StatusBar", text=" 60.0 fps", font="Arial 10", color="white")
 
         # agregamos a los actores
-        self.space_ship = SpaceShip(307, 400)
+        self.space_ship = SpaceShip(307, 400, layer=2)
 
-        Space()
         for i in range(2):
-            Alien(288 + i * 40, 60, "Recursos/Alien0-*.png", self.getTarget)
+            Alien(288 + i * 40, 60, 2, "Recursos/Alien0-*.png", get_target=self.getTarget)
         for i in range(6):
-            Alien(208 + i * 40, 100, "Recursos/Alien2-*.png", self.getTarget)
+            Alien(208 + i * 40, 100, 2, "Recursos/Alien2-*.png", self.getTarget)
         for i in range(8):
-            Alien(168 + i * 40, 100 + 40, "Recursos/Alien1-*.png", self.getTarget)
+            Alien(168 + i * 40, 100 + 40, 2, "Recursos/Alien1-*.png", self.getTarget)
         for i in range(10):
-            Alien(128 + i * 40, 100 + 40 * 2, "Recursos/Alien3-*.png", self.getTarget)
-            Alien(128 + i * 40, 100 + 40 * 3, "Recursos/Alien3-*.png", self.getTarget)
-            Alien(128 + i * 40, 100 + 40 * 4, "Recursos/Alien3-*.png", self.getTarget)
+            Alien(128 + i * 40, 100 + 40 * 2, 2, "Recursos/Alien3-*.png", self.getTarget)
+            Alien(128 + i * 40, 100 + 40 * 3, 2, "Recursos/Alien3-*.png", self.getTarget)
+            Alien(128 + i * 40, 100 + 40 * 4, 2, "Recursos/Alien3-*.png", self.getTarget)
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         if self.isPressed("Escape"):
             self.exitGame()
         fps = self.gw.getFPS()

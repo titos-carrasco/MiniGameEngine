@@ -3,10 +3,10 @@ from MiniGameEngine.Sprite import Sprite
 
 class Ball(Sprite):
     # inicializamos la pelota
-    def __init__(self, x, y, speed_x, speed_y):
-        super().__init__(x, y, layer=1, tipo="Ball", image_path="Recursos/Ball.png")
+    def __init__(self, x, y, layer, speed_x, speed_y):
+        super().__init__(x, y, layer=layer, tipo="Ball", image_path="Recursos/Ball.png")
 
-        # receptor de colisiones
+        # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
 
         # variables internas
@@ -14,7 +14,7 @@ class Ball(Sprite):
         self.speed_y = speed_y
 
     # manejamos la actualizacion
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, dt, _dt_optimal):
         x = self.getX() + dt * self.speed_x
         y = self.getY() + dt * self.speed_y
 
@@ -42,7 +42,7 @@ class Ball(Sprite):
             self.setPosition(x, y)
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, gobj):
         if gobj.getTipo() == "Paleta":
             # me desplazaba hacia la derecha
             if self.speed_x > 0:

@@ -7,8 +7,8 @@ from MiniGameEngine.Animation import Animation
 
 
 class Invader(Sprite):
-    def __init__(self, x, y, images_path):
-        super().__init__(x, y, layer=1, tipo="Invader")
+    def __init__(self, x, y, layer, images_path):
+        super().__init__(x, y, layer=layer, tipo="Invader")
 
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER)
@@ -24,7 +24,7 @@ class Invader(Sprite):
         self.last_bomb = time.time()
 
     # manejamos la actualizacion
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         self.animator.next()
 
         if time.time() - self.t < self.speed:
@@ -40,13 +40,13 @@ class Invader(Sprite):
 
         t = time.time()
         if random.randint(0, 50) == 25:
-            Bomb(x + self.getWidth() / 2, y + self.getHeight() + 1)
+            Bomb(x + self.getWidth() / 2, y + self.getHeight() + 1, layer=self.getLayer())
         self.t = t
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, gobj):
         if gobj.getTipo() == "Missil":
             self.gw.addPoints(10)
             x, y = self.getPosition()
             self.delete()
-            Animation(x - 2, y - 6, "Recursos/Invader-Explosion.png")
+            Animation(x - 2, y - 2, "Recursos/Invader-Explosion.png")

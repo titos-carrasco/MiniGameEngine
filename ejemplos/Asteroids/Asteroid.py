@@ -4,8 +4,8 @@ from MiniGameEngine.Sprite import Sprite
 
 
 class Asteroid(Sprite):
-    def __init__(self, rock=0, idx=0):
-        super().__init__(0, 0, layer=1, tipo="Asteroide", debug=False)
+    def __init__(self, layer, rock=0, idx=0):
+        super().__init__(0, 0, layer=layer, tipo="Asteroide", debug=False)
 
         # la forma inicial
         if rock == 0:
@@ -40,7 +40,7 @@ class Asteroid(Sprite):
         self.setCollisionFlag(self.COLLISION_RECEIVER)
 
     # manejamos la actualizacion
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, dt, _dt_optimal):
         x, y = self.getPosition()
         x = x + self.speed_x * dt
         y = y + self.speed_y * dt
@@ -57,16 +57,13 @@ class Asteroid(Sprite):
             self.delete()
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, gobj):
         tipo = gobj.getTipo()
         if tipo != "Bullet":
             return
 
         self.gw.message("Asteroide Hit", self)
-        rock = self.rock
-        speed_x = self.speed_x
-        speed_y = self.speed_y
         x, y = self.getPosition()
         w, h = self.getDimension()
         self.delete()
-        Explosion(x + w / 2, y + h / 2)
+        Explosion(x + w / 2, y + h / 2, layer=self.getLayer())

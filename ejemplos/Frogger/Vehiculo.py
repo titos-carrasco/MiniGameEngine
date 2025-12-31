@@ -4,13 +4,7 @@ from MiniGameEngine.Sprite import Sprite
 class Vehiculo(Sprite):
     # inicializamos el objeto
     def __init__(self, x, y, layer, skin, direccion, speed):
-        super().__init__(
-            x,
-            y,
-            layer=layer,
-            tipo="Vehiculo",
-            image_path=f"Recursos/{skin}-{direccion}.png",
-        )
+        super().__init__(x, y, layer=layer, tipo="Vehiculo", image_path=f"Recursos/{skin}-{direccion}.png")
 
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER)

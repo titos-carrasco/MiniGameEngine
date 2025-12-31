@@ -12,15 +12,7 @@ class Game(GameWorld):
         self.puntaje = 0
 
         # para mostrar los FPS
-        self.status_bar = Text(
-            10,
-            10,
-            layer=100,
-            tipo="StatusBar",
-            text=" 60.0 fps",
-            font="Arial 10",
-            color="white",
-        )
+        self.status_bar = Text(10, 10, layer=100, tipo="StatusBar", text=" 60.0 fps", font="Arial 10", color="white")
 
         # agregamos a los actores
         x0 = 90
@@ -28,18 +20,18 @@ class Game(GameWorld):
         y = 80
         d = 30
         for x in range(11):
-            Invader(x0 + 2 + x * 30, y + d * 0, "Recursos/Invader1-*.png")
-            Invader(x0 + x * 30, y + d * 1, "Recursos/Invader2-*.png")
-            Invader(x0 + x * 30, y + d * 2, "Recursos/Invader2-*.png")
-            Invader(x0 + x * 30, y + d * 3, "Recursos/Invader3-*.png")
-            Invader(x0 + x * 30, y + d * 4, "Recursos/Invader3-*.png")
+            Invader(x0 + 2 + x * 30, y + d * 0, 1, "Recursos/Invader1-*.png")
+            Invader(x0 + x * 30, y + d * 1, 1, "Recursos/Invader2-*.png")
+            Invader(x0 + x * 30, y + d * 2, 1, "Recursos/Invader2-*.png")
+            Invader(x0 + x * 30, y + d * 3, 1, "Recursos/Invader3-*.png")
+            Invader(x0 + x * 30, y + d * 4, 1, "Recursos/Invader3-*.png")
 
         for x in range(4):
-            Torre(120 + x * 110, 340)
+            Torre(120 + x * 110, 340, layer=1)
 
-        Base(294, 400)
+        Base(294, 400, layer=1)
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         if self.isPressed("Escape"):
             self.exitGame()
         fps = self.gw.getFPS()
