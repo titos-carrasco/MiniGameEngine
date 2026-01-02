@@ -217,7 +217,7 @@ class GameWorld:
                     o._new_image_ = False
 
                 if o._move_:
-                    if self._canvas.type(o._item) == "rectangle":
+                    if o._coords_4p_:
                         tt_commands.append(
                             f"{self._canvas._w} coords {o._item} {o._x1} {o._y1} {o._x2} {o._y2}"
                         )

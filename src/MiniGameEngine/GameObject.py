@@ -61,6 +61,7 @@ class GameObject:
         self._canvas = self.gw._getCanvas()
 
         self._move_ = False
+        self._coords_4p_ = False
 
     # ---
 

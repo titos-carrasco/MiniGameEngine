@@ -48,6 +48,7 @@ class Box(GameObject):
             fill=fill_color,
             state="disabled",
         )
+        self._coords_4p_ = True
 
         # la agregamos al juego
         self._addToGame()
