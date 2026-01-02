@@ -61,6 +61,3 @@ class Box(GameObject):
             height (int): Alto de la caja.
         """
         super()._setDimension(width, height)
-
-        x1, y1, x2, y2 = self.getCoords()
-        self._canvas.coords(self._item, int(x1), int(y1), int(x2), int(y2))

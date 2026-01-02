@@ -32,31 +32,37 @@ class Pacman(Sprite):
             x = round(x - self.speed * dt)
             x = math.floor(x / self.mult) * self.mult
             self.moving = "L"
+            self.setX(x)
         elif self.gw.isPressed("Right"):
             x = x + self.speed * dt
             x = math.ceil(x / self.mult) * self.mult
             self.moving = "R"
+            self.setX(x)
         elif self.gw.isPressed("Up"):
             y = y - self.speed * dt
             y = math.floor(y / self.mult) * self.mult
             self.moving = "U"
+            self.setY(y)
         elif self.gw.isPressed("Down"):
             y = y + self.speed * dt
             y = math.ceil(y / self.mult) * self.mult
             self.moving = "D"
+            self.setY(y)
         else:
             if self.moving != "-":
                 if self.moving == "L":
                     x = math.floor(x / self.stop) * self.stop
+                    self.setX(x)
                 elif self.moving == "R":
                     x = math.ceil(x / self.stop) * self.stop
+                    self.setX(x)
                 elif self.moving == "U":
                     y = math.floor(y / self.stop) * self.stop
+                    self.setY(y)
                 elif self.moving == "D":
                     y = math.ceil(y / self.stop) * self.stop
+                    self.setY(y)
                 self.moving = "-"
-
-        self.setPosition(x, y)
 
     def onCollision(self, dt, dt_optimal, gobj):
         x, y = self.getPosition()

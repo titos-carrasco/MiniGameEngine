@@ -36,6 +36,7 @@ class Sprite(GameObject):
 
         # cargamos la imagen
         self._image = None
+        self._new_image_ = False
         if image_path:
             self.setShape(image_path)
 
@@ -51,7 +52,7 @@ class Sprite(GameObject):
         """
         img = self.gw.loadImage(image_path)
         if img != self._image:
-            self._canvas.itemconfig(self._item, image=img)
             width, height = img.width(), img.height()
             self._setDimension(width, height)
             self._image = img
+            self._new_image_ = True

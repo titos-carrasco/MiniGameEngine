@@ -1,6 +1,5 @@
 import time
 import tkinter as tk
-import socket
 from typing import Dict, Tuple
 
 from MiniGameEngine.Camera import Camera
@@ -71,7 +70,6 @@ class GameWorld:
         self._fps_time = 0
         self._fps_acum = []
         self._running = False
-        self._sock = socket.socket()
         self._dragged = False
 
         # la ventana principal
@@ -207,6 +205,32 @@ class GameWorld:
             cx, cy = self._camera.moveToTarget()
             self._frame.place(x=-cx, y=-cy)
 
+            # aqui realizamos las principales operaciones con tcl/tk
+            tt_commands = []
+            for o in self._gobjects:
+                _new_image_ = getattr(o, "_new_image_", False)
+                if _new_image_:
+                    _new_image_ = str(o._image)
+                    tt_commands.append(
+                        f"{self._canvas._w} itemconfigure {o._item} -image {_new_image_}"
+                    )
+                    o._new_image_ = False
+
+                if o._move_:
+                    if self._canvas.type(o._item) == "rectangle":
+                        tt_commands.append(
+                            f"{self._canvas._w} coords {o._item} {o._x1} {o._y1} {o._x2} {o._y2}"
+                        )
+                    else:
+                        tt_commands.append(
+                            f"{self._canvas._w} coords {o._item} {o._x1} {o._y1}"
+                        )
+                    o._move_ = False
+
+            if tt_commands:
+                script = "\n".join(tt_commands)
+                self._win.tk.eval(script)
+
             # actualiza el despliegue
             self._win.update()
 
@@ -253,7 +277,6 @@ class GameWorld:
         del self._gobjects_colliders
         del self._images
         del self._keys
-        del self._sock
 
         del GameWorld._instance_
 
@@ -435,12 +458,12 @@ class GameWorld:
 
     def _doDebug(self, _evt):
         items = self._canvas.find_all()
-        print("Canvas items:", items, flush=True)
+        print("\n\nCanvas items:", items, flush=True)
 
         gobjs = sorted(
             [(o.getLayer(), o.getItem(), o.getTipo()) for o in self._gobjects]
         )
-        print("gObjects:", gobjs, flush=True)
+        print("\n\ngObjects:", gobjs, flush=True)
 
         gobjs = [(o1.getTipo(), o2.getTipo()) for o1, o2 in self._gobjects_colliders]
-        print("gObjects_colliders:", gobjs, flush=True)
+        print("\n\ngObjects_colliders:", gobjs, flush=True)

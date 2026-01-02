@@ -60,6 +60,8 @@ class GameObject:
         self.gw = GameWorld._getInstance()
         self._canvas = self.gw._getCanvas()
 
+        self._move_ = False
+
     # ---
 
     def getX(self) -> float:
@@ -188,21 +190,11 @@ class GameObject:
         if self._x1 == x:
             return
 
+        if self._item:
+            self._move_ = True
+
         self._x1 = x
         self._x2 = self._x1 + self._width - 1
-
-        if self._item:
-            try:
-                self._canvas.coords(self._item, int(self._x1), int(self._y1))
-            except tk.TclError:
-                self._canvas.coords(
-                    self._item,
-                    int(self._x1),
-                    int(self._y1),
-                    int(self._x2),
-                    int(self._y2),
-                )
-
         self._setCollider()
 
     def setY(self, y: float):
@@ -215,21 +207,11 @@ class GameObject:
         if self._y1 == y:
             return
 
+        if self._item:
+            self._move_ = True
+
         self._y1 = y
         self._y2 = self._y1 + self._height - 1
-
-        if self._item:
-            try:
-                self._canvas.coords(self._item, int(self._x1), int(self._y1))
-            except tk.TclError:
-                self._canvas.coords(
-                    self._item,
-                    int(self._x1),
-                    int(self._y1),
-                    int(self._x2),
-                    int(self._y2),
-                )
-
         self._setCollider()
 
     def setPosition(self, x: float, y: float):
@@ -243,23 +225,13 @@ class GameObject:
         if self._x1 == x and self._y1 == y:
             return
 
+        if self._item:
+            self._move_ = True
+
         self._x1 = x
         self._y1 = y
         self._x2 = self._x1 + self._width - 1
         self._y2 = self._y1 + self._height - 1
-
-        if self._item:
-            try:
-                self._canvas.coords(self._item, int(self._x1), int(self._y1))
-            except tk.TclError:
-                self._canvas.coords(
-                    self._item,
-                    int(self._x1),
-                    int(self._y1),
-                    int(self._x2),
-                    int(self._y2),
-                )
-
         self._setCollider()
 
     def setVisibility(self, visible: bool):
