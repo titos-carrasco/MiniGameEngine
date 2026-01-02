@@ -3,8 +3,8 @@ from MiniGameEngine.Animator import Animator
 
 
 class Bomb(Sprite):
-    def __init__(self, x, y):
-        super().__init__(x, y, layer=1, tipo="Bomb")
+    def __init__(self, x, y, layer):
+        super().__init__(x, y, layer=layer, tipo="Bomb")
 
         # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
@@ -13,7 +13,7 @@ class Bomb(Sprite):
         self.animator.start()
 
     # actualizamos el estado de la bomba en cada frame
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, dt_optimal):
         self.animator.next()
 
         y = self.getY()
@@ -24,6 +24,6 @@ class Bomb(Sprite):
             self.setY(y)
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, gobj):
         if gobj.getTipo() != "Invader":
             self.delete()

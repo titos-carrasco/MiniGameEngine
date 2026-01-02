@@ -5,16 +5,10 @@ from MiniGameEngine.Animator import Animator
 
 class BlueBird(Sprite):
     # inicializamos el Ave
-    def __init__(self, x, y):
-        super().__init__(
-            x,
-            y,
-            layer=1,
-            tipo="BlueBird",
-            debug=False,
-        )
+    def __init__(self, x, y, layer):
+        super().__init__(x, y, layer=layer, tipo="BlueBird", debug=False)
 
-        # iniciador y receptos de colisiones
+        # iniciador y receptor de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR + self.COLLISION_RECEIVER)
 
         self.speed = random.randint(100, 160)
@@ -22,7 +16,7 @@ class BlueBird(Sprite):
         self.animator.start()
 
     # actualizamos 1/fps veces por segundo
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, dt_optimal):
         x = self.getX()
         w = self.getWidth()
         ww = self.gw.getWidth()

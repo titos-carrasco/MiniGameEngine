@@ -3,15 +3,8 @@ from MiniGameEngine.Sprite import Sprite
 
 
 class Enemy(Sprite):
-    def __init__(self, x, y, getTargetPosition):
-        super().__init__(
-            x,
-            y,
-            layer=2,
-            tipo="Enemy",
-            image_path="Recursos/RedCar-up.png",
-            debug=False,
-        )
+    def __init__(self, x, y, layer, get_target_position):
+        super().__init__(x, y, layer=layer, tipo="Enemy", image_path="Recursos/RedCar-up.png", debug=False)
 
         # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
@@ -21,16 +14,16 @@ class Enemy(Sprite):
         self.speed_y = -self.speed
 
         # para obtenber la posición del auto a perseguir
-        self.getTargetPosition = getTargetPosition
+        self.get_target_position = get_target_position
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, dt_optimal):
         x, y = self.getPosition()
 
         x = x + self.speed_x * dt_optimal
         y = y + self.speed_y * dt_optimal
         self.setPosition(x, y)
 
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, dt_optimal, gobj):
         tipo = gobj.getTipo()
 
         # chocamos al auto que perseguimos
@@ -47,7 +40,7 @@ class Enemy(Sprite):
             self.setPosition(x, y)
 
             # necesitamos la posición del auto que perseguimos
-            car_pos = self.getTargetPosition()
+            car_pos = self.get_target_position()
             if car_pos is None:
                 return
             cx, cy = car_pos

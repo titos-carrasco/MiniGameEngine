@@ -15,7 +15,7 @@ class Pacman(Sprite):
         self.stop = 16
         self.moving = "-"
 
-        # receptor de colisiones
+        # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
 
         self.animator = Animator("Recursos/Pacman-L*.png", self, speed=0.6)
@@ -64,7 +64,9 @@ class Pacman(Sprite):
                     self.setY(y)
                 self.moving = "-"
 
-    def onCollision(self, dt, dt_optimal, gobj):
+        self.setPosition(x, y)
+
+    def onCollision(self, _dt, _dt_optimal, gobj):
         x, y = self.getPosition()
         if gobj.getTipo() == "Bloque":
             if x != self.last_x:

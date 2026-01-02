@@ -4,9 +4,7 @@ from MiniGameEngine.EmptyObject import EmptyObject
 
 class Laberinto(Sprite):
     def __init__(self, x, y, layer):
-        super().__init__(
-            x, y, image_path="./Recursos/Laberinto.png", layer=layer, tipo="Laberinto"
-        )
+        super().__init__(x, y, image_path="./Recursos/Laberinto.png", layer=layer, tipo="Laberinto")
 
         # fmt: off
         self.mapa = [

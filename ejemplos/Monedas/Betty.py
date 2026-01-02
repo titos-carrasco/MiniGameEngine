@@ -5,9 +5,7 @@ from MiniGameEngine.Sprite import Sprite
 class Betty(Sprite):
     # inicializamos a Betty
     def __init__(self, x, y, layer):
-        super().__init__(
-            x, y, tipo="Betty", layer=layer, image_path="Recursos/BettyRight.png"
-        )
+        super().__init__(x, y, tipo="Betty", layer=layer, image_path="Recursos/BettyRight.png")
 
         # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
@@ -19,7 +17,7 @@ class Betty(Sprite):
         self.direccion = "Right"
 
     # actualizamos 1/fps veces por segundo
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, dt_optimal):
         ww = self.gw.getWidth()
         w = self.getWidth()
         x = self.getX()
@@ -42,7 +40,5 @@ class Betty(Sprite):
                 self.setShape(self.images["Right"])
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
-        print(
-            datetime.now().strftime("%H:%M:%S"), "Betty: Colisione con", gobj.getTipo()
-        )
+    def onCollision(self, _dt, _dt_optimal, gobj):
+        print(datetime.now().strftime("%H:%M:%S"), "Betty: Colisione con", gobj.getTipo())

@@ -3,13 +3,13 @@ from MiniGameEngine.Sprite import Sprite
 
 
 class Explosion(Sprite):
-    def __init__(self, x, y):
-        super().__init__(x, y, layer=1, tipo="Explosion")
+    def __init__(self, x, y, layer):
+        super().__init__(x, y, layer=layer, tipo="Explosion")
 
         x1 = int(x)
         y1 = int(y)
         r = 50
-        for e in range(20):
+        for _e in range(20):
             x2 = random.randint(x1 - r, x1 + r)
             y2 = random.randint(y1 - r, y1 + r)
             Esquirla(x, y, x2, y2)
@@ -34,9 +34,9 @@ class Esquirla(Sprite):
         for i in range(cantidad_p):
             self.puntos.append((x1 + delta_x * i, y1 + delta_y * i))
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         try:
             x, y = self.puntos.pop(0)
             self.setPosition(x, y)
-        except:
+        except IndexError as _e:
             self.delete()

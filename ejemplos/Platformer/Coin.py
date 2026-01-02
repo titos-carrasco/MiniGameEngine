@@ -4,8 +4,8 @@ from MiniGameEngine.Animator import Animator
 
 class Coin(Sprite):
     # inicializamos la Moneda
-    def __init__(self, x, y):
-        super().__init__(x, y, layer=1, tipo="Coin")
+    def __init__(self, x, y, layer):
+        super().__init__(x, y, layer=layer, tipo="Coin")
 
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER)
@@ -14,9 +14,9 @@ class Coin(Sprite):
         self.animator.start()
 
     # manejamos la actualizacion
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         self.animator.next()
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, _sgobj):
         pass

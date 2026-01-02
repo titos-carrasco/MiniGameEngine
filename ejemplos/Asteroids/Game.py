@@ -11,29 +11,21 @@ class Game(GameWorld):
         self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
-        self.status_bar = Text(
-            10,
-            10,
-            layer=100,
-            tipo="StatusBar",
-            text=" 60.0 fps",
-            font="Arial 10",
-            color="white",
-        )
+        self.status_bar = Text(10, 10, layer=100, tipo="StatusBar", text=" 60.0 fps", font="Arial 10", color="white")
 
         # número de asteroides
         self.count = 10
 
         # agregamos a los actores
-        SpaceShip(400, 300)
-        for i in range(self.count):
-            Asteroid()
+        SpaceShip(400, 300, layer=2)
+        for _i in range(self.count):
+            Asteroid(layer=2)
 
-    def message(self, msg, gobj):
+    def message(self, msg, _gobj):
         if msg == "Asteroide Out":
-            Asteroid()
+            Asteroid(layer=2)
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         if self.isPressed("Escape"):
             self.exitGame()
         fps = self.gw.getFPS()

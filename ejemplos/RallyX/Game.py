@@ -9,25 +9,13 @@ class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
         super().__init__(
-            800,
-            576,
-            title="Rally X",
-            bg_path="Recursos/Fondo.png",
-            world_size=(1008, 1536),
-            key_debug="F12",
+            800, 576, title="Rally X", bg_path="Recursos/Fondo.png", world_size=(1008, 1536), key_debug="F12"
         )
         self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
         self.status_bar = Text(
-            10,
-            10,
-            layer=100,
-            tipo="StatusBar",
-            text="      fps",
-            font=("Courier New", 15, "bold"),
-            color="black",
-            debug=False,
+            10, 10, layer=100, tipo="StatusBar", text="", font=("Courier New", 15, "bold"), color="black", debug=False
         )
 
         # agregamos via programación los muros
@@ -37,13 +25,13 @@ class Game(GameWorld):
         self.getCamera().addGameObject(self.status_bar)
 
         # el heroe
-        self.car = Car(436, 1300)
+        self.car = Car(436, 1300, layer=2)
         self.getCamera().setTarget(self.car)
 
         # los perseguidores
-        Enemy(340, 1300, self.getTargetPosition)
+        Enemy(340, 1300, 2, self.getTargetPosition)
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         if self.isPressed("Escape"):
             self.exitGame()
         fps = self.gw.getFPS()
@@ -74,9 +62,7 @@ class Game(GameWorld):
             col = 5
             for c in line:
                 if c == "X":
-                    box = EmptyObject(
-                        col * 24, row * 24, 24, 24, 1, "Muro", debug=False
-                    )
+                    box = EmptyObject(col * 24, row * 24, 24, 24, 1, "Muro", debug=False)
                     box.setCollisionFlag(box.COLLISION_RECEIVER)
                 col = col + 1
             row = row + 1

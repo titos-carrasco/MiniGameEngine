@@ -11,30 +11,15 @@ class Game(GameWorld):
         self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
-        self.status_bar = Text(
-            10,
-            10,
-            layer=100,
-            tipo="StatusBar",
-            text=" 60.0 fps",
-            font="Arial 10",
-            color="white",
-        )
+        self.status_bar = Text(10, 10, layer=100, tipo="StatusBar", text=" 60.0 fps", font="Arial 10", color="white")
 
         # agregamos a los actores
         Tronco(0, 146, 1, "2", "R", 80)
-        # Tronco(160, 146, 1, "2", "R", 80)
-        # Tronco(320, 146, 1, "2", "R", 80)
         Tronco(480, 146, 1, "2", "R", 80)
-        # Tronco(640, 146, 1, "1", "L", 80)
-
         Tronco(0, 235, 1, "3", "R", 80)
         Tronco(480, 235, 1, "3", "R", 80)
-
         Tronco(0, 280, 1, "1", "L", 80)
-        # Tronco(160, 280, 1, "1", "L", 80)
         Tronco(320, 280, 1, "1", "L", 80)
-        # Tronco(480, 280, 1, "1", "L", 80)
         Tronco(640, 280, 1, "1", "L", 80)
 
         Vehiculo(0, 430, 1, "Camion", "L", 80)
@@ -57,7 +42,7 @@ class Game(GameWorld):
 
         Rana(300, 644, 2, speed=150)
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         if self.isPressed("Escape"):
             self.exitGame()
         fps = self.gw.getFPS()

@@ -1,6 +1,5 @@
 import random
 import time
-#import cProfile
 from BlueBird import BlueBird
 from MiniGameEngine.Text import Text
 from MiniGameEngine.GameWorld import GameWorld
@@ -9,31 +8,23 @@ from MiniGameEngine.GameWorld import GameWorld
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(
-            800, 440, title="Blue Bird", bg_path="Recursos/Fondo.png", key_debug="F12"
-        )
+        super().__init__(800, 440, title="Blue Bird", bg_path="Recursos/Fondo.png", key_debug="F12")
         self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
         self.status_bar = Text(
-            2,
-            2,
-            layer=100,
-            tipo="StatusBar",
-            text=" 60.0 fps",
-            font=("Courier New", 12),
-            color="red",
+            2, 2, layer=100, tipo="StatusBar", text=" 60.0 fps", font=("Courier New", 12), color="red"
         )
         # utilizamos una variable llamada "_"
         for _ in range(60):
             x = random.randint(-40, 700)
             y = random.randint(20, 400)
-            BlueBird(x, y)
+            BlueBird(x, y, layer=1)
 
         # para detener el juego en un lapso de tiempo específico
         self.t = time.time()
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         if self.isPressed("Escape"):
             self.exitGame()
         fps = self.gw.getFPS()
@@ -47,4 +38,3 @@ class Game(GameWorld):
 # -- show time
 game = Game()
 game.gameLoop(60)
-#cProfile.run("game.gameLoop(60)", sort="cumtime")

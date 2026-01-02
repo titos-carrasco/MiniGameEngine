@@ -5,8 +5,8 @@ from MiniGameEngine.Animation import Animation
 
 class Alien(Sprite):
     # inicializamos el Alien
-    def __init__(self, x, y):
-        super().__init__(x, y, layer=1, tipo="Alien")
+    def __init__(self, x, y, layer):
+        super().__init__(x, y, layer=layer, tipo="Alien")
 
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER)
@@ -15,11 +15,11 @@ class Alien(Sprite):
         self.animator.start()
 
     # manejamos la actualizacion
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         self.animator.next()
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, gobj):
         if gobj.getTipo() == "Bullet":
             x, y = self.getPosition()
             Animation(x - 2, y - 6, "Recursos/Explosion-*.png", speed=0.1)

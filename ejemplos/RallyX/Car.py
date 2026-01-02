@@ -4,15 +4,8 @@ from MiniGameEngine.Sprite import Sprite
 
 
 class Car(Sprite):
-    def __init__(self, x, y):
-        super().__init__(
-            x,
-            y,
-            layer=2,
-            tipo="Car",
-            image_path="Recursos/BlueCar-up.png",
-            debug=False,
-        )
+    def __init__(self, x, y, layer):
+        super().__init__(x, y, layer=layer, tipo="Car", image_path="Recursos/BlueCar-up.png", debug=False)
 
         # iniciador y receptor de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR + self.COLLISION_RECEIVER)
@@ -45,7 +38,7 @@ class Car(Sprite):
 
         if self.gw.isPressed("space"):
             if time.time() - self.last_smoke > 0.5:
-                Smoke(x - 4, y - 4)
+                Smoke(x - 4, y - 4, self.getLayer())
                 self.last_smoke = time.time()
 
         x = x + self.speed_x * dt_optimal

@@ -23,20 +23,14 @@ class Game(GameWorld):
 
         # para mostrar los FPS
         self.status_bar = Text(
-            10,
-            10,
-            layer=100,
-            tipo="StatusBar",
-            text="      fps",
-            font=("Courier New", 10),
-            color="black",
+            10, 10, layer=100, tipo="StatusBar", text="      fps", font=("Courier New", 10), color="black"
         )
 
         # la camara
         self.getCamera().addGameObject(self.status_bar)
 
         # el heroe
-        self.heroe = Heroe(600, 100)
+        self.heroe = Heroe(600, 100, layer=2)
         self.getCamera().setTarget(self.heroe)
 
         # el terreno
@@ -51,19 +45,19 @@ class Game(GameWorld):
         suelo.setCollisionFlag(suelo.COLLISION_RECEIVER)
 
         # una moneda bien arriba
-        Coin(350, 100)
+        Coin(350, 100, layer=1)
 
         # algunas bases móviles
-        Base(300, 260, 1, distance_y=70, vy=90)
-        Base(600, 300, 1, distance_x=120, vx=90)
+        Base(300, 260, layer=1, distance_y=70, vy=90)
+        Base(600, 300, layer=1, distance_x=120, vx=90)
 
         # algunas escaleras
-        Escalera(800, 320)
+        Escalera(800, 320, layer=1)
 
         # la prioridad en los eventos onUpdate y onCollision
         self.setPriority("Base", "Heroe", "Suelo")
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         if self.isPressed("Escape"):
             self.exitGame()
         fps = self.gw.getFPS()

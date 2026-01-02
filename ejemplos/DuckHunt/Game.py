@@ -18,24 +18,16 @@ class Game(GameWorld):
         self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
-        self.status_bar = Text(
-            4,
-            4,
-            layer=100,
-            tipo="StatusBar",
-            text=" 60.0 fps",
-            font="Arial 12",
-            color="black",
-        )
+        self.status_bar = Text(4, 4, layer=100, tipo="StatusBar", text=" 60.0 fps", font="Arial 12", color="black")
 
         # agregamos a los actores
-        Pasto(0, 150)
-        Perro(0, 160)
-        Pato(-200, 30)
-        Pato(-130, 20)
-        Pato(-60, 10)
+        Pasto(0, 150, layer=3)
+        Perro(0, 160, layer=4)
+        Pato(-200, 30, layer=2)
+        Pato(-130, 20, layer=2)
+        Pato(-60, 10, layer=2)
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         if self.isPressed("Escape"):
             self.exitGame()
         fps = self.gw.getFPS()

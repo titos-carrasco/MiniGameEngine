@@ -3,14 +3,8 @@ from MiniGameEngine.Animator import Animator
 
 
 class Heroe(Sprite):
-    def __init__(self, x, y):
-        super().__init__(
-            x,
-            y,
-            layer=2,
-            tipo="Heroe",
-            debug=False,
-        )
+    def __init__(self, x, y, layer):
+        super().__init__(x, y, layer=layer, tipo="Heroe", debug=False)
 
         self.anim_idle = Animator("Recursos/Heroe/Idle.png", self)
         self.anim_left = Animator("Recursos/Heroe/Left-*.png", self)
@@ -32,7 +26,7 @@ class Heroe(Sprite):
         self.on_ground = False
         self.on_stairs = False
 
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, _dt, dt_optimal):
         x, y = self.getPosition()
         w, _ = self.getDimension()
         ww, _ = self.gw.getWidth(), self.gw.getHeight()
@@ -81,7 +75,7 @@ class Heroe(Sprite):
         self.on_ground = False
         self.on_stairs = False
 
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, gobj):
         x, y = self.getPosition()
         w, h = self.getDimension()
 

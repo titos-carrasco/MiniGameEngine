@@ -4,10 +4,10 @@ from MiniGameEngine.Sprite import Sprite
 
 
 class SpaceShip(Sprite):
-    def __init__(self, x, y):
-        super().__init__(x, y, layer=1, tipo="SpaceShip", debug=False)
+    def __init__(self, x, y, layer):
+        super().__init__(x, y, layer=layer, tipo="SpaceShip", debug=False)
 
-        # receptor de colisiones
+        # receptor e iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER + self.COLLISION_INITIATOR)
 
         # formas
@@ -37,7 +37,7 @@ class SpaceShip(Sprite):
         self.last_b = 0
 
     # actualizamos el estado de la Nave Espacial en cada frame
-    def onUpdate(self, dt, dt_optimal):
+    def onUpdate(self, dt, _dt_optimal):
         x, y = self.getPosition()
 
         # verificamos las teclas cada cierto tiempo
@@ -81,7 +81,7 @@ class SpaceShip(Sprite):
             if self.gw.isPressed("space"):
                 if t - self.last_b > 0.5:
                     shape, vx, vy = self.shapes[self.shape]
-                    bullet = Bullet(x, y, vx, vy)
+                    bullet = Bullet(x, y, layer=self.getLayer(), dx=vx, dy=vy)
                     bx, by = bullet.getDimension()
                     bx = x - bx / 2 + self.getWidth() / 2 + self.getWidth() / 2 * vx
                     by = y - by / 2 + self.getHeight() / 2 + self.getHeight() / 2 * vy
@@ -94,7 +94,7 @@ class SpaceShip(Sprite):
         self.setPosition(x, y)
 
     # manejamos las colisiones
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, _dt_optimal, gobj):
         tipo = gobj.getTipo()
         if tipo != "Asteroide":
             return
