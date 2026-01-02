@@ -48,4 +48,7 @@ $ . .venv/bin/activate
 * En VSCODE: File -> Preferences -> Settings: Buscar y Marcar "Python: Execute In File Dir"
 * Verificación de código: ``$ pylint --module-naming-style PascalCase --method-naming-style camelCase src/MiniGameEngine/``
 * Generación de documentación: ``$ pdoc -o doc --no-search --no-show-source -d google MiniGameEngine``
-* Generación del WHL: ``$ python setup.py bdist_wheel``
+* Generación del WHL: ``$ python -m build``
+
+Se congela el desarrollo en v0.7.0. No es posible mejorar el rendimiento en X11 por el pipeline entre tk y X11
+
