@@ -40,7 +40,9 @@ class Invader(Sprite):
 
         t = time.time()
         if random.randint(0, 50) == 25:
-            Bomb(x + self.getWidth() / 2, y + self.getHeight() + 1, layer=self.getLayer())
+            Bomb(
+                x + self.getWidth() / 2, y + self.getHeight() + 1, layer=self.getLayer()
+            )
         self.t = t
 
     # manejamos las colisiones

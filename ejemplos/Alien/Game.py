@@ -12,7 +12,15 @@ class Game(GameWorld):
         self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
-        self.status_bar = Text(10, 10, layer=100, tipo="StatusBar", text=" 60.0 fps", font="Arial 10", color="white")
+        self.status_bar = Text(
+            10,
+            10,
+            layer=100,
+            tipo="StatusBar",
+            text=" 60.0 fps",
+            font="Arial 10",
+            color="white",
+        )
 
         # el espacio infinito
         Space(layer=1)

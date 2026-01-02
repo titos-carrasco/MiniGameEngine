@@ -5,7 +5,9 @@ from MiniGameEngine.Sprite import Sprite
 class Betty(Sprite):
     # inicializamos a Betty
     def __init__(self, x, y, layer):
-        super().__init__(x, y, tipo="Betty", layer=layer, image_path="Recursos/BettyRight.png")
+        super().__init__(
+            x, y, tipo="Betty", layer=layer, image_path="Recursos/BettyRight.png"
+        )
 
         # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
@@ -41,4 +43,6 @@ class Betty(Sprite):
 
     # manejamos las colisiones
     def onCollision(self, _dt, _dt_optimal, gobj):
-        print(datetime.now().strftime("%H:%M:%S"), "Betty: Colisione con", gobj.getTipo())
+        print(
+            datetime.now().strftime("%H:%M:%S"), "Betty: Colisione con", gobj.getTipo()
+        )

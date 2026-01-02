@@ -9,13 +9,25 @@ class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
         super().__init__(
-            800, 576, title="Rally X", bg_path="Recursos/Fondo.png", world_size=(1008, 1536), key_debug="F12"
+            800,
+            576,
+            title="Rally X",
+            bg_path="Recursos/Fondo.png",
+            world_size=(1008, 1536),
+            key_debug="F12",
         )
         self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
         self.status_bar = Text(
-            10, 10, layer=100, tipo="StatusBar", text="", font=("Courier New", 15, "bold"), color="black", debug=False
+            10,
+            10,
+            layer=100,
+            tipo="StatusBar",
+            text="",
+            font=("Courier New", 15, "bold"),
+            color="black",
+            debug=False,
         )
 
         # agregamos via programación los muros
@@ -62,7 +74,9 @@ class Game(GameWorld):
             col = 5
             for c in line:
                 if c == "X":
-                    box = EmptyObject(col * 24, row * 24, 24, 24, 1, "Muro", debug=False)
+                    box = EmptyObject(
+                        col * 24, row * 24, 24, 24, 1, "Muro", debug=False
+                    )
                     box.setCollisionFlag(box.COLLISION_RECEIVER)
                 col = col + 1
             row = row + 1

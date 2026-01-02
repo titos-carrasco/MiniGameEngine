@@ -16,12 +16,24 @@ class Game(GameWorld):
         # el puntaje
         self.puntaje1 = 0
         self.puntaje1_text = Text(
-            200, 20, layer=100, tipo="StatusBar", text="", font=("Courier", 60, "bold"), color="white"
+            200,
+            20,
+            layer=100,
+            tipo="StatusBar",
+            text="",
+            font=("Courier", 60, "bold"),
+            color="white",
         )
 
         self.puntaje2 = 0
         self.puntaje2_text = Text(
-            350, 20, layer=100, tipo="StatusBar", text="", font=("Courier", 60, "bold"), color="white"
+            350,
+            20,
+            layer=100,
+            tipo="StatusBar",
+            text="",
+            font=("Courier", 60, "bold"),
+            color="white",
         )
 
         # la franja del centro

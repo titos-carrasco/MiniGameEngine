@@ -4,7 +4,14 @@ from MiniGameEngine.Sprite import Sprite
 
 class Enemy(Sprite):
     def __init__(self, x, y, layer, get_target_position):
-        super().__init__(x, y, layer=layer, tipo="Enemy", image_path="Recursos/RedCar-up.png", debug=False)
+        super().__init__(
+            x,
+            y,
+            layer=layer,
+            tipo="Enemy",
+            image_path="Recursos/RedCar-up.png",
+            debug=False,
+        )
 
         # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
@@ -43,7 +50,7 @@ class Enemy(Sprite):
             car_pos = self.get_target_position()
             if car_pos is None:
                 return
-            cx, cy = car_pos
+            #cx, cy = car_pos
 
             # necesitamos nuestro siguiente movimiento
             n = random.randint(1, 4)

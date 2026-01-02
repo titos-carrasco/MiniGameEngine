@@ -7,7 +7,9 @@ from MiniGameEngine.Sprite import Sprite
 class SpaceShip(Sprite):
     # inicializamos la Nave Espacial
     def __init__(self, x, y, layer):
-        super().__init__(x, y, layer=layer, tipo="SpaceShip", image_path="Recursos/SpaceShip.png")
+        super().__init__(
+            x, y, layer=layer, tipo="SpaceShip", image_path="Recursos/SpaceShip.png"
+        )
 
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER)

@@ -8,12 +8,20 @@ from MiniGameEngine.GameWorld import GameWorld
 class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
-        super().__init__(800, 440, title="Blue Bird", bg_path="Recursos/Fondo.png", key_debug="F12")
+        super().__init__(
+            800, 440, title="Blue Bird", bg_path="Recursos/Fondo.png", key_debug="F12"
+        )
         self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
         self.status_bar = Text(
-            2, 2, layer=100, tipo="StatusBar", text=" 60.0 fps", font=("Courier New", 12), color="red"
+            2,
+            2,
+            layer=100,
+            tipo="StatusBar",
+            text=" 60.0 fps",
+            font=("Courier New", 12),
+            color="red",
         )
         # utilizamos una variable llamada "_"
         for _ in range(60):

@@ -5,7 +5,14 @@ from MiniGameEngine.Sprite import Sprite
 
 class Car(Sprite):
     def __init__(self, x, y, layer):
-        super().__init__(x, y, layer=layer, tipo="Car", image_path="Recursos/BlueCar-up.png", debug=False)
+        super().__init__(
+            x,
+            y,
+            layer=layer,
+            tipo="Car",
+            image_path="Recursos/BlueCar-up.png",
+            debug=False,
+        )
 
         # iniciador y receptor de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR + self.COLLISION_RECEIVER)
@@ -45,7 +52,7 @@ class Car(Sprite):
         y = y + self.speed_y * dt_optimal
         self.setPosition(x, y)
 
-    def onCollision(self, dt, dt_optimal, gobj):
+    def onCollision(self, _dt, dt_optimal, gobj):
         tipo = gobj.getTipo()
         if tipo == "Muro":
             x, y = self.getPosition()

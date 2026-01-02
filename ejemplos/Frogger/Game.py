@@ -11,7 +11,15 @@ class Game(GameWorld):
         self.gw = GameWorld._getInstance()
 
         # para mostrar los FPS
-        self.status_bar = Text(10, 10, layer=100, tipo="StatusBar", text=" 60.0 fps", font="Arial 10", color="white")
+        self.status_bar = Text(
+            10,
+            10,
+            layer=100,
+            tipo="StatusBar",
+            text=" 60.0 fps",
+            font="Arial 10",
+            color="white",
+        )
 
         # agregamos a los actores
         Tronco(0, 146, 1, "2", "R", 80)

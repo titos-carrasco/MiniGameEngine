@@ -4,7 +4,14 @@ from MiniGameEngine.Sprite import Sprite
 class Escalera(Sprite):
     # inicializamos la Escalera
     def __init__(self, x, y, layer):
-        super().__init__(x, y, layer=layer, tipo="Escalera", image_path="Recursos/Escalera.png", debug=True)
+        super().__init__(
+            x,
+            y,
+            layer=layer,
+            tipo="Escalera",
+            image_path="Recursos/Escalera.png",
+            debug=True,
+        )
 
         # receptor de colisiones
         self.setCollider(30, 10, 30, 0)

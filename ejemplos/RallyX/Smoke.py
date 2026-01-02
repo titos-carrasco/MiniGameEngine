@@ -4,7 +4,9 @@ from MiniGameEngine.Sprite import Sprite
 
 class Smoke(Sprite):
     def __init__(self, x, y, layer):
-        super().__init__(x, y, layer=layer, tipo="Smoke", image_path="Recursos/Smoke.png")
+        super().__init__(
+            x, y, layer=layer, tipo="Smoke", image_path="Recursos/Smoke.png"
+        )
 
         self.t = time.time()
 

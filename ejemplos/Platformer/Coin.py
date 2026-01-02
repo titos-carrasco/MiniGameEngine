@@ -18,5 +18,5 @@ class Coin(Sprite):
         self.animator.next()
 
     # manejamos las colisiones
-    def onCollision(self, _dt, _dt_optimal, _sgobj):
+    def onCollision(self, _dt, _dt_optimal, _gobj):
         pass

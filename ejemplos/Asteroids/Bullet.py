@@ -4,7 +4,14 @@ from MiniGameEngine.Sprite import Sprite
 class Bullet(Sprite):
     # inicializamos la Bala
     def __init__(self, x, y, layer, dx, dy):
-        super().__init__(x, y, layer=layer, tipo="Bullet", image_path="Recursos/Bullet.png", debug=False)
+        super().__init__(
+            x,
+            y,
+            layer=layer,
+            tipo="Bullet",
+            image_path="Recursos/Bullet.png",
+            debug=False,
+        )
 
         # ajustamos colisionador
         self.setCollider(13, 13, 13, 13)

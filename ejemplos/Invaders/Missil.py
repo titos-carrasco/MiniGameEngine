@@ -3,7 +3,9 @@ from MiniGameEngine.Sprite import Sprite
 
 class Missil(Sprite):
     def __init__(self, x, y, layer):
-        super().__init__(x, y, layer=layer, tipo="Missil", image_path="Recursos/Missil.png")
+        super().__init__(
+            x, y, layer=layer, tipo="Missil", image_path="Recursos/Missil.png"
+        )
 
         # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)

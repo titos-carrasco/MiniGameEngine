@@ -4,7 +4,9 @@ from MiniGameEngine.Sprite import Sprite
 class Human(Sprite):
     # inicializamos la paleta del humano
     def __init__(self, x, y, layer):
-        super().__init__(x, y, layer=layer, tipo="Paleta", image_path="Recursos/Paleta.png")
+        super().__init__(
+            x, y, layer=layer, tipo="Paleta", image_path="Recursos/Paleta.png"
+        )
 
         # receptor de colisiones
         self.setCollisionFlag(self.COLLISION_RECEIVER)
