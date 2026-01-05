@@ -1,4 +1,3 @@
-import tkinter as tk
 from typing import Tuple
 
 from MiniGameEngine.GameWorld import GameWorld
@@ -347,14 +346,13 @@ class GameObject:
             self._border = Box(
                 self._x1,
                 self._y1,
-                1,
-                1,
+                self._width,
+                self._height,
                 self._layer,
                 tipo="Debug",
                 border=1,
                 border_color="red",
             )
-            self._setCollider()
 
     def _setDimension(self, width: int, height: int):
         """
