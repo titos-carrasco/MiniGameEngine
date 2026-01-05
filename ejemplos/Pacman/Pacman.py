@@ -4,52 +4,82 @@ from MiniGameEngine.Animator import Animator
 
 
 class Pacman(Sprite):
-    def __init__(self, x, y, layer):
-        super().__init__(x, y, layer=layer, tipo="Pacman")
+    def __init__(self, x, y, layer, game):
+        super().__init__(
+            x, y, layer=layer, tipo="Pacman", image_path="./Recursos/Pacman-L0.png"
+        )
+
+        # para nteractuar con el controlador del juego
+        self.game = game
 
         # para el movimiento
-        self.speed = 200
+        self.speed = 100
         self.last_x = x
         self.last_y = y
-        self.mult = 4
+        self.mult = 1
         self.stop = 16
         self.moving = "-"
 
         # iniciador de colisiones
         self.setCollisionFlag(self.COLLISION_INITIATOR)
 
-        self.animator = Animator("Recursos/Pacman-L*.png", self, speed=0.6)
-        self.animator.start()
+        # las animaciones
+        self.animator = None
+        self.animLeft = Animator("Recursos/Pacman-L*.png", self, speed=0.1)
+        self.animRight = Animator("Recursos/Pacman-R*.png", self, speed=0.1)
+        self.animUp = Animator("Recursos/Pacman-U*.png", self, speed=0.1)
+        self.animDown = Animator("Recursos/Pacman-D*.png", self, speed=0.1)
 
     # actualizamos su estado en cada frame
     def onUpdate(self, dt, _dt_optimal):
-        self.animator.next()
+        if self.animator:
+            self.animator.next()
         x, y = self.getPosition()
         self.last_x = x
         self.last_y = y
 
+        if x >= 460:
+            x = -28
+        elif x <= -28:
+            x = 460
+
         if self.gw.isPressed("Left"):
             x = round(x - self.speed * dt)
-            x = math.floor(x / self.mult) * self.mult
-            self.moving = "L"
+            # x = math.floor(x / self.mult) * self.mult
             self.setX(x)
+            if self.moving != "L":
+                self.animator = self.animLeft
+                self.animator.start()
+                self.moving = "L"
         elif self.gw.isPressed("Right"):
             x = x + self.speed * dt
-            x = math.ceil(x / self.mult) * self.mult
-            self.moving = "R"
+            # x = math.ceil(x / self.mult) * self.mult
             self.setX(x)
+            if self.moving != "R":
+                self.animator = self.animRight
+                self.animator.start()
+                self.moving = "R"
         elif self.gw.isPressed("Up"):
             y = y - self.speed * dt
-            y = math.floor(y / self.mult) * self.mult
-            self.moving = "U"
+            # y = math.floor(y / self.mult) * self.mult
             self.setY(y)
+            if self.moving != "U":
+                self.animator = self.animUp
+                self.animator.start()
+                self.moving = "U"
         elif self.gw.isPressed("Down"):
             y = y + self.speed * dt
-            y = math.ceil(y / self.mult) * self.mult
-            self.moving = "D"
+            # y = math.ceil(y / self.mult) * self.mult
             self.setY(y)
+            if self.moving != "D":
+                self.animator = self.animDown
+                self.animDown.start()
+                self.moving = "D"
         else:
             if self.moving != "-":
+                self.animator.stop()
+                self.animator = None
+                self.setShape("./Recursos/Pacman-L0.png")
                 if self.moving == "L":
                     x = math.floor(x / self.stop) * self.stop
                     self.setX(x)
@@ -73,4 +103,15 @@ class Pacman(Sprite):
                 self.setX(self.last_x)
             if y != self.last_y:
                 self.setY(self.last_y)
-            print("Bloque")
+        elif gobj.getTipo() == "Punto":
+            w, h = self.getDimension()
+            x = x + w / 2
+            y = y + h / 2
+            xp, yp = gobj.getPosition()
+            w, h = gobj.getDimension()
+            xp = xp + w / 2
+            yp = yp + h / 2
+            d = abs(math.hypot(xp - x, yp - y))
+            if d <= 8:
+                gobj.delete()
+                self.game.eatDot()
