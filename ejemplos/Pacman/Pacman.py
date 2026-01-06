@@ -9,15 +9,13 @@ class Pacman(Sprite):
             x, y, layer=layer, tipo="Pacman", image_path="./Recursos/Pacman-L0.png"
         )
 
-        # para nteractuar con el controlador del juego
+        # para interactuar con el controlador del juego
         self.game = game
 
         # para el movimiento
-        self.speed = 100
+        self.speed = 1
         self.last_x = x
         self.last_y = y
-        self.mult = 1
-        self.stop = 16
         self.moving = "-"
 
         # iniciador de colisiones
@@ -31,7 +29,7 @@ class Pacman(Sprite):
         self.animDown = Animator("Recursos/Pacman-D*.png", self, speed=0.1)
 
     # actualizamos su estado en cada frame
-    def onUpdate(self, dt, _dt_optimal):
+    def onUpdate(self, _dt, _dt_optimal):
         if self.animator:
             self.animator.next()
         x, y = self.getPosition()
@@ -44,32 +42,28 @@ class Pacman(Sprite):
             x = 460
 
         if self.gw.isPressed("Left"):
-            x = round(x - self.speed * dt)
-            # x = math.floor(x / self.mult) * self.mult
+            x = x - self.speed
             self.setX(x)
             if self.moving != "L":
                 self.animator = self.animLeft
                 self.animator.start()
                 self.moving = "L"
         elif self.gw.isPressed("Right"):
-            x = x + self.speed * dt
-            # x = math.ceil(x / self.mult) * self.mult
+            x = x + self.speed
             self.setX(x)
             if self.moving != "R":
                 self.animator = self.animRight
                 self.animator.start()
                 self.moving = "R"
         elif self.gw.isPressed("Up"):
-            y = y - self.speed * dt
-            # y = math.floor(y / self.mult) * self.mult
+            y = y - self.speed
             self.setY(y)
             if self.moving != "U":
                 self.animator = self.animUp
                 self.animator.start()
                 self.moving = "U"
         elif self.gw.isPressed("Down"):
-            y = y + self.speed * dt
-            # y = math.ceil(y / self.mult) * self.mult
+            y = y + self.speed
             self.setY(y)
             if self.moving != "D":
                 self.animator = self.animDown
@@ -81,16 +75,16 @@ class Pacman(Sprite):
                 self.animator = None
                 self.setShape("./Recursos/Pacman-L0.png")
                 if self.moving == "L":
-                    x = math.floor(x / self.stop) * self.stop
+                    x = x // 8 * 8
                     self.setX(x)
                 elif self.moving == "R":
-                    x = math.ceil(x / self.stop) * self.stop
+                    x = (x + 8) // 8 * 8
                     self.setX(x)
                 elif self.moving == "U":
-                    y = math.floor(y / self.stop) * self.stop
+                    y = y // 8 * 8
                     self.setY(y)
                 elif self.moving == "D":
-                    y = math.ceil(y / self.stop) * self.stop
+                    y = (y + 8) // 8 * 8
                     self.setY(y)
                 self.moving = "-"
 
