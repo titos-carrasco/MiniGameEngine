@@ -104,7 +104,7 @@ class Laberinto(Sprite):
 
 class Muro(EmptyObject):
     def __init__(self, x, y, w, h, layer):
-        super().__init__(x, y, width=w, height=h, layer=layer, tipo="Muro", debug=True)
+        super().__init__(x, y, width=w, height=h, layer=layer, tipo="Muro", debug=False)
         self.setCollisionFlag(self.COLLISION_RECEIVER)
 
 

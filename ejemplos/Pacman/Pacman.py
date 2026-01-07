@@ -6,7 +6,7 @@ from MiniGameEngine.Animator import Animator
 class Pacman(Sprite):
     def __init__(self, x, y, layer, game):
         super().__init__(
-            x, y, layer=layer, tipo="Pacman", image_path="./Recursos/Pacman-L0.png"
+            x, y, layer=layer, tipo="Pacman", image_path="./Recursos/Pacman/Left-0.png"
         )
 
         # para interactuar con el controlador del juego
@@ -19,19 +19,26 @@ class Pacman(Sprite):
         self.moving = "-"
 
         # iniciador de colisiones
-        self.setCollisionFlag(self.COLLISION_INITIATOR)
+        self.setCollisionFlag(self.COLLISION_INITIATOR + self.COLLISION_RECEIVER)
 
         # las animaciones
         self.animator = None
-        self.animLeft = Animator("Recursos/Pacman-L*.png", self, speed=0.1)
-        self.animRight = Animator("Recursos/Pacman-R*.png", self, speed=0.1)
-        self.animUp = Animator("Recursos/Pacman-U*.png", self, speed=0.1)
-        self.animDown = Animator("Recursos/Pacman-D*.png", self, speed=0.1)
+        self.animLeft = Animator("Recursos/Pacman/Left*.png", self, speed=0.1)
+        self.animRight = Animator("Recursos/Pacman/Right*.png", self, speed=0.1)
+        self.animUp = Animator("Recursos/Pacman/Up*.png", self, speed=0.1)
+        self.animDown = Animator("Recursos/Pacman/Down*.png", self, speed=0.1)
+        self.animDead = Animator(
+            "Recursos/Pacman/Die*.png", self, speed=0.1, repeat=False
+        )
 
     # actualizamos su estado en cada frame
     def onUpdate(self, _dt, _dt_optimal):
         if self.animator:
             self.animator.next()
+
+        if self.moving == "Dead":
+            return
+
         x, y = self.getPosition()
         self.last_x = x
         self.last_y = y
@@ -73,7 +80,7 @@ class Pacman(Sprite):
             if self.moving != "-":
                 self.animator.stop()
                 self.animator = None
-                self.setShape("./Recursos/Pacman-L0.png")
+                self.setShape("./Recursos/Pacman/Left-0.png")
                 if self.moving == "L":
                     x = x // 8 * 8
                     self.setX(x)
@@ -91,8 +98,11 @@ class Pacman(Sprite):
         self.setPosition(x, y)
 
     def onCollision(self, _dt, _dt_optimal, gobj):
+        if self.moving == "Dead":
+            return
+
         x, y = self.getPosition()
-        if gobj.getTipo() == "Bloque":
+        if gobj.getTipo() == "Muro":
             if x != self.last_x:
                 self.setX(self.last_x)
             if y != self.last_y:
@@ -109,3 +119,29 @@ class Pacman(Sprite):
             if d <= 8:
                 gobj.delete()
                 self.game.eatDot()
+        elif gobj.getTipo() == "Circulo":
+            w, h = self.getDimension()
+            x = x + w / 2
+            y = y + h / 2
+            xp, yp = gobj.getPosition()
+            w, h = gobj.getDimension()
+            xp = xp + w / 2
+            yp = yp + h / 2
+            d = abs(math.hypot(xp - x, yp - y))
+            if d <= 12:
+                gobj.delete()
+                self.game.eatCircle()
+
+        elif gobj.getTipo() == "Ghost":
+            w, h = self.getDimension()
+            x = x + w / 2
+            y = y + h / 2
+            xp, yp = gobj.getPosition()
+            w, h = gobj.getDimension()
+            xp = xp + w / 2
+            yp = yp + h / 2
+            d = abs(math.hypot(xp - x, yp - y))
+            if d <= 30:
+                self.moving = "Dead"
+                self.animator = self.animDead
+                self.animator.start()

@@ -39,13 +39,12 @@ class Game(GameWorld):
             color="white",
         )
 
-
         # agregamos a los actores
         Pacman(13 * 16 + 8, 320, 10, self)
         Blinky(186, 272, 10)
         Clyde(200, 272, 10)
         Inky(232, 272, 10)
-        Pinky(15*16, 272, 10)
+        Pinky(15 * 16, 272, 10)
 
     def onUpdate(self, _dt, _dt_optimal):
         if self.isPressed("Escape"):
@@ -55,6 +54,10 @@ class Game(GameWorld):
 
     def eatDot(self):
         self.puntos = self.puntos + 1
+        self.point_bar.setText(f"{self.puntos:04d}")
+
+    def eatCircle(self):
+        self.puntos = self.puntos + 20
         self.point_bar.setText(f"{self.puntos:04d}")
 
 
