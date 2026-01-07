@@ -1,6 +1,9 @@
 from Laberinto import Laberinto
 from Pacman import Pacman
 from Blinky import Blinky
+from Clyde import Clyde
+from Inky import Inky
+from Pinky import Pinky
 from MiniGameEngine.Text import Text
 from MiniGameEngine.GameWorld import GameWorld
 
@@ -39,7 +42,10 @@ class Game(GameWorld):
 
         # agregamos a los actores
         Pacman(13 * 16 + 8, 320, 10, self)
-        Blinky(12*16, 17*16, 10)
+        Blinky(186, 272, 10)
+        Clyde(200, 272, 10)
+        Inky(232, 272, 10)
+        Pinky(15*16, 272, 10)
 
     def onUpdate(self, _dt, _dt_optimal):
         if self.isPressed("Escape"):

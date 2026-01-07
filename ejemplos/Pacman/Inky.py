@@ -4,16 +4,16 @@ from MiniGameEngine.Sprite import Sprite
 from MiniGameEngine.Animator import Animator
 
 
-class Blinky(Sprite):
+class Inky(Sprite):
     def __init__(self, x, y, layer):
         super().__init__(x, y, layer=layer, tipo="Ghost")
 
         self.setCollisionFlag(self.COLLISION_INITIATOR)
 
-        self.animLeft = Animator("./Recursos/Blinky/L*", self, speed=0.4)
-        self.animRight = Animator("./Recursos/Blinky/R*", self, speed=0.4)
-        self.animUp = Animator("./Recursos/Blinky/U*", self, speed=0.4)
-        self.animDown = Animator("./Recursos/Blinky/D*", self, speed=0.4)
+        self.animLeft = Animator("./Recursos/Inky/L*", self, speed=0.4)
+        self.animRight = Animator("./Recursos/Inky/R*", self, speed=0.4)
+        self.animUp = Animator("./Recursos/Inky/U*", self, speed=0.4)
+        self.animDown = Animator("./Recursos/Inky/D*", self, speed=0.4)
         self.animator = self.animDown
         self.animator.start()
 
