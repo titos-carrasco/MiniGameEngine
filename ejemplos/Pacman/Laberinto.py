@@ -9,59 +9,102 @@ class Laberinto(Sprite):
         )
 
         # fmt: off
-        self.mapa = [
-            "BBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
-            "B............ B............ B",
-            "B.    .     . B.     .    . B",
-            "Bc BBB. BBBB. B. BBBB. BBBc B",
-            "B. BBB. BBBB. B. BBBB. BBB. B",
-            "B.......................... B",
-            "B.    .  .        .  .    . B",
-            "B. BBB. B. BBBBBBB. B. BBB. B",
-            "B...... B.... B.... B...... B",
-            "B     . B   . B.    B.      B",
-            "BBBBBB. BBBB. B. BBBB. BBBBBB",
-            "BBBBBB. B.......... B. BBBBBB",
-            "BBBBBB. B.        . B. BBBBBB",
-            "BBBBBB. B. BB   BB. B. BBBBBB",
-            ".......... B     B.......... ",
-            "      .  . B     B.  .       ",
-            "BBBBBB. B. BBBBBBB. B. BBBBBB",
-            "BBBBBB. B....  .... B. BBBBBB",
-            "BBBBBB. B.        . B. BBBBBB",
-            "BBBBBB. B. BBBBBBB. B. BBBBBB",
-            "B............ B............ B",
-            "B.    .     . B.     .    . B",
-            "B. BBB. BBBB. B. BBBB. BBB. B",
-            "Bc.. B................ B..c B",
-            "B  . B.  .        .  . B.   B",
-            "BBB. B. B. BBBBBBB. B. B. BBB",
-            "B...... B.... B.... B...... B",
-            "B.      B   . B.    B     . B",
-            "B. BBBBBBBBB. B. BBBBBBBBB. B",
-            "B.......................... B",
-            "B                           B",
-            "BBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+        dots = [
+            "............BB............",
+            ".BBBB.BBBBB.BB.BBBBB.BBBB.",
+            "CBBBB.BBBBB.BB.BBBBB.BBBBC",
+            ".BBBB.BBBBB.BB.BBBBB.BBBB.",
+            "..........................",
+            ".BBBB.BB.BBBBBBBB.BB.BBBB.",
+            ".BBBB.BB.BBBBBBBB.BB.BBBB.",
+            "......BB....BB....BB......",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "BBBBB.BBBBBBBBBBBBBB.BBBBB",
+            "............BB............",
+            ".BBBB.BBBBB.BB.BBBBB.BBBB.",
+            ".BBBB.BBBBB.BB.BBBBB.BBBB.",
+            "C..BB.......BB.......BB..C",
+            "BB.BB.BB.BBBBBBBB.BB.BB.BB",
+            "BB.BB.BB.BBBBBBBB.BB.BB.BB",
+            "......BB....BB....BB......",
+            ".BBBBBBBBBB.BB.BBBBBBBBBB.",
+            ".BBBBBBBBBB.BB.BBBBBBBBBB.",
+            ".........................."
         ]
         # fmt: on
+        muros = [
+            (0, 48, 464, 16),
+            (0, 64, 16, 208),
+            (0, 304, 16, 240),
+            (0, 544, 464, 16),
+            (448, 304, 16, 240),
+            (448, 64, 16, 208),
+            (48, 96, 48, 32),
+            (128, 96, 64, 32),
+            (224, 64, 16, 64),
+            (272, 96, 64, 32),
+            (368, 96, 48, 32),
+            (48, 160, 48, 16),
+            (128, 160, 16, 112),
+            (176, 160, 112, 16),
+            (320, 160, 16, 112),
+            (368, 160, 48, 16),
+            (16, 208, 80, 64),
+            (144, 208, 48, 16),
+            (224, 176, 16, 48),
+            (272, 208, 48, 16),
+            (368, 208, 81, 64),
+            (176, 256, 112, 64),
+            (16, 304, 80, 64),
+            (128, 304, 16, 64),
+            (176, 352, 112, 16),
+            (320, 304, 16, 64),
+            (368, 304, 80, 64),
+            (48, 400, 48, 16),
+            (128, 400, 64, 16),
+            (224, 368, 16, 48),
+            (272, 400, 64, 16),
+            (368, 400, 48, 16),
+            (16, 448, 32, 16),
+            (80, 416, 16, 48),
+            (128, 448, 16, 48),
+            (176, 448, 112, 16),
+            (320, 448, 16, 48),
+            (368, 416, 16, 48),
+            (416, 448, 32, 16),
+            (48, 496, 144, 16),
+            (224, 464, 16, 48),
+            (272, 496, 144, 16),
+        ]
 
-        y = 3 * 16
-        for row in self.mapa:
-            x = 0
+        for muro in muros:
+            x, y, w, h = muro
+            Muro(x, y, w, h, 2)
+
+        y = 5 * 16
+        for row in dots:
+            x = 32
             for b in row:
-                if b == "B":
-                    Cell(x, y, 2)
-                elif b == ".":
-                    Dot(x + 16, y + 16, 2)
-                elif b == "c":
-                    Circle(x + 10, y + 10, 2)
+                if b == ".":
+                    Dot(x, y, 2)
+                elif b == "C":
+                    Circle(x - 6, y - 6, 2)
                 x = x + 16
             y = y + 16
 
 
-class Cell(EmptyObject):
-    def __init__(self, x, y, layer):
-        super().__init__(x, y, width=16, height=16, layer=layer, tipo="Bloque")
+class Muro(EmptyObject):
+    def __init__(self, x, y, w, h, layer):
+        super().__init__(x, y, width=w, height=h, layer=layer, tipo="Muro", debug=True)
         self.setCollisionFlag(self.COLLISION_RECEIVER)
 
 
