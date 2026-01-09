@@ -78,6 +78,7 @@ class GameWorld:
         self._win.resizable(False, False)
         self._screen_width = width
         self._screen_height = height
+        self._win.configure(bg=bg_color)
         if world_size:
             self._world_width = world_size[0]
             self._world_height = world_size[1]
