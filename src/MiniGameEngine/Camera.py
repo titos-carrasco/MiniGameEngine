@@ -1,3 +1,6 @@
+from typing import Tuple
+
+
 class Camera:
     """
     Clase que representa una cámara utilizada para desplegar el mundo del juego
@@ -5,8 +8,8 @@ class Camera:
 
     def __init__(
         self,
-        x: int,
-        y: int,
+        x: float,
+        y: float,
         width: int,
         height: int,
         world_width: int,
@@ -77,26 +80,43 @@ class Camera:
         if gobj in self._gobjects:
             del self._gobjects[gobj]
 
-    def setPosition(self, x: int, y: int):
+    def setPosition(self, x: float, y: float):
         """
         Posiciona la cámara en el mundo del juego
 
         Args:
-            x (int): Posición x de la cámara
-            y (int): Posición y de la cámara
+            x (float): Posición x de la cámara
+            y (float): Posición y de la cámara
         """
-        self._x, self._y = int(x), int(y)
+        self._x, self._y = x, y
 
         for item in self._gobjects.items():
             gobj, (ox, oy) = item
             gobj.setPosition(x + ox, y + oy)
+
+    def getPosition(self) -> Tuple[float, float]:
+        """Obtiene las coordenadas x e y de la camara.
+
+        Returns:
+            (float, float): Las coordenadas x e y del objeto.
+        """
+        return self._x, self._y
+
+    def getDimension(self) -> Tuple[int, int]:
+        """
+        Retorna la dimensión de la camara.
+
+        Returns:
+            (int, int): El ancho y alto de la camara.
+        """
+        return self._width, self._height
 
     def moveToTarget(self):
         """
         Desplaza la cámara hacia su target dejándolo en el centro de ella.
         """
         if self._target is None:
-            return 0, 0
+            return self._x, self._y
 
         xt, yt = self._target.getPosition()
         wt, ht = self._target.getDimension()
