@@ -3,12 +3,13 @@ from MiniGameEngine.Sprite import Sprite
 
 
 class Barco(Sprite):
-    def __init__(self, x, y, layer, dir, gw):
-        imagen = f"./Recursos/Barco-{dir}.png"
+    def __init__(self, x, y, layer, direccion, gw):
+        imagen = f"./Recursos/Barco-{direccion}.png"
         super().__init__(x, y, layer=layer, tipo="Barco", image_path=imagen)
+        self.gw = gw
 
         self.setCollisionFlag(self.COLLISION_RECEIVER + self.COLLISION_INITIATOR)
-        self.direccion = dir
+        self.direccion = direccion
 
     def onUpdate(self, dt, _dt_optimal):
         _cx, cy = self.gw.getCamera().getPosition()
@@ -38,6 +39,7 @@ class Barco(Sprite):
                 self.setShape("./Recursos/Barco-R.png")
                 self.direccion = "R"
         else:
+            self.gw.addPoints(20)
             x, y = gobj.getPosition()
             Explosion(x, y, self.getLayer(), "red", npoints=80)
             self.delete()

@@ -4,18 +4,19 @@ from MiniGameEngine.Animator import Animator
 
 
 class Helicoptero(Sprite):
-    def __init__(self, x, y, layer, dir, gw):
-        imagen = f"./Recursos/Helicoptero-{dir}1.png"
+    def __init__(self, x, y, layer, direccion, gw):
+        imagen = f"./Recursos/Helicoptero-{direccion}1.png"
         super().__init__(x, y, layer=layer, tipo="Barco", image_path=imagen)
         self.setCollisionFlag(self.COLLISION_RECEIVER + self.COLLISION_INITIATOR)
+        self.gw = gw
 
-        self.direccion = dir
-        self.animLeft = Animator("./Recursos/Helicoptero-L*", self, 0.1)
-        self.animRight = Animator("./Recursos/Helicoptero-R*", self, 0.1)
+        self.direccion = direccion
+        self.anim_left = Animator("./Recursos/Helicoptero-L*", self, 0.1)
+        self.ainm_right = Animator("./Recursos/Helicoptero-R*", self, 0.1)
         if self.direccion == "R":
-            self.animator = self.animRight
+            self.animator = self.ainm_right
         else:
-            self.animator = self.animLeft
+            self.animator = self.anim_left
         self.animator.start()
 
     def onUpdate(self, dt, _dt_optimal):
@@ -42,14 +43,15 @@ class Helicoptero(Sprite):
     def onCollision(self, _dt, _dt_optimal, gobj):
         if gobj.getTipo() == "Tierra":
             if self.direccion == "R":
-                self.animator = self.animLeft
+                self.animator = self.anim_left
                 self.animator.start()
                 self.direccion = "L"
             else:
-                self.animator = self.animRight
+                self.animator = self.ainm_right
                 self.animator.start()
                 self.direccion = "R"
         else:
+            self.gw.addPoints(15)
             x, y = gobj.getPosition()
             Explosion(x, y, self.getLayer(), "red", npoints=80)
             self.delete()
