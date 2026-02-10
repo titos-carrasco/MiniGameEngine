@@ -56,7 +56,7 @@ class Game(GameWorld):
             (176*2, 0, 127*2, 63*2),
         ]
         for coords in colisionadores:
-            obj = EmptyObject(*coords, layer=4, tipo="Tierra", debug=True)
+            obj = EmptyObject(*coords, layer=4, tipo="Tierra", debug=False)
             obj.setCollisionFlag(obj.COLLISION_RECEIVER)
 
         self.running = False

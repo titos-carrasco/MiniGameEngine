@@ -8,12 +8,12 @@ class Tablero(Sprite):
             x, y, layer=layer, tipo="Tablero", image_path="./Recursos/Tablero.png"
         )
         self.points = Text(
-            x + 130,
+            x + 250,
             y,
             layer=layer + 1,
             tipo="Puntos",
             text="00000",
-            font="Arial 10",
+            font="Arial 20",
             color="yellow",
         )
         gw.getCamera().addGameObject(self.points)
