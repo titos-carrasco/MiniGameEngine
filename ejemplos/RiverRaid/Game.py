@@ -12,12 +12,12 @@ class Game(GameWorld):
     def __init__(self):
         # Inicializamos el mundo del juego
         super().__init__(
-            304,
-            360,
+            608,
+            720,
             title="River Raid",
             bg_color="black",
             bg_path="./Recursos/Escenario-01.png",
-            world_size=(304, 1175),
+            world_size=(608, 2350),
             key_debug="F12",
         )
         self.gw = GameWorld._getInstance()
@@ -34,29 +34,29 @@ class Game(GameWorld):
         )
         self.cam.addGameObject(self.status_bar)
 
-        self.tablero = Tablero(0, 360 - 42, layer=100, gw=self.gw)
+        self.tablero = Tablero(0, 720 - 84, layer=100, gw=self.gw)
         self.cam.addGameObject(self.tablero)
 
         self.points = 0
 
-        self.avion = Avion(137, 1100, layer=3, speed=1)  # 1100
-        self.cam.setPosition(0, 1175 - 360)  # world height - win height
-        Puente(112, 9, layer=3, gw=self.gw)
-        Barco(126, 972, 3, "R", self.gw)
-        Helicoptero(115, 903, 3, "L", self.gw)
-        Helicoptero(97, 680, 3, "R", self.gw)
-        Helicoptero(127, 616, 3, "L", self.gw)
+        self.avion = Avion(274, 2200, layer=3, speed=1.4)  # 1100
+        self.cam.setPosition(0, 2350 - 720)  # world height - win height
+        Puente(112*2, 9*2, layer=3, gw=self.gw)
+        Barco(126*2, 972*2, 3, "R", self.gw)
+        Helicoptero(115*2, 903*2, 3, "L", self.gw)
+        Helicoptero(97*2, 680*2, 3, "R", self.gw)
+        Helicoptero(127*2, 616, 3, "L", self.gw)
 
         colisionadores = [
-            (0, 988, 112, 188),
-            (176, 988, 128, 187),
-            (0, 63, 72, 925),
-            (216, 63, 88, 925),
-            (0, 0, 112, 63),
-            (176, 0, 127, 63),
+            (0, 988*2, 112*2, 188*2),
+            (176*2, 988*2, 128*2, 187*2),
+            (0, 63*2, 72*2, 925*2),
+            (216*2, 63*2, 88*2, 925*2),
+            (0, 0, 112*2, 63*2),
+            (176*2, 0, 127*2, 63*2),
         ]
         for coords in colisionadores:
-            obj = EmptyObject(*coords, layer=4, tipo="Tierra", debug=False)
+            obj = EmptyObject(*coords, layer=4, tipo="Tierra", debug=True)
             obj.setCollisionFlag(obj.COLLISION_RECEIVER)
 
         self.running = False
@@ -79,7 +79,7 @@ class Game(GameWorld):
 
         x, y = self.cam.getPosition()
         if y > 0:
-            self.cam.setPosition(x, y - 1)
+            self.cam.setPosition(x, y - self.avion.speed)
 
     def addPoints(self, points):
         self.points = self.points + points

@@ -51,7 +51,7 @@ class Avion(Sprite):
                 self.setShape("./Recursos/Avion-C.png")
                 self.moving = "C"
         if self.gw.isPressed("space") and time.time() - self.last_missil > 0.3:
-            Misil(self.getX() + 6, self.getY() - 15, 3)
+            Misil(self.getX() + 12, self.getY() - 15, 3)
             self.last_missil = time.time()
 
         y = y - self.speed
