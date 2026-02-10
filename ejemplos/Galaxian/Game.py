@@ -21,6 +21,7 @@ class Game(GameWorld):
             font="Arial 10",
             color="white",
         )
+        self.running = False
 
         # agregamos a los actores
         self.space_ship = SpaceShip(307, 400, layer=2)
@@ -45,6 +46,10 @@ class Game(GameWorld):
             )
 
     def onUpdate(self, _dt, _dt_optimal):
+        if not self.running:
+            if self.isPressed("space"):
+                self.running = True
+            return
         if self.isPressed("Escape"):
             self.exitGame()
         fps = self.gw.getFPS()
@@ -52,8 +57,9 @@ class Game(GameWorld):
 
     # utilizada por los alien para obtener las coordenadas del target
     def getTarget(self):
-        if self.space_ship.isAlive():
-            return self.space_ship.getPosition()
+        if self.running:
+            if self.space_ship.isAlive():
+                return self.space_ship.getPosition()
         return None
 
 
